@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>1994 컴퓨터</title>
+<meta name="description" content="1994년의 오래된 컴퓨터를 켜서 안을 들여다보는 페이지">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding:wght@400;700&family=Nanum+Gothic:wght@400;700&display=swap">
+<link rel="stylesheet" href="style.css?v=202610180152">
+</head>
+<body>
+  <div id="room" class="room">
+    <div id="pc" class="pc">
+      <div class="monitor">
+        <div class="bezel">
+          <div class="glass">
+            <div id="screen" class="screen off"></div>
+            <div class="scan"></div><div class="glare"></div>
+          </div>
+        </div>
+        <div class="chin">
+          <span class="badge">SVGA&nbsp;14"</span>
+          <span class="knobs"><i></i><i></i></span>
+          <i id="led" class="led"></i>
+          <button id="power" class="power" aria-label="전원"><span>POWER</span></button>
+        </div>
+      </div>
+      <div class="neck"></div><div class="foot"></div>
+    </div>
+    <p id="hint" class="hint">전원 버튼을 누르세요</p>
+  </div>
+  <script src="data.js?v=202610180152"></script>
+  <script src="app.js?v=202610180152"></script>
+</body>
+</html>
