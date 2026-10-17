@@ -2,7 +2,7 @@
   const P = window.PHONE;
   const $ = s => document.querySelector(s);
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const zbar = document.getElementById("zbar"), wrap = $("#wrap"), flip = $("#flip"), lcd = $("#lcd"), hint = $("#hint"), closeBtn = $("#closeBtn");
+  const wrap = $("#wrap"), flip = $("#flip"), lcd = $("#lcd"), hint = $("#hint"), closeBtn = $("#closeBtn");
   const TOUCH = matchMedia("(pointer: coarse)").matches;
 
   /* ================= 시간 ================= */
@@ -38,9 +38,8 @@
     const vw = innerWidth, vh = innerHeight;
     let s, tx, ty;
     if (opened && big) {   // 액정 크게: 액정(경첩 축 기준 중심 0,-302 · 240×274)을 위쪽에 크게, 아래엔 조작 버튼
-      const barH = zbar.offsetHeight || 150;
-      s = Math.min((vw - 20) / 240, (vh - barH - 70) / 274, 3);
-      tx = vw / 2; ty = (vh - barH) / 2 + 18 + 302 * s;
+      s = Math.min((vw - 20) / 240, (vh - 90) / 274, 3);
+      tx = vw / 2; ty = vh / 2 + 10 + 302 * s;
     } else {
       const [y0, y1] = opened ? [-605, 625] : [-126, 650];   // 경첩 축 기준 위·아래 끝
       s = Math.min((vw - 24) / 370, (vh - 64) / (y1 - y0), 1.5);
@@ -67,12 +66,12 @@
   $("#lid").addEventListener("click", () => { if (!opened) openPhone(); });
   closeBtn.addEventListener("click", closePhone);
   /* 액정 클로즈업: 펼친 상태에서 액정을 누르면 크게, 액정 밖을 누르면 원래대로 */
-  const zbarKeys = zbar.querySelectorAll("[data-z]");
-  function setBig(v) { if (big === v) return; big = v; document.body.classList.toggle("big", v); zbar.hidden = !v; fit(); }
+  const bigOff = $("#bigOff");
+  function setBig(v) { if (big === v) return; big = v; document.body.classList.toggle("big", v); bigOff.hidden = !v; fit(); }
   lcd.addEventListener("click", e => { if (opened && !big) { e.stopImmediatePropagation(); setBig(true); } }, true);
-  $("#room").addEventListener("click", e => { if (big && !e.target.closest("#lcd, #zbar, .tbtns")) setBig(false); });
-  zbarKeys.forEach(b => b.addEventListener("pointerdown", e => { e.preventDefault(); b.classList.add("press"); key(b.dataset.z); }));
-  zbarKeys.forEach(b => { const up = () => b.classList.remove("press"); b.addEventListener("pointerup", up); b.addEventListener("pointerleave", up); });
+  bigOff.addEventListener("click", () => setBig(false));
+  /* 클로즈업 중 터치 조작: 화면 아래 글자(소프트키)도 누를 수 있음 */
+  lcd.addEventListener("click", e => { const sk = e.target.closest("[data-sk]"); if (sk && big) key(sk.dataset.sk); });
   addEventListener("keydown", e => { if (e.key === "Escape") closePhone(); });
 
   /* 바깥 작은 액정 */
@@ -105,7 +104,7 @@
     settings: `<circle cx="16" cy="16" r="5" fill="none" stroke="#5a6577" stroke-width="3"/>${[0, 45, 90, 135, 180, 225, 270, 315].map(a => `<rect x="14.5" y="4" width="3" height="5" rx="1" fill="#5a6577" transform="rotate(${a} 16 16)"/>`).join("")}`
   };
   const statusBar = () => `<div class="sb"><b>▂▄▆█</b><span class="r"><b data-sbt></b><span class="bat">${batHTML(P.battery ?? 2)}</span></span></div>`;
-  const frame = (title, body, l = "", r = "") => `<div class="scr">${statusBar()}${title ? `<div class="title">${esc(title)}</div>` : ""}<div class="body">${body}</div><div class="softbar"><span>${esc(l)}</span><span>${esc(r)}</span></div></div>`;
+  const frame = (title, body, l = "", r = "") => `<div class="scr">${statusBar()}${title ? `<div class="title">${esc(title)}</div>` : ""}<div class="body">${body}</div><div class="softbar"><span data-sk="sl">${esc(l)}</span><span data-sk="sr">${esc(r)}</span></div></div>`;
 
   let S = { name: "off" }, popT = null, callT = [];
   function go(name, opt = {}) { S = { name, sel: 0, ...opt }; render(); }
