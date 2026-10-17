@@ -3,70 +3,61 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<title>1994 컴퓨터</title>
-<meta name="description" content="1994년의 오래된 컴퓨터를 켜서 안을 들여다보는 페이지">
+<title>폴더폰</title>
+<meta name="description" content="2000년대 초 폴더폰을 열어 안을 들여다보는 페이지">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding:wght@400;700&family=Nanum+Gothic:wght@400;700&display=swap">
-<link rel="stylesheet" href="style.css?v=202610180201">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Nanum+Gothic+Coding:wght@400;700&display=swap">
+<link rel="stylesheet" href="style.css?v=202610180208">
 </head>
-<body class="scene">
+<body>
   <div id="room" class="room">
-    <div id="stage" class="stage">
-      <div class="wall"></div><div class="desk"></div>
+    <div id="wrap" class="wrap">
+      <div id="flip" class="flip">
 
-      <!-- 스피커 (왼쪽) -->
-      <div class="spk spk-l"><i class="grille"></i><i class="spk-base"></i></div>
-
-      <!-- 본체 -->
-      <div id="tower" class="tower">
-        <div class="bay b525"><i></i></div>
-        <div class="bay b35"><i></i></div>
-        <div class="tw-leds"><i id="pwrLed" class="tl"></i><i id="hddLed" class="tl hdd"></i></div>
-        <button id="towerPower" class="tw-power" aria-label="본체 전원"></button>
-        <div class="tw-vent"></div>
-      </div>
-
-      <!-- 모니터 -->
-      <div id="pc" class="pc">
-        <div class="monitor">
-          <div class="bezel">
-            <div class="glass">
-              <div id="screen" class="screen off"></div>
-              <div class="scan"></div><div class="glare"></div>
+        <!-- 아래 몸체: 경첩 + 키패드 -->
+        <div class="base">
+          <div class="hinge"><i class="cyl"></i><i class="cam"></i></div>
+          <div class="pad">
+            <div class="nav">
+              <button class="k soft sl" data-k="sl" aria-label="왼쪽 소프트키"></button>
+              <div class="ring">
+                <button class="dir up" data-k="up" aria-label="위"></button>
+                <button class="dir dn" data-k="down" aria-label="아래"></button>
+                <button class="dir lf" data-k="left" aria-label="왼쪽"></button>
+                <button class="dir rt" data-k="right" aria-label="오른쪽"></button>
+                <button class="ok" data-k="ok" aria-label="확인"></button>
+              </div>
+              <button class="k soft sr" data-k="sr" aria-label="오른쪽 소프트키"></button>
+              <button class="k send" data-k="send" aria-label="통화"><i></i></button>
+              <button class="k clr" data-k="clr">취소</button>
+              <button class="k end" data-k="end" aria-label="종료"><i></i></button>
             </div>
-          </div>
-          <div class="chin">
-            <span class="knobs"><i></i><i></i><i></i><i></i></span>
-            <i id="led" class="led"></i>
-            <button id="power" class="power" aria-label="전원"></button>
+            <div class="nums">
+              <button class="k n" data-k="1">1<small>.QZ</small></button><button class="k n" data-k="2">2<small>ABC</small></button><button class="k n" data-k="3">3<small>DEF</small></button>
+              <button class="k n" data-k="4">4<small>GHI</small></button><button class="k n" data-k="5">5<small>JKL</small></button><button class="k n" data-k="6">6<small>MNO</small></button>
+              <button class="k n" data-k="7">7<small>PRS</small></button><button class="k n" data-k="8">8<small>TUV</small></button><button class="k n" data-k="9">9<small>WXY</small></button>
+              <button class="k n" data-k="*">✱</button><button class="k n" data-k="0">0<small>+</small></button><button class="k n" data-k="#">#</button>
+            </div>
+            <i class="mic"></i>
           </div>
         </div>
-        <div class="neck"></div><div class="foot"></div>
-        <button id="zoomHit" class="zoom-hit" aria-label="모니터 가까이 보기"></button>
-      </div>
 
-      <!-- 스피커 (오른쪽) -->
-      <div class="spk spk-r"><i class="grille"></i><i class="spk-base"><b></b><b></b></i></div>
-
-      <!-- 키보드 · 마우스 -->
-      <div class="kbd"><div class="keys"></div><div class="keys num"></div></div>
-      <div class="mouse"><i></i></div>
-
-      <!-- 휴대전화 -->
-      <div id="phone" class="phone">
-        <i class="ant"></i>
-        <div class="ph-body">
-          <i class="ph-spk"></i>
-          <div class="ph-lcd"><span id="phTime"></span></div>
-          <i class="ph-nav"></i>
-          <div class="ph-keys"></div>
+        <!-- 위 덮개: 바깥면(작은 액정) / 안쪽면(큰 액정) -->
+        <div id="lid" class="lid">
+          <div class="face outer">
+            <div class="oval"><div class="sub-lcd"><div class="sl-top"><b>▂▄▆</b><b class="bat" data-bat></b></div><div class="sl-time" data-subtime></div><div class="sl-date" data-subdate></div></div></div>
+          </div>
+          <div class="face inner">
+            <i class="earpiece"></i>
+            <div class="lcd-frame"><div id="lcd" class="lcd"></div></div>
+          </div>
         </div>
       </div>
     </div>
-    <button id="back" class="back" hidden>← 책상으로</button>
-    <p id="hint" class="hint">모니터를 누르세요</p>
+    <button id="closeBtn" class="close-btn" hidden>폴더 닫기</button>
+    <p id="hint" class="hint">휴대폰을 누르면 열립니다</p>
   </div>
-  <script src="data.js?v=202610180201"></script>
-  <script src="app.js?v=202610180201"></script>
+  <script src="data.js?v=202610180208"></script>
+  <script src="app.js?v=202610180208"></script>
 </body>
 </html>
