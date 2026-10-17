@@ -2,7 +2,7 @@
   const P = window.PHONE;
   const $ = s => document.querySelector(s);
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const wrap = $("#wrap"), flip = $("#flip"), lcd = $("#lcd"), hint = $("#hint"), closeBtn = $("#closeBtn");
+  const zbar = document.getElementById("zbar"), wrap = $("#wrap"), flip = $("#flip"), lcd = $("#lcd"), hint = $("#hint"), closeBtn = $("#closeBtn");
   const TOUCH = matchMedia("(pointer: coarse)").matches;
 
   /* ================= 시간 ================= */
@@ -33,12 +33,19 @@
   const closeSnap = () => { click(.45, .38, 1500); click(.25, .44, 3000); };
 
   /* ================= 배율 · 위치 (닫힘 / 열림) ================= */
-  let opened = false;
+  let opened = false, big = false;
   function fit(instant) {
     const vw = innerWidth, vh = innerHeight;
-    const [y0, y1] = opened ? [-605, 625] : [-126, 650];   // 경첩 축 기준 위·아래 끝
-    const s = Math.min((vw - 24) / 370, (vh - 64) / (y1 - y0), 1.5);
-    const tx = vw / 2, ty = vh / 2 - ((y0 + y1) / 2) * s - 6;
+    let s, tx, ty;
+    if (opened && big) {   // 액정 크게: 액정(경첩 축 기준 중심 0,-302 · 240×274)을 위쪽에 크게, 아래엔 조작 버튼
+      const barH = zbar.offsetHeight || 150;
+      s = Math.min((vw - 20) / 240, (vh - barH - 70) / 274, 3);
+      tx = vw / 2; ty = (vh - barH) / 2 + 18 + 302 * s;
+    } else {
+      const [y0, y1] = opened ? [-605, 625] : [-126, 650];   // 경첩 축 기준 위·아래 끝
+      s = Math.min((vw - 24) / 370, (vh - 64) / (y1 - y0), 1.5);
+      tx = vw / 2; ty = vh / 2 - ((y0 + y1) / 2) * s - 6;
+    }
     wrap.classList.toggle("instant", !!instant);
     wrap.style.transform = `translate(${tx}px,${ty}px) scale(${s})`;
     if (instant) requestAnimationFrame(() => requestAnimationFrame(() => wrap.classList.remove("instant")));
@@ -48,17 +55,24 @@
   function openPhone() {
     if (opened) return; opened = true; audio();
     flip.classList.add("open"); fit(); openJingle();
-    hint.style.opacity = 0; closeBtn.hidden = false;
+    hint.style.opacity = 0; closeBtn.hidden = false; bigBtn.hidden = false;
     go("idle");
   }
   function closePhone() {
     if (!opened) return; opened = false;
     flip.classList.remove("open"); fit(); closeSnap();
-    closeBtn.hidden = true; hint.style.opacity = 1; hint.textContent = "휴대폰을 누르면 열립니다";
+    setBig(false); closeBtn.hidden = true; bigBtn.hidden = true; hint.style.opacity = 1; hint.textContent = "휴대폰을 누르면 열립니다";
     stopCall();
   }
   $("#lid").addEventListener("click", () => { if (!opened) openPhone(); });
   closeBtn.addEventListener("click", closePhone);
+  /* 액정 크게 보기 */
+  const bigBtn = $("#bigBtn");
+  function setBig(v) { big = v; document.body.classList.toggle("big", v); zbar.hidden = !v; bigBtn.textContent = v ? "전체 보기" : "화면 크게"; fit(); }
+  bigBtn.addEventListener("click", () => setBig(!big));
+  lcd.addEventListener("dblclick", () => setBig(!big));
+  zbar.querySelectorAll("[data-z]").forEach(b => b.addEventListener("pointerdown", e => { e.preventDefault(); b.classList.add("press"); key(b.dataset.z); }));
+  zbar.querySelectorAll("[data-z]").forEach(b => { const up = () => b.classList.remove("press"); b.addEventListener("pointerup", up); b.addEventListener("pointerleave", up); });
   addEventListener("keydown", e => { if (e.key === "Escape") closePhone(); });
 
   /* 바깥 작은 액정 */

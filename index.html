@@ -7,7 +7,7 @@
 <meta name="description" content="2000년대 초 폴더폰을 열어 안을 들여다보는 페이지">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Nanum+Gothic+Coding:wght@400;700&display=swap">
-<link rel="stylesheet" href="style.css?v=202610180215">
+<link rel="stylesheet" href="style.css?v=202610180219">
 </head>
 <body>
   <div id="room" class="room">
@@ -50,10 +50,17 @@
         </div>
       </div>
     </div>
-    <button id="closeBtn" class="close-btn" hidden>폴더 닫기</button>
+    <div class="tbtns"><button id="bigBtn" class="tb-btn" hidden>화면 크게</button><button id="closeBtn" class="tb-btn" hidden>폴더 닫기</button></div>
+    <div id="zbar" class="zbar" hidden>
+      <div class="zr"><button data-z="menu">메뉴</button><button data-z="up">▲</button><button data-z="ok">확인</button></div>
+      <div class="zr"><button data-z="left">◀</button><button data-z="ok" class="zok">●</button><button data-z="right">▶</button></div>
+      <div class="zr"><button data-z="send" class="zs">통화</button><button data-z="down">▼</button><button data-z="end" class="ze">종료</button></div>
+      <div class="zr"><button data-z="clr">취소</button><button data-z="ph">전화부</button></div>
+      <div class="zr zn"><button data-z="1">1</button><button data-z="2">2</button><button data-z="3">3</button><button data-z="4">4</button><button data-z="5">5</button><button data-z="6">6</button><button data-z="7">7</button><button data-z="8">8</button><button data-z="9">9</button><button data-z="*">*</button><button data-z="0">0</button><button data-z="#">#</button></div>
+    </div>
     <p id="hint" class="hint">휴대폰을 누르면 열립니다</p>
   </div>
-  <script src="data.js?v=202610180215"></script>
-  <script src="app.js?v=202610180215"></script>
+  <script src="data.js?v=202610180219"></script>
+  <script src="app.js?v=202610180219"></script>
 </body>
 </html>
