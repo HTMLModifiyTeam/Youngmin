@@ -41,11 +41,12 @@ body.big .hint{opacity:0}
 .hk:active,.hk.press{background:radial-gradient(closest-side,rgba(0,20,60,.22),rgba(0,20,60,.08) 70%,transparent)}
 
 /* 큰 액정 자리: 펼친 사진의 (64,166) 240×274 */
-.lcd{position:absolute;left:64px;top:166px;width:240px;height:274px;overflow:hidden;background:#0d0f0e;font-size:12px;color:#111;border-radius:2px}
+.lcd{cursor:zoom-in;position:absolute;left:64px;top:166px;width:240px;height:274px;overflow:hidden;background:#0d0f0e;font-size:12px;color:#111;border-radius:2px}
 .lcd:after{content:"";position:absolute;inset:0;z-index:20;pointer-events:none;background:repeating-linear-gradient(rgba(0,0,0,.09) 0 1px,transparent 1px 3px),linear-gradient(135deg,rgba(255,255,255,.12),transparent 40%)}
 
 /* 닫힌 사진의 바깥 액정 자리: (188,498)~(452,708) × 0.547 */
 .sub-lcd{position:absolute;left:103px;top:273px;width:144px;height:114px;border-radius:9px;background:linear-gradient(#dfe5dc,#cfd6cc);color:#273024;font-family:"Nanum Gothic Coding",monospace;padding:7px 9px;display:flex;flex-direction:column;box-shadow:inset 0 1px 3px rgba(0,0,0,.18)}
+.sub-lcd:after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:repeating-linear-gradient(rgba(0,0,0,.08) 0 1px,transparent 1px 3px)}
 .sl-top{display:flex;justify-content:space-between;align-items:center;font-size:10px;line-height:1}
 .sl-time{flex:1;display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:700;letter-spacing:-.03em}
 .sl-time small{font-size:13px;margin-left:2px;align-self:flex-end;margin-bottom:10px}
@@ -96,3 +97,5 @@ body.big .hint{opacity:0}
 .calling .ani{font-size:20px;letter-spacing:4px;animation:pulse 1s infinite}
 @keyframes pulse{50%{opacity:.3}}
 .off-lcd{position:absolute;inset:0;background:#000}
+
+body.big .lcd{cursor:default}

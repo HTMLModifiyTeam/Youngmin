@@ -55,24 +55,24 @@
   function openPhone() {
     if (opened) return; opened = true; audio();
     flip.classList.add("open"); fit(); openJingle();
-    hint.style.opacity = 0; closeBtn.hidden = false; bigBtn.hidden = false;
+    hint.style.opacity = 0; closeBtn.hidden = false;
     go("idle");
   }
   function closePhone() {
     if (!opened) return; opened = false;
     flip.classList.remove("open"); fit(); closeSnap();
-    setBig(false); closeBtn.hidden = true; bigBtn.hidden = true; hint.style.opacity = 1; hint.textContent = "휴대폰을 누르면 열립니다";
+    setBig(false); closeBtn.hidden = true; hint.style.opacity = 1; hint.textContent = "휴대폰을 누르면 열립니다";
     stopCall();
   }
   $("#lid").addEventListener("click", () => { if (!opened) openPhone(); });
   closeBtn.addEventListener("click", closePhone);
-  /* 액정 크게 보기 */
-  const bigBtn = $("#bigBtn");
-  function setBig(v) { big = v; document.body.classList.toggle("big", v); zbar.hidden = !v; bigBtn.textContent = v ? "전체 보기" : "화면 크게"; fit(); }
-  bigBtn.addEventListener("click", () => setBig(!big));
-  lcd.addEventListener("dblclick", () => setBig(!big));
-  zbar.querySelectorAll("[data-z]").forEach(b => b.addEventListener("pointerdown", e => { e.preventDefault(); b.classList.add("press"); key(b.dataset.z); }));
-  zbar.querySelectorAll("[data-z]").forEach(b => { const up = () => b.classList.remove("press"); b.addEventListener("pointerup", up); b.addEventListener("pointerleave", up); });
+  /* 액정 클로즈업: 펼친 상태에서 액정을 누르면 크게, 액정 밖을 누르면 원래대로 */
+  const zbarKeys = zbar.querySelectorAll("[data-z]");
+  function setBig(v) { if (big === v) return; big = v; document.body.classList.toggle("big", v); zbar.hidden = !v; fit(); }
+  lcd.addEventListener("click", e => { if (opened && !big) { e.stopImmediatePropagation(); setBig(true); } }, true);
+  $("#room").addEventListener("click", e => { if (big && !e.target.closest("#lcd, #zbar, .tbtns")) setBig(false); });
+  zbarKeys.forEach(b => b.addEventListener("pointerdown", e => { e.preventDefault(); b.classList.add("press"); key(b.dataset.z); }));
+  zbarKeys.forEach(b => { const up = () => b.classList.remove("press"); b.addEventListener("pointerup", up); b.addEventListener("pointerleave", up); });
   addEventListener("keydown", e => { if (e.key === "Escape") closePhone(); });
 
   /* 바깥 작은 액정 */
