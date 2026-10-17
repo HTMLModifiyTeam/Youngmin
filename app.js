@@ -36,9 +36,9 @@
   let opened = false;
   function fit(instant) {
     const vw = innerWidth, vh = innerHeight;
-    const [y0, y1] = opened ? [-418, 470] : [0, 470];
-    const s = Math.min((vw - 24) / 270, (vh - 70) / (y1 - y0), 1.7);
-    const tx = vw / 2 - 125 * s, ty = vh / 2 - ((y0 + y1) / 2) * s - 6;
+    const [y0, y1] = opened ? [-605, 625] : [-126, 650];   // 경첩 축 기준 위·아래 끝
+    const s = Math.min((vw - 24) / 370, (vh - 64) / (y1 - y0), 1.5);
+    const tx = vw / 2, ty = vh / 2 - ((y0 + y1) / 2) * s - 6;
     wrap.classList.toggle("instant", !!instant);
     wrap.style.transform = `translate(${tx}px,${ty}px) scale(${s})`;
     if (instant) requestAnimationFrame(() => requestAnimationFrame(() => wrap.classList.remove("instant")));
@@ -146,6 +146,9 @@
   function key(k) {
     if (!opened) return;
     keyBeep(k);
+    if (k === "menu") k = "sl";
+    if (k === "ph") { stopCall(); return openMenu(0); }   // 위쪽 전화부 키
+    if (k === "jump" || k === "cam" || k === "nate") { if (S.name === "calling") return; return pop(k === "nate" ? "무선인터넷에 연결할 수 없습니다" : "준비 중입니다"); }
     const n = S.name, digit = /^[0-9*#]$/.test(k);
     if (k === "end") { stopCall(); return go("idle"); }
     if (n === "idle") {
