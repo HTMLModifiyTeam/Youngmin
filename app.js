@@ -13,24 +13,45 @@
   const p2 = n => String(n).padStart(2, "0");
   const W = "일월화수목금토";
 
-  /* ================= 화면 크기 · 배율 ================= */
-  let mobile = false;
-  function fit() {
-    const narrow = innerWidth < 760, portrait = innerHeight > innerWidth;
-    mobile = narrow || (TOUCH && innerWidth < 1000);
+  /* ================= 책상 장면 · 모니터 확대 ================= */
+  const stage = $("#stage"), mon = pcEl.querySelector(".monitor"), back = $("#back");
+  let mobile = false, zoomed = false;
+  function fit(instant) {
+    const vw = innerWidth, vh = innerHeight, portrait = vh > vw;
+    mobile = vw < 760 || (TOUCH && vw < 1000);
     document.body.classList.toggle("mobile", mobile);
-    const [sw, sh] = mobile && portrait ? [360, 500] : [640, 480];
+    document.body.classList.toggle("zoomed", zoomed);
+    const [sw, sh] = zoomed && mobile && portrait ? [360, 500] : [640, 480];
     document.documentElement.style.setProperty("--sw", sw + "px");
     document.documentElement.style.setProperty("--sh", sh + "px");
-    pcEl.style.transform = "none";
-    const r = pcEl.getBoundingClientRect();
-    const s = Math.min((innerWidth - 16) / r.width, (innerHeight - 44) / r.height, mobile ? 2 : 1.45);
-    pcEl.style.transform = `scale(${s})`;
-    pcEl.style.margin = `${(r.height * (s - 1)) / 2}px 0`;
+    pcEl.style.left = (850 - pcEl.offsetWidth / 2) + "px";
+    let s, tx, ty;
+    if (!zoomed) {   // 책상 전체 (스피커~휴대전화)
+      const X0 = 30, X1 = 1560, Y0 = mobile && portrait ? 120 : 20, Y1 = 920;
+      s = Math.min(vw / (X1 - X0), vh / (Y1 - Y0));
+      tx = (vw - (X1 - X0) * s) / 2 - X0 * s; ty = (vh - (Y1 - Y0) * s) / 2 - Y0 * s;
+    } else {         // 모니터가 화면 가운데를 가득
+      const mx = pcEl.offsetLeft + mon.offsetLeft, my = pcEl.offsetTop + mon.offsetTop, mw = mon.offsetWidth, mh = mon.offsetHeight;
+      s = Math.min((vw - 12) / mw, (vh - 12) / mh, mobile ? 3 : 1.6);
+      tx = vw / 2 - (mx + mw / 2) * s; ty = vh / 2 - (my + mh / 2) * s;
+    }
+    stage.classList.toggle("instant", !!instant);
+    stage.style.transform = `translate(${tx}px,${ty}px) scale(${s})`;
+    if (instant) requestAnimationFrame(() => requestAnimationFrame(() => stage.classList.remove("instant")));
     document.querySelectorAll(".win").forEach(w => { if (mobile && !w.closest(".dlg")) w.classList.add("max"); });
   }
-  addEventListener("resize", fit); fit();
-  if (mobile) hint.textContent = "PC 환경에서 보는 것을 권장합니다 · 전원 버튼을 누르세요";
+  function zoom(z) {
+    if (zoomed === z) return; zoomed = z;
+    document.body.classList.toggle("scene", !z); back.hidden = !z; fit();
+  }
+  $("#zoomHit").addEventListener("click", () => zoom(true));
+  back.addEventListener("click", () => zoom(false));
+  addEventListener("keydown", e => { if (e.key === "Escape" && zoomed && !(document.activeElement && /INPUT|TEXTAREA/.test(document.activeElement.tagName))) zoom(false); });
+  addEventListener("resize", () => fit(true)); fit(true);
+  hint.textContent = mobile ? "모니터를 누르세요 · PC 환경을 권장합니다" : "모니터를 누르세요";
+  /* 휴대전화 화면의 시계 */
+  const phTime = $("#phTime"), phTick = () => { const d = now(); phTime.textContent = `${p2(d.getHours())}:${p2(d.getMinutes())}`; };
+  phTick(); setInterval(phTick, 1000);
 
   /* ================= 소리 ================= */
   let ctx = null, fan = null;
@@ -46,6 +67,7 @@
     o.connect(g); g.connect(ctx.destination); o.start(t); o.stop(t + dur);
   }
   function seek(n = 3) {   // 하드디스크 '드륵드륵'
+    const hl = $("#hddLed"); if (hl && on) { hl.classList.add("on"); clearTimeout(hl._t); hl._t = setTimeout(() => hl.classList.remove("on"), 90 * n); }
     if (!audio()) return; const buf = noiseBuf(.05);
     for (let i = 0; i < n; i++) { const t = ctx.currentTime + i * (.04 + Math.random() * .09), s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
       s.buffer = buf; f.type = "bandpass"; f.frequency.value = 1800 + Math.random() * 2500; f.Q.value = 3; g.gain.setValueAtTime(.12, t); g.gain.exponentialRampToValueAtTime(.001, t + .03);
@@ -82,14 +104,15 @@
 
   /* ================= 전원 · 부팅 ================= */
   let on = false, bootTok = 0, skip = false;
-  $("#power").addEventListener("click", () => { audio(); on ? powerOff() : powerOn(); });
+  const togglePower = () => { audio(); on ? powerOff() : powerOn(); };
+  $("#power").addEventListener("click", togglePower);
+  $("#towerPower").addEventListener("click", () => { togglePower(); if (on) setTimeout(() => zoom(true), 350); });
   function powerOff() {
-    on = false; bootTok++; $("#power").classList.remove("on"); led.className = "led"; fanOff();
+    on = false; bootTok++; $("#power").classList.remove("on"); led.className = "led"; $("#pwrLed").classList.remove("on"); fanOff();
     screen.style.filter = "brightness(3)"; setTimeout(() => { screen.classList.add("off"); screen.innerHTML = ""; screen.style.filter = ""; }, 120);
-    hint.textContent = "전원 버튼을 누르세요";
   }
   async function powerOn() {
-    on = true; const tok = ++bootTok; skip = false; $("#power").classList.add("on"); led.className = "led on"; fanOn(); hint.textContent = "";
+    on = true; const tok = ++bootTok; skip = false; $("#power").classList.add("on"); led.className = "led on"; $("#pwrLed").classList.add("on"); fanOn();
     screen.classList.remove("off"); screen.innerHTML = `<div class="blank"></div>`;
     const alive = () => tok === bootTok;
     await wait(700); if (!alive()) return;
