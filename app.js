@@ -159,10 +159,12 @@
       const st = lcd.querySelector(".stl span"); if (st && st.scrollWidth > st.parentNode.clientWidth) st.parentNode.classList.add("long");
     } else if (n === "talk") {   // 통화 녹음: 대화가 한 줄씩 올라옴
       const c = S.c, who = c.name;
-      lcd.innerHTML = frame("Call Rec.", `<div class="talk ruled"><div class="meta">${{ missed: "Missed", out: "Dialed", in: "Received" }[c.dir]} ${esc(c.when)}${c.dur ? " · " + esc(c.dur) : ""}</div>${c.talk.slice(0, S.n).map(l => `<div class="tl${l.me ? " me" : ""}${l.loud ? " loud" : ""}"><b>${l.me ? "Me" : esc(who)}</b>${esc(l.t)}</div>`).join("")}${S.n < c.talk.length ? `<div class="tl wait">▪ ▪ ▪</div>` : `<div class="tl end">— End of call —</div>`}</div>`, "Call", "Back", { right: `${Math.min(S.n, c.talk.length)}/${c.talk.length}`, mid: S.n < c.talk.length ? "▶" : "■" });
+      const done = S.n >= c.talk.length;
+      lcd.innerHTML = frame(S.live ? (done ? "Call Ended" : "Connected") : "Call Rec.", `<div class="talk ruled"><div class="meta">${S.live ? esc(who) : `${{ missed: "Missed", out: "Dialed", in: "Received" }[c.dir]} ${esc(c.when)}${c.dur ? " · " + esc(c.dur) : ""}`}</div>${c.talk.slice(0, S.n).map(l => `<div class="tl${l.me ? " me" : ""}"><b>${l.me ? "Me" : esc(who)}</b>${esc(l.t)}</div>`).join("")}${S.n < c.talk.length ? `<div class="tl wait">▪ ▪ ▪</div>` : `<div class="tl end">— End of call —</div>`}</div>`, S.live ? "" : "Call", S.live ? (done ? "OK" : "End") : "Back", { right: `${Math.min(S.n, c.talk.length)}/${c.talk.length}`, mid: S.n < c.talk.length ? "▶" : "■" });
       const tk = lcd.querySelector(".talk"); tk.scrollTop = tk.scrollHeight;
       clearTimeout(talkT);
-      if (S.n < c.talk.length) { const nx = c.talk[S.n]; talkT = setTimeout(() => { if (S.name === "talk" && S.c === c) { S.n++; render(); } }, S.n === 0 ? 700 : 1300 + Math.min(2600, (c.talk[S.n - 1]?.t.length || 10) * 70)); }
+      if (S.n < c.talk.length) { talkT = setTimeout(() => { if (S.name === "talk" && S.c === c) { S.n++; render(); } }, S.n === 0 ? 700 : 1300 + Math.min(2600, (c.talk[S.n - 1]?.t.length || 10) * 70)); }
+      else if (S.live && !S.logged) { S.logged = true; P.calls.unshift(c); talkT = setTimeout(() => { if (S.name === "talk" && S.c === c) go("idle"); }, 3500); }   // 실시간 통화가 끝나면 통화목록에 남음
     } else if (n === "calling") {
       lcd.innerHTML = frame("", `<div class="calling"><div class="ani">${ico("calls")}</div><div class="who">${esc(S.who || "")}</div><div class="num">${esc(S.num)}</div><div class="st" data-cst>Calling…</div></div>`, "", "End", { mid: "" });
     }
@@ -221,9 +223,16 @@
     if (S.mode === "memo") { if (S.memo) { S.memo.text = t; S.memo.when = stamp(); } else P.memos.unshift({ text: t, when: stamp() }); return pop("Saved", () => memoList(S.memo ? P.memos.indexOf(S.memo) + 1 : 1)); }
   }
   function startCall(num) {
-    stopCall(); const who = nameOf(num) || (P.contacts || []).find(c => c.name === num)?.name || "";
+    stopCall(); clearTimeout(talkT); const who = nameOf(num) || (P.contacts || []).find(c => c.name === num)?.name || "";
     go("calling", { num: numberOf(num), who });
-    tone([440, 480], 1.2, .03, .4); tone([440, 480], 1.2, .03, 4.4);
+    tone([440, 480], 1.2, .03, .4);
+    const sc = (P.scripts || {})[who];
+    if (sc) {   // 전화번호부에서 건 전화: 상대가 받으면 대본이 한 줄씩
+      callT.push(setTimeout(() => { if (S.name !== "calling") return; click(.3, 0, 1600); const d = now();
+        go("talk", { live: true, n: 0, c: { name: who, dir: "out", when: `${String(d.getFullYear()).slice(2)}/${stamp()}`, dur: "", talk: sc } }); }, 2600));
+      return;
+    }
+    tone([440, 480], 1.2, .03, 4.4);
     callT.push(setTimeout(() => { const s = lcd.querySelector("[data-cst]"); if (s) s.textContent = "No answer"; }, 7000));
     callT.push(setTimeout(() => { if (S.name === "calling") go("idle"); }, 9000));
   }
@@ -237,7 +246,7 @@
     if (k === "jump" || k === "cam" || k === "nate") return;   // 쓰지 않는 키
     if (k === "ph") { stopCall(); return openMenu(0); }   // 위쪽 전화부 키
     const n = S.name, digit = /^[0-9*#]$/.test(k);
-    if (k === "end") { stopCall(); return go("idle"); }
+    if (k === "end") { if (S.name === "talk" && S.live && !S.logged) { S.logged = true; P.calls.unshift(S.c); } clearTimeout(talkT); stopCall(); return go("idle"); }
     if (n === "idle") {
       if (digit) return go("dial", { num: k });
       if (k === "ok" || k === "sl") return mainMenu(0);
@@ -292,6 +301,7 @@
     if (n === "talk") {
       if (k === "up" || k === "down") { const r = lcd.querySelector(".talk"); r.scrollTop += k === "up" ? -36 : 36; return; }
       if (k === "ok" || k === "right") { if (S.n < S.c.talk.length) { S.n++; return render(); } return; }   // 다음 줄 바로 보기
+      if (S.live) { if (k === "sr" || k === "clr" || k === "end") { clearTimeout(talkT); if (!S.logged) { S.logged = true; P.calls.unshift(S.c); } return go("idle"); } return; }
       if (k === "send" || k === "sl") return startCall(numberOf(S.c.name));
       if (k === "clr" || k === "sr" || k === "left") { clearTimeout(talkT); return S.backTo(); }
       return;
@@ -310,6 +320,7 @@
   });
   /* 화면을 직접 눌러도 선택 */
   lcd.addEventListener("click", e => {
+    if (S.name === "talk" && !e.target.closest("[data-sk]")) { if (S.n < S.c.talk.length) { S.n = S.c.talk.length; render(); } return; }   // 한 번 누르면 대본 끝까지 바로
     const b = e.target.closest("[data-i]"); if (!b) return; const i = +b.dataset.i;
     if (S.name === "menu" || S.name === "list") { S.sel = i; render(); key("ok"); }
   });
