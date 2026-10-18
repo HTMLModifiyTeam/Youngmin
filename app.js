@@ -124,12 +124,24 @@
   const ico = id => `<svg class="pi" viewBox="0 0 16 16">${ICON[id] || ""}</svg>`;
   const ANT = `<span class="ant"><b>T</b><i></i><i></i><i></i><i></i></span>`;
   const statusBar = () => `<div class="sb">${ANT}<span class="sbi">${(P.messages || []).some(m => m.read === false) ? ico("msg") : ""}${M.on ? ico("music") : ""}</span><span class="r"><span data-sbt></span><span class="bat">${batHTML(P.battery ?? 2)}</span></span></div>`;
-  const frame = (title, body, l = "", r = "", o = {}) => `<div class="scr${o.cls ? " " + o.cls : ""}">${statusBar()}${title ? `<div class="title"><span>${esc(title)}</span>${o.right ? `<em>${esc(o.right)}</em>` : ""}</div>` : ""}<div class="body">${body}</div><div class="softbar"><button type="button" data-sk="sl">${esc(l)}</button><span class="mid">${o.mid !== undefined ? esc(o.mid) : "▲▼"}</span><button type="button" data-sk="sr">${esc(r)}</button></div></div>`;
+  const frame = (title, body, l = "", r = "", o = {}) => `<div class="scr${o.cls ? " " + o.cls : ""}">${statusBar()}${title ? `<div class="title"><span>${esc(title)}</span>${o.right ? `<em>${esc(o.right)}</em>` : ""}</div>` : ""}<div class="body">${body}</div><div class="softbar"><button type="button" data-sk="sl">${esc(l)}</button>${navHTML() || `<span class="mid">${o.mid !== undefined ? esc(o.mid) : "▲▼"}</span>`}<button type="button" data-sk="sr">${esc(r)}</button></div></div>`;
   const stamp = () => { const d = now(); return `${p2(d.getMonth() + 1)}/${p2(d.getDate())} ${p2(d.getHours())}:${p2(d.getMinutes())}`; };
   const bytes = s => [...s].reduce((n, c) => n + (c.charCodeAt(0) > 127 ? 2 : 1), 0);
 
   let S = { name: "off" }, popT = null, callT = [], talkT = null;
-  function go(name, opt = {}) { S = { name, sel: 0, ...opt }; render(); }
+  let navNext = null;   // 목록에서 연 기록: 아래 바 가운데 ▲▼로 이전/다음 기록
+  function go(name, opt = {}) { S = { name, sel: 0, ...opt }; if (navNext && (name === "read" || name === "talk") && !S.live) S.nav = navNext; navNext = null; render(); }
+  const navHTML = () => {
+    if (!S || !S.nav || S.live || (S.name !== "read" && S.name !== "talk")) return "";
+    const i = S.nav.sel, L = S.nav.items.length;
+    return `<span class="mid nav"><button type="button" data-sk="prev"${i <= 0 ? " disabled" : ""}>▲</button><button type="button" data-sk="next"${i >= L - 1 ? " disabled" : ""}>▼</button></span>`;
+  };
+  function pickNav() { navNext = { ...S }; pick(); navNext = null; }
+  function step(d) {   // 이전(-1)/다음(+1) 기록 열기
+    const L = S.nav; if (!L) return; const i = L.sel + d;
+    if (i < 0 || i >= L.items.length) return;
+    clearTimeout(talkT); S = { ...L, sel: i }; pickNav();
+  }
   const listHTML = items => `<div class="list">${items.length ? items.map((it, i) => `<button class="li${i === S.sel ? " sel" : ""}" data-i="${i}"><span class="no">${i + 1}</span>${it.ic ? ico(it.ic) : ""}${it.dot ? `<i class="dot"></i>` : ""}<span class="lb">${esc(it.label)}</span><small>${esc(it.sub || "")}</small></button>`).join("") : `<div class="empty">No entries</div>`}</div>`;
   function render() {
     const n = S.name;
@@ -269,6 +281,7 @@
     if (k === "menu") k = "sl";
     if (k === "jump" || k === "cam" || k === "nate") return;   // 쓰지 않는 키
     if (k === "ph") { stopCall(); return openMenu(0); }   // 위쪽 전화부 키
+    if (k === "prev" || k === "next") return step(k === "prev" ? -1 : 1);
     const n = S.name, digit = /^[0-9*#]$/.test(k);
     if (k === "end") { if (S.name === "talk" && S.live && !S.logged) { S.logged = true; P.calls.unshift(S.c); } clearTimeout(talkT); stopCall(); return go("idle"); }
     if (n === "idle") {
@@ -297,14 +310,14 @@
     }
     if (n === "list") {
       if (k === "up" || k === "down") { if (!S.items.length) return; S.sel = (S.sel + (k === "up" ? -1 : 1) + S.items.length) % S.items.length; return render(); }
-      if (k === "ok" || k === "sl" || k === "right") return pick();
+      if (k === "ok" || k === "sl" || k === "right") return pickNav();
       if (k === "send" && S.items[S.sel] && S.kind !== "memo") { const d = S.items[S.sel].data; return d && startCall(d.number || numberOf(d.name || d.from || d.to)); }
-      if (/^[1-9]$/.test(k) && S.items[+k - 1]) { S.sel = +k - 1; render(); return pick(); }
+      if (/^[1-9]$/.test(k) && S.items[+k - 1]) { S.sel = +k - 1; render(); return pickNav(); }
       if (k === "clr" || k === "sr" || k === "left") return S.backTo ? S.backTo() : mainMenu(0);
       return;
     }
     if (n === "read") {
-      if (k === "up" || k === "down") { const r = lcd.querySelector(".read"); r.scrollTop += k === "up" ? -36 : 36; return; }
+      if (k === "up" || k === "down") { const r = lcd.querySelector(".read"), t0 = r.scrollTop; r.scrollTop += k === "up" ? -36 : 36; if (r.scrollTop === t0 && S.nav) step(k === "up" ? -1 : 1); return; }
       if (k === "send" && S.call) return startCall(S.call);
       if (k === "ok" || k === "sl") {
         if (S.memo) return go("edit", { title: "Edit Memo", text: S.memo.text, l: "Save", max: 200, mode: "memo", memo: S.memo, backTo: S.backTo });
@@ -323,7 +336,7 @@
       return;
     }
     if (n === "talk") {
-      if (k === "up" || k === "down") { const r = lcd.querySelector(".talk"); r.scrollTop += k === "up" ? -36 : 36; return; }
+      if (k === "up" || k === "down") { const r = lcd.querySelector(".talk"), t0 = r.scrollTop; r.scrollTop += k === "up" ? -36 : 36; if (r.scrollTop === t0 && S.nav) step(k === "up" ? -1 : 1); return; }
       if (k === "ok" || k === "right") { if (S.n < S.c.talk.length) { S.n++; return render(); } return; }   // 다음 줄 바로 보기
       if (S.live) { if (k === "sr" || k === "clr" || k === "end") { clearTimeout(talkT); if (!S.logged) { S.logged = true; P.calls.unshift(S.c); } return go("idle"); } return; }
       if (k === "send" || k === "sl") return startCall(numberOf(S.c.name));

@@ -195,3 +195,7 @@ body.big .softbar [data-sk]{cursor:pointer}
 .read .pic .pn svg{width:10px;height:10px}
 .read .ko{display:block;font-size:10.5px;line-height:15px;color:var(--ink2);margin-top:2px;white-space:pre-wrap}
 .read .txt{word-break:keep-all;overflow-wrap:anywhere}
+.softbar .mid.nav{display:flex;gap:2px}
+.softbar .mid.nav button{flex:none;width:22px;text-align:center;color:#dfe6ff;font:400 10px "Galmuri11",monospace}
+.softbar .mid.nav button:disabled{color:#6f7fc4;cursor:default}
+body.big .softbar .mid.nav button:not(:disabled):active{color:#fff;background:rgba(255,255,255,.18)}
