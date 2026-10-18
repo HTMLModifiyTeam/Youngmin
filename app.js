@@ -264,12 +264,25 @@
     if (here === "recfile") { const di = S.di; return go("recplay", { r: it.data, d: RECS[di].date, backTo: () => recFiles(di, sel) }); }
     if (here === "music") { if (M.i !== sel) { M.i = sel; M.t = 0; } M.on = true; return go("player", {}); }
   }
+  /* 문자 답장: 몇 초 뒤 받은 문자함에 도착 */
+  const sentN = {};
+  function replyFrom(who) {
+    const C = (P.msgReplies || {})[who]; if (!C) return;
+    const k = sentN[who] = (sentN[who] ?? -1) + 1;
+    const txt = k < (C.replies || []).length ? C.replies[k] : (C.loop || [])[Math.floor(Math.random() * (C.loop || []).length)];
+    if (!txt) return;
+    setTimeout(() => {
+      P.messages.unshift({ from: who, when: `${String(now().getFullYear()).slice(2)}/${stamp()}`, read: false, text: txt });
+      tone([1320], .12, .05); tone([990], .14, .05, .16);
+      if (S.name === "idle") render(); else if (S.name === "list" && S.kind === "inbox") inbox(0);
+    }, 3500 + Math.random() * 3000);
+  }
   function save() {   // 편집 화면에서 저장/전송
     const ta = lcd.querySelector(".ta"); if (ta) S.text = ta.value;   // 조합 중인 글자까지 반영
     if (typing()) document.activeElement.blur();
     const t = (S.text || "").trim();
     if (!t) return pop("Enter text");
-    if (S.mode === "sms") { P.sent.unshift({ to: S.to, when: stamp(), text: t }); const b = S.backTo; S.name = "sending"; return pop("Message sent", () => msgMenu(1)); }
+    if (S.mode === "sms") { P.sent.unshift({ to: S.to, when: `${String(now().getFullYear()).slice(2)}/${stamp()}`, text: t }); replyFrom(S.to); const b = S.backTo; S.name = "sending"; return pop("Message sent", () => msgMenu(1)); }
     if (S.mode === "memo") { if (S.memo) { S.memo.text = t; S.memo.when = stamp(); } else P.memos.unshift({ text: t, when: stamp() }); return pop("Saved", () => memoList(S.memo ? P.memos.indexOf(S.memo) + 1 : 1)); }
   }
   function startCall(num) {
