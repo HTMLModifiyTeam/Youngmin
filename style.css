@@ -167,3 +167,12 @@ body.big .softbar [data-sk]{cursor:pointer}
 .softbar button{font:inherit;color:inherit;background:none;border:0;padding:0;height:100%;text-align:left;cursor:pointer;touch-action:manipulation}
 .softbar button[data-sk="sr"]{text-align:right}
 .softbar button:empty{visibility:hidden}
+
+/* 통화 녹음 화면 */
+.talk{position:absolute;inset:0;overflow:auto;padding:0 6px 8px;font-size:12px;line-height:18px;color:var(--ink)}
+.talk .meta{font-size:10.5px;color:var(--ink2);height:18px;border-bottom:1px solid var(--blue2);margin-bottom:2px}
+.talk .tl{padding:0 0 0 0;word-break:break-all}
+.talk .tl b{display:inline-block;min-width:0;margin-right:5px;padding:0 3px;font-size:10px;line-height:13px;background:#fff;border:1px solid var(--blue2);color:var(--blue2);vertical-align:1px}
+.talk .tl.me b{background:var(--navy);border-color:var(--navy);color:#fff}
+.talk .tl.wait{color:var(--ink2);letter-spacing:2px;animation:pulse 1s steps(2) infinite}
+.talk .tl.end{text-align:center;font-size:10.5px;color:var(--ink2)}

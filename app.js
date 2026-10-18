@@ -94,7 +94,7 @@
     subT.innerHTML = `${t}<small>${ap}</small>`; subD.textContent = `${d.getMonth() + 1}/${p2(d.getDate())} ${WE[d.getDay()]}`;
     lcd.querySelectorAll("[data-clk]").forEach(e => e.textContent = t);
     lcd.querySelectorAll("[data-ap]").forEach(e => e.textContent = ap === "A" ? "AM" : "PM");
-    const missed = (P.calls || []).filter(c => c.dir === "missed").length, unread = (P.messages || []).filter(m => !m.read).length;
+    const missed = (P.calls || []).filter(c => c.dir === "missed" && !c.seen).length, unread = (P.messages || []).filter(m => !m.read).length;
     subIc.innerHTML = (unread ? `<span class="sl-ic">✉</span>` : "") + (missed ? `<span class="sl-ic">☎</span>` : "");
     subN.textContent = missed ? `${missed} Missed call${missed > 1 ? "s" : ""}` : unread ? `${unread} New msg` : "";
     lcd.querySelectorAll("[data-sbt]").forEach(e => e.textContent = `${p2(d.getHours())}:${p2(d.getMinutes())}`);
@@ -125,14 +125,14 @@
   const stamp = () => { const d = now(); return `${p2(d.getMonth() + 1)}/${p2(d.getDate())} ${p2(d.getHours())}:${p2(d.getMinutes())}`; };
   const bytes = s => [...s].reduce((n, c) => n + (c.charCodeAt(0) > 127 ? 2 : 1), 0);
 
-  let S = { name: "off" }, popT = null, callT = [];
+  let S = { name: "off" }, popT = null, callT = [], talkT = null;
   function go(name, opt = {}) { S = { name, sel: 0, ...opt }; render(); }
   const listHTML = items => `<div class="list">${items.length ? items.map((it, i) => `<button class="li${i === S.sel ? " sel" : ""}" data-i="${i}"><span class="no">${i + 1}</span>${it.ic ? ico(it.ic) : ""}${it.dot ? `<i class="dot"></i>` : ""}<span class="lb">${esc(it.label)}</span><small>${esc(it.sub || "")}</small></button>`).join("") : `<div class="empty">No entries</div>`}</div>`;
   function render() {
     const n = S.name;
     if (n !== "edit" && typing()) document.activeElement.blur();   // 전송·저장·취소하면 자판이 내려감
     if (n === "idle") {
-      const missed = (P.calls || []).filter(c => c.dir === "missed").length, unread = (P.messages || []).filter(m => !m.read).length, d = now();
+      const missed = (P.calls || []).filter(c => c.dir === "missed" && !c.seen).length, unread = (P.messages || []).filter(m => !m.read).length, d = now();
       lcd.innerHTML = frame("", `<div class="idle"><div class="ilogo">${esc(P.banner || "")}</div><div class="clk"><span data-clk></span><b data-ap></b></div><div class="dt">${WE[d.getDay()]}, ${MON[d.getMonth()]} ${p2(d.getDate())} ${d.getFullYear()}</div>
         ${missed || unread ? `<div class="note">${missed ? `<span>${ico("calls")}${missed} Missed call${missed > 1 ? "s" : ""}</span>` : ""}${unread ? `<span>${ico("msg")}${unread} New message${unread > 1 ? "s" : ""}</span>` : ""}</div>` : ""}</div>`, "Menu", "Contacts", { cls: "home", mid: "" });
     } else if (n === "dial") {
@@ -156,6 +156,12 @@
         <div class="pb"><i data-pf style="width:${(M.t / (L || 1)) * 100}%"></i></div><div class="ptm"><span data-pc>${mmss(M.t)}</span><span>${esc(s.len || "")}</span></div>
         <div class="pctl"><span>|◀◀</span><b>${M.on ? "❚❚" : "▶"}</b><span>▶▶|</span></div></div>`, M.on ? "Pause" : "Play", "Back", { mid: "" });
       const st = lcd.querySelector(".stl span"); if (st && st.scrollWidth > st.parentNode.clientWidth) st.parentNode.classList.add("long");
+    } else if (n === "talk") {   // 통화 녹음: 대화가 한 줄씩 올라옴
+      const c = S.c, who = c.name;
+      lcd.innerHTML = frame("Call Rec.", `<div class="talk ruled"><div class="meta">${{ missed: "Missed", out: "Dialed", in: "Received" }[c.dir]} ${esc(c.when)}${c.dur ? " · " + esc(c.dur) : ""}</div>${c.talk.slice(0, S.n).map(l => `<div class="tl${l.me ? " me" : ""}"><b>${l.me ? "Me" : esc(who)}</b>${esc(l.t)}</div>`).join("")}${S.n < c.talk.length ? `<div class="tl wait">▪ ▪ ▪</div>` : `<div class="tl end">— End of call —</div>`}</div>`, "Call", "Back", { right: `${Math.min(S.n, c.talk.length)}/${c.talk.length}`, mid: S.n < c.talk.length ? "▶" : "■" });
+      const tk = lcd.querySelector(".talk"); tk.scrollTop = tk.scrollHeight;
+      clearTimeout(talkT);
+      if (S.n < c.talk.length) { const nx = c.talk[S.n]; talkT = setTimeout(() => { if (S.name === "talk" && S.c === c) { S.n++; render(); } }, S.n === 0 ? 700 : 1300 + Math.min(2600, (c.talk[S.n - 1]?.t.length || 10) * 70)); }
     } else if (n === "calling") {
       lcd.innerHTML = frame("", `<div class="calling"><div class="ani">${ico("calls")}</div><div class="who">${esc(S.who || "")}</div><div class="num">${esc(S.num)}</div><div class="st" data-cst>Calling…</div></div>`, "", "End", { mid: "" });
     }
@@ -170,7 +176,7 @@
   function openMenu(i) {
     const id = MENU[i].id;
     if (id === "contacts") return go("list", { title: "Phonebook", kind: "contacts", backTo: () => mainMenu(0), items: (P.contacts || []).map(c => ({ label: c.name, sub: c.number, data: c })) });
-    if (id === "calls") return go("list", { title: "Call Log", kind: "calls", backTo: () => mainMenu(1), items: (P.calls || []).map(c => ({ label: c.name, sub: c.when, ic: "calls", dot: c.dir === "missed", data: c })) });
+    if (id === "calls") return go("list", { title: "Call Log", kind: "calls", backTo: () => mainMenu(1), items: (P.calls || []).map(c => ({ label: c.name, sub: (c.dir === "out" ? "↗ " : c.dir === "in" ? "↙ " : "✕ ") + String(c.when).slice(0, 8), ic: "calls", dot: c.dir === "missed" && !c.seen, data: c })) });
     if (id === "msg") return msgMenu(0);
     if (id === "memo") return memoList();
     if (id === "music") return musicList(M.i);
@@ -196,7 +202,8 @@
     const it = S.items[S.sel]; if (!it) return;
     const here = S.kind, sel = S.sel;
     if (here === "contacts") return go("read", { title: it.data.name, meta: "Mobile", text: it.data.number, call: it.data.number, smsTo: it.data.name, l: "Call", backTo: () => openMenu(0) });
-    if (here === "calls") return go("read", { title: "Call Log", meta: { missed: "Missed", out: "Dialed", in: "Received" }[it.data.dir] + "  " + it.data.when, text: `${it.data.name}\n${numberOf(it.data.name)}`, call: numberOf(it.data.name), l: "Call", backTo: () => { openMenu(1); S.sel = sel; render(); } });
+    if (here === "calls" && it.data.talk) { it.data.seen = true; return go("talk", { c: it.data, n: 0, backTo: () => { openMenu(1); S.sel = sel; render(); } }); }
+    if (here === "calls") { it.data.seen = true; } if (here === "calls") return go("read", { title: "Call Log", meta: { missed: "Missed", out: "Dialed", in: "Received" }[it.data.dir] + "  " + it.data.when, text: `${it.data.name}\n${numberOf(it.data.name)}`, call: numberOf(it.data.name), l: "Call", backTo: () => { openMenu(1); S.sel = sel; render(); } });
     if (here === "inbox") { it.data.read = true; const i = P.messages.indexOf(it.data); return go("read", { title: "Message", right: `${i + 1}/${P.messages.length}`, meta: `${it.data.from}  ${it.data.when}`, text: it.data.text, call: numberOf(it.data.from), smsTo: it.data.from, l: "Reply", backTo: () => inbox(sel) }); }
     if (here === "sent") return go("read", { title: "Sent", meta: `${it.data.to}  ${it.data.when}`, text: it.data.text, call: numberOf(it.data.to), l: "Call", backTo: () => sentBox(sel) });
     if (here === "memo") return it.data ? go("read", { title: "Memo", meta: it.data.when, text: it.data.text, l: "Edit", memo: it.data, backTo: () => memoList(sel) })
@@ -279,6 +286,13 @@
       if (k === "sr") return S.backTo ? S.backTo() : go("idle");
       if (k === "clr") { if (S.text) { S.text = S.text.slice(0, -1); return render(); } return S.backTo ? S.backTo() : go("idle"); }
       if (digit) { S.text = (S.text || "") + k; return render(); }
+      return;
+    }
+    if (n === "talk") {
+      if (k === "up" || k === "down") { const r = lcd.querySelector(".talk"); r.scrollTop += k === "up" ? -36 : 36; return; }
+      if (k === "ok" || k === "right") { if (S.n < S.c.talk.length) { S.n++; return render(); } return; }   // 다음 줄 바로 보기
+      if (k === "send" || k === "sl") return startCall(numberOf(S.c.name));
+      if (k === "clr" || k === "sr" || k === "left") { clearTimeout(talkT); return S.backTo(); }
       return;
     }
     if (n === "player") {
