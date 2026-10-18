@@ -64,7 +64,8 @@
     if (opened) return; opened = true; audio();
     flip.classList.add("open"); fit(); openJingle();
     hint.style.opacity = 0; closeBtn.hidden = false;
-    go("idle");
+    if (S && S.name === "incoming") render(); else go("idle");
+    if (MY && !autoT) autoT = setTimeout(incoming, 180000);   // 3분 안에 못 찾으면 먼저 걸려 옴
   }
   function closePhone() {
     if (!opened) return; opened = false;
@@ -96,7 +97,8 @@
     lcd.querySelectorAll("[data-ap]").forEach(e => e.textContent = ap === "A" ? "AM" : "PM");
     const missed = (P.calls || []).filter(c => c.dir === "missed" && !c.seen).length, unread = (P.messages || []).filter(m => m.read === false).length;
     subIc.innerHTML = (unread ? `<span class="sl-ic">✉</span>` : "") + (missed ? `<span class="sl-ic">☎</span>` : "");
-    subN.textContent = missed ? `${missed} Missed call${missed > 1 ? "s" : ""}` : unread ? `${unread} New msg` : "";
+    let inc = false; try { inc = S.name === "incoming"; } catch (e) {}
+    subN.textContent = inc ? "☎ Incoming call…" : missed ? `${missed} Missed call${missed > 1 ? "s" : ""}` : unread ? `${unread} New msg` : "";
     lcd.querySelectorAll("[data-sbt]").forEach(e => e.textContent = `${p2(d.getHours())}:${p2(d.getMinutes())}`);
     let st0 = 0; try { st0 = S.t0; } catch (e) {}
     if (st0) { const S = { t0: st0 }; const s = Math.floor((Date.now() - S.t0) / 1000); lcd.querySelectorAll("[data-ctm]").forEach(e => e.textContent = `${p2(Math.floor(s / 60))}:${p2(s % 60)}`); }
@@ -158,9 +160,9 @@
       lcd.innerHTML = frame(S.title, listHTML(S.items), S.items.length ? (S.lbl || "Select") : "", "Back", { right: S.items.length ? `${S.sel + 1}/${S.items.length}` : "" });
       const el = lcd.querySelector(".li.sel"); if (el) el.scrollIntoView({ block: "nearest" });
     } else if (n === "read") {
-      lcd.innerHTML = frame(S.title, `<div class="read ruled"><div class="meta">${esc(S.meta)}</div>${S.pic ? `<div class="pic"><div class="ph"></div></div>` : ""}<div class="txt">${esc(S.text)}</div>${S.ko ? `<small class="ko">(${esc(S.ko)})</small>` : ""}</div>`, S.l || "", "Back", { right: S.right || "" });
+      lcd.innerHTML = frame(S.title, `<div class="read ruled"><div class="meta">${S.intl ? INTL + " " : ""}${esc(S.meta)}</div>${S.pic ? `<div class="pic"><div class="ph"></div><div class="pn">${ico("cam")}${esc(S.pn || "IMG.JPG")}</div>${S.cap ? `<small class="ko">${esc(S.cap)}</small>` : ""}</div>` : ""}<div class="txt">${esc(S.text)}</div>${S.ko ? `<small class="ko">(${esc(S.ko)})</small>` : ""}</div>`, S.l || "", "Back", { right: S.right || "" });
     } else if (n === "edit") {
-      lcd.innerHTML = frame(S.title, `<div class="edit">${S.to != null ? `<div class="to">To: <b>${esc(S.to || "")}</b></div>` : ""}<textarea class="ta ruled" spellcheck="false" maxlength="${S.max || 80}">${esc(S.text || "")}</textarea></div>`, S.l || "Save", "Cancel", { right: "", mid: `${bytes(S.text || "")}/${S.max || 80}` });
+      lcd.innerHTML = frame(S.title, `<div class="edit">${S.to != null ? `<div class="to">To: <b>${esc(S.to || "")}</b>${isIntl(S.to) ? " " + INTL : ""}</div>` : ""}<textarea class="ta ruled" spellcheck="false" maxlength="${S.max || 80}">${esc(S.text || "")}</textarea></div>`, S.l || "Save", "Cancel", { right: "", mid: `${bytes(S.text || "")}/${S.max || 80}` });
       const ta = lcd.querySelector(".ta"), cnt = lcd.querySelector(".softbar .mid");
       ta.addEventListener("input", () => { S.text = ta.value; cnt.textContent = `${bytes(ta.value)}/${S.max || 80}`; });
       if (!TOUCH || big) setTimeout(() => { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }, 30);
@@ -176,11 +178,11 @@
       const done = S.n >= c.talk.length;
       if (S.live) {   // 실시간 통화: 통화 화면 + 아래 자막
         const cur = S.n > 0 ? c.talk[S.n - 1] : null;
-        lcd.innerHTML = frame("", `<div class="incall"><div class="ava">${ico("calls")}</div><div class="who">${esc(who)}</div><div class="num">${esc(numberOf(who))}</div><div class="cst">${done ? "Call ended" : "Connected"} <span data-ctm></span></div>
+        lcd.innerHTML = frame("", `<div class="incall"><div class="ava">${ico("calls")}</div><div class="who">${esc(who)}</div><div class="num">${isIntl(who) ? INTL + " " : ""}${esc(numberOf(who))}</div><div class="cst">${done ? "Call ended" : "Connected"} <span data-ctm></span></div>
           <div class="cap${cur ? " on" : ""}">${cur ? `<b>${cur.me ? "Me" : esc(who)}</b><span>${esc(cur.t)}</span>${cur.ko ? `<small>(${esc(cur.ko)})</small>` : ""}` : ""}</div></div>`, "", done ? "OK" : "End", { mid: "" });
         clearTimeout(talkT);
         if (!done) talkT = setTimeout(() => { if (S.name === "talk" && S.c === c) { S.n++; render(); } }, S.n === 0 ? 900 : 1500 + Math.min(3000, ((cur && cur.t.length) || 10) * 75));
-        else if (!S.logged) { S.logged = true; P.calls.unshift(c); talkT = setTimeout(() => { if (S.name === "talk" && S.c === c) go("idle"); }, 3500); }
+        else if (!S.logged) { S.logged = true; P.calls.unshift(c); if (c.talk[c.talk.length - 1]?.cut) [0, .5, 1, 1.5].forEach(t => tone([480, 620], .25, .03, t)); talkT = setTimeout(() => { if (S.name === "talk" && S.c === c) go("idle"); }, 3500); }
         tick(); return;
       }
       lcd.innerHTML = frame(S.live ? (done ? "Call Ended" : "Connected") : "Call Rec.", `<div class="talk ruled"><div class="meta">${S.live ? esc(who) : `<b class="who">${esc(who)}</b> ${{ missed: "Missed", out: "Dialed", in: "Received" }[c.dir]} ${esc(c.when)}${c.dur ? " · " + esc(c.dur) : ""}`}</div>${c.talk.slice(0, S.n).map(l => `<div class="tl${l.me ? " me" : ""}"><b>${l.me ? "Me" : esc(who)}</b>${esc(l.t)}${l.ko ? `<small class="ko">(${esc(l.ko)})</small>` : ""}</div>`).join("")}${S.n < c.talk.length ? `<div class="tl wait">▪ ▪ ▪</div>` : `<div class="tl end">— End of call —</div>`}</div>`, S.live ? "" : "Call", S.live ? (done ? "OK" : "End") : "Back", { right: `${Math.min(S.n, c.talk.length)}/${c.talk.length}`, mid: S.n < c.talk.length ? "▶" : "■" });
@@ -188,15 +190,20 @@
       clearTimeout(talkT);
       if (S.n < c.talk.length) { talkT = setTimeout(() => { if (S.name === "talk" && S.c === c) { S.n++; render(); } }, S.n === 0 ? 700 : 1300 + Math.min(2600, (c.talk[S.n - 1]?.t.length || 10) * 70)); }
       else if (S.live && !S.logged) { S.logged = true; P.calls.unshift(c); talkT = setTimeout(() => { if (S.name === "talk" && S.c === c) go("idle"); }, 3500); }   // 실시간 통화가 끝나면 통화목록에 남음
+    } else if (n === "incoming") {
+      lcd.innerHTML = frame("", `<div class="calling"><div class="ani">${ico("calls")}</div><div class="st">Incoming call</div><div class="who">${esc(S.who)}</div><div class="num">${esc(numberOf(S.who))}</div></div>`, "Answer", "Reject", { mid: "" });
     } else if (n === "calling") {
-      lcd.innerHTML = frame("", `<div class="calling"><div class="ani">${ico("calls")}</div><div class="who">${esc(S.who || "")}</div><div class="num">${esc(S.num)}</div><div class="st" data-cst>Calling…</div></div>`, "", "End", { mid: "" });
+      lcd.innerHTML = frame("", `<div class="calling"><div class="ani">${ico("calls")}</div><div class="who">${esc(S.who || "")}</div><div class="num">${esc(S.num)}</div>${S.intl ? `<div class="st">${INTL} International call</div>` : ""}<div class="st" data-cst>Calling…</div></div>`, "", "End", { mid: "" });
     }
     tick();
   }
   function pop(msg, then, ms = 1300) { const p = document.createElement("div"); p.className = "pop"; p.textContent = msg; lcd.querySelector(".body")?.appendChild(p); clearTimeout(popT); popT = setTimeout(() => { p.remove(); then && then(); }, ms); }
 
-  const numberOf = name => (P.contacts || []).find(c => c.name === name)?.number || name;
-  const nameOf = num => (P.contacts || []).find(c => c.number === num)?.name || "";
+  const MY = P.mystery || null; let myN = 0;   // 정체 모를 번호와 통화한 횟수
+  const numberOf = name => (MY && name === MY.name) ? MY.number : (P.contacts || []).find(c => c.name === name)?.number || name;
+  const nameOf = num => (MY && num === MY.number) ? MY.name : (P.contacts || []).find(c => c.number === num)?.name || "";
+  const isIntl = x => !!(P.contacts || []).find(c => (c.name === x || c.number === x) && c.intl);
+  const INTL = `<span class="intl">INT'L</span>`;
 
   const mainMenu = sel => go("menu", { items: MENU, sel: sel || 0, level: "main" });
   const msgMenu = sel => go("menu", { items: [{ id: "inbox", label: "Inbox" }, { id: "sent", label: "Sent" }, { id: "write", label: "Write New" }], sel: sel || 0, level: "msg", title: "Messages" });
@@ -228,11 +235,11 @@
   function pick() {
     const it = S.items[S.sel]; if (!it) return;
     const here = S.kind, sel = S.sel;
-    if (here === "contacts") return go("read", { title: it.data.name, meta: "Mobile", text: it.data.number, call: it.data.number, smsTo: it.data.name, l: "Call", backTo: () => openMenu(0) });
+    if (here === "contacts") return go("read", { title: it.data.name, meta: it.data.intl ? "International" : "Mobile", intl: it.data.intl, text: it.data.number, call: it.data.number, smsTo: it.data.name, l: "Call", backTo: () => openMenu(0) });
     if (here === "calls" && it.data.talk) { it.data.seen = true; return go("talk", { c: it.data, n: 0, backTo: () => { openMenu(1); S.sel = sel; render(); } }); }
     if (here === "calls") { it.data.seen = true; } if (here === "calls") return go("read", { title: "Call Log", meta: { missed: "Missed", out: "Dialed", in: "Received" }[it.data.dir] + "  " + it.data.when, text: `${it.data.name}\n${numberOf(it.data.name)}`, call: numberOf(it.data.name), l: "Call", backTo: () => { openMenu(1); S.sel = sel; render(); } });
-    if (here === "inbox") { it.data.read = true; const i = P.messages.indexOf(it.data); return go("read", { title: "Message", right: `${i + 1}/${P.messages.length}`, meta: `${it.data.from}  ${it.data.when}`, text: it.data.text, ko: it.data.ko, pic: it.data.pic, call: numberOf(it.data.from), smsTo: it.data.from, l: "Reply", backTo: () => inbox(sel) }); }
-    if (here === "sent") return go("read", { title: "Sent", meta: `${it.data.to}  ${it.data.when}`, text: it.data.text, call: numberOf(it.data.to), l: "Call", backTo: () => sentBox(sel) });
+    if (here === "inbox") { it.data.read = true; const i = P.messages.indexOf(it.data); return go("read", { title: "Message", right: `${i + 1}/${P.messages.length}`, meta: `${it.data.from}  ${it.data.when}`, intl: isIntl(it.data.from), text: it.data.text, ko: it.data.ko, pic: it.data.pic, cap: it.data.cap, pn: `IMG_${String(it.data.when).replace(/\D/g, "").slice(2, 8)}.JPG`, call: numberOf(it.data.from), smsTo: it.data.from, l: "Reply", backTo: () => inbox(sel) }); }
+    if (here === "sent") return go("read", { title: "Sent", meta: `${it.data.to}  ${it.data.when}`, intl: isIntl(it.data.to), text: it.data.text, call: numberOf(it.data.to), l: "Call", backTo: () => sentBox(sel) });
     if (here === "memo") return it.data ? go("read", { title: "Memo", meta: it.data.when, text: it.data.text, l: "Edit", memo: it.data, backTo: () => memoList(sel) })
                                        : go("edit", { title: "New Memo", text: "", l: "Save", max: 200, mode: "memo", backTo: () => memoList(0) });
     if (here === "pickTo") return compose(it.data.name, () => pickTo());
@@ -248,9 +255,9 @@
   }
   function startCall(num) {
     stopCall(); clearTimeout(talkT); const who = nameOf(num) || (P.contacts || []).find(c => c.name === num)?.name || "";
-    go("calling", { num: numberOf(num), who });
+    go("calling", { num: numberOf(num), who, intl: isIntl(who) });
     tone([440, 480], 1.2, .03, .4);
-    const sc = (P.scripts || {})[who];
+    const sc = (MY && who === MY.name) ? MY.calls[Math.min(myN++, MY.calls.length - 1)] : (P.scripts || {})[who];
     if (sc) {   // 전화번호부에서 건 전화: 상대가 받으면 대본이 한 줄씩
       callT.push(setTimeout(() => { if (S.name !== "calling") return; click(.3, 0, 1600); const d = now();
         go("talk", { live: true, n: 0, t0: Date.now(), c: { name: who, dir: "out", when: `${String(d.getFullYear()).slice(2)}/${stamp()}`, dur: "", talk: sc } }); }, 2600));
@@ -261,6 +268,25 @@
     callT.push(setTimeout(() => { if (S.name === "calling") go("idle"); }, 9000));
   }
   function stopCall() { callT.forEach(clearTimeout); callT = []; }
+  /* ---- 정체 모를 번호에서 먼저 걸려 오는 전화 (처음 연 뒤 3분 동안 못 찾으면) ---- */
+  let ringT = null, ringTO = null, autoT = null;
+  const stamp2 = () => `${String(now().getFullYear()).slice(2)}/${stamp()}`;
+  function ringOnce() { [0, .4].forEach(t => { tone([1300, 1600], .18, .05, t, "square"); tone([1300, 1600], .18, .05, t + .2, "square"); }); }
+  function incoming() {
+    if (!MY || myN > 0) return;
+    if (["talk", "calling", "edit"].includes(S.name)) { autoT = setTimeout(incoming, 10000); return; }   // 다른 걸 하는 중이면 조금 뒤에
+    go("incoming", { who: MY.name }); ringOnce(); ringT = setInterval(ringOnce, 2600);
+    ringTO = setTimeout(missIncoming, 30000);   // 30초 동안 안 받으면 부재중
+  }
+  function stopRing() { clearInterval(ringT); clearTimeout(ringTO); ringT = ringTO = null; }
+  function answer() {
+    stopRing(); click(.3, 0, 1600);
+    go("talk", { live: true, n: 0, t0: Date.now(), c: { name: MY.name, dir: "in", when: stamp2(), dur: "", talk: MY.calls[Math.min(myN++, MY.calls.length - 1)] } });
+  }
+  function missIncoming() {
+    if (S.name !== "incoming") return; stopRing();
+    P.calls.unshift({ name: MY.name, dir: "missed", when: stamp2() }); go("idle");
+  }
 
   /* ================= 키 입력 ================= */
   function key(k) {
@@ -271,6 +297,7 @@
     if (k === "ph") { stopCall(); return openMenu(0); }   // 위쪽 전화부 키
     if (k === "prev" || k === "next") return step(k === "prev" ? -1 : 1);
     const n = S.name, digit = /^[0-9*#]$/.test(k);
+    if (n === "incoming") { if (k === "send" || k === "sl" || k === "ok") return answer(); if (k === "sr" || k === "end" || k === "clr") return missIncoming(); return; }
     if (k === "end") { if (S.name === "talk" && S.live && !S.logged) { S.logged = true; P.calls.unshift(S.c); } clearTimeout(talkT); stopCall(); return go("idle"); }
     if (n === "idle") {
       if (digit) return go("dial", { num: k });
@@ -284,7 +311,7 @@
     if (n === "dial") {
       if (digit) { S.num = (S.num + k).slice(0, 20); return render(); }
       if (k === "clr" || k === "sr") { S.num = S.num.slice(0, -1); return S.num ? render() : go("idle"); }
-      if (k === "send" || k === "ok" || k === "sl") return startCall(S.num);
+      if (k === "send" || k === "ok" || k === "sl") return startCall(MY ? MY.number : S.num);   // 아무 번호나 눌러도 그 번호로
       return;
     }
     if (n === "menu") {
