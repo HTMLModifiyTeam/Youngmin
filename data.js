@@ -178,6 +178,7 @@ window.PHONE = {
     { from: "Ethan Miller", when: "99/10/29 21:58", text: "You actually told the teacher? Bold move, slant-eyes. She laughed about it in the lounge btw. Nobody's coming to save you.", ko: "진짜 선생한테 말했냐? 배짱 좋네, 찢눈아. 그 선생 교무실에서 그거 얘기하면서 웃더라. 아무도 너 구하러 안 와." },
     { from: "Marcus Lee", when: "99/10/27 23:40", text: "Your face looked better with the blood on it. More color. Same time Monday.", ko: "피 묻으니까 얼굴이 더 낫더라. 혈색 돌고. 월요일 같은 시간에." },
     { from: "Jake", when: "99/10/22 12:14", pic: "tray", cap: "(사진: 식당 바닥에 엎어진 민재의 식판)", text: "lunch is served, rice rat. eat it off the floor like back home", ko: "점심 나왔다, 쌀쥐야. 고향에서처럼 바닥에서 주워 먹어." },
+    { from: "Ethan Miller", when: "99/10/18 21:36", text: "So how do you like the cigarette burn I gave you on your wrist today? Suits you, rice rat. Want a matching one on the other side?", ko: "오늘 손목에 새겨 준 담배빵은 마음에 드냐? 잘 어울리더라, 쌀쥐야. 반대쪽에도 똑같이 하나 해 줄까?" },
     { from: "Ryan", when: "99/09/15 08:02", text: "Dog-eater. Did your family eat the dog or did the dog eat your family? Asking for science.", ko: "개 먹는 놈. 너네 가족이 개를 먹었냐, 개가 너네 가족을 먹었냐? 과학적으로 궁금해서." },
     { from: "019-338-0412", when: "99/05/09 02:31", text: "We know where you live. Nice house for a chink. Shame if something happened to it.", ko: "너 어디 사는지 안다. 짱깨치고 집 좋더라. 무슨 일 생기면 안타깝겠다." },
     { from: "Ethan Miller", when: "98/10/01 19:45", pic: "book", cap: "(사진: 찢겨서 젖은 민재의 교과서와 공책)", text: "Oops. Guess the bookworm's gonna fail now. Daddy's money can't buy you a new brain, yellow.", ko: "어이쿠. 책벌레 이제 낙제하겠네. 아빠 돈으로 새 뇌는 못 사, 옐로우." },
@@ -192,7 +193,7 @@ window.PHONE = {
     { from: "Ethan Miller", when: "94/05/07 21:12", text: "Tell anyone and next time it won't be your locker. It'll be your face.", ko: "누구한테 말하면 다음엔 사물함이 아니라 니 얼굴이야." },
     { from: "Jake", when: "94/05/06 08:15", pic: "locker", cap: "(사진: 'GO HOME YELLOW' 낙서로 뒤덮인 민재의 사물함)", text: "good morning yellow :) check ur locker", ko: "좋은 아침, 옐로우 :) 니 사물함 확인해 봐" },
     { from: "Marcus Lee", when: "94/04/23 16:40", text: "Stop looking at me in class, slant-eyes. You look at me again I break your glasses.", ko: "수업 시간에 나 쳐다보지 마, 찢눈아. 또 쳐다보면 안경 부숴 버린다." },
-    { from: "Ryan", when: "94/04/15 20:09", text: "Hey Mr. Miyagi. Wax on wax off lol. Do u even speak english or just ching chong", ko: "어이 미야기 씨. 왁스 온 왁스 오프 ㅋㅋ 영어는 하냐 아님 칭챙만 하냐" },
+    { from: "Ryan", when: "94/04/15 20:09", text: "Hey Mr. Miyagi. Wax on wax off lol. Do u even speak english or just ching chong", ko: "어이 쿵푸 사부님. 아뵤~ 한번 해 봐 ㅋㅋ 영어는 하냐 아님 칭챙만 하냐" },
     { from: "Jake", when: "94/04/09 22:31", text: "hey new kid. ur the yellow one right? welcome to america lol. u wont last", ko: "어이 전학생. 니가 그 노란 애 맞지? 미국에 온 걸 환영한다 ㅋㅋ 오래 못 버틸걸" },
     { from: "엄마", when: "94/03/02 19:30", text: "우리 아들 첫 등교 잘했어? 친구들 많이 사귀어. 엄마가 사랑해." },
     { from: "수일이 형", when: "94/03/01 13:05", text: "민재야 도착했다며. 시차 적응 잘하고. 힘들면 연락해." }
