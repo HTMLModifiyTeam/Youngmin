@@ -34,11 +34,12 @@
 
   /* ================= 배율 · 위치 (닫힘 / 열림) ================= */
   let opened = false, big = false;
+  function typing() { return !!(document.activeElement && document.activeElement.tagName === "TEXTAREA"); }
   function fit(instant) {
-    const vw = innerWidth, vh = innerHeight;
+    const VV = window.visualViewport, vw = VV ? VV.width : innerWidth, vh = VV ? VV.height : innerHeight, oy = VV ? VV.offsetTop : 0, ox = VV ? VV.offsetLeft : 0;
     let s, tx, ty;
     if (opened && big) {   // 액정 크게: 액정(경첩 축 기준 중심 0,-302 · 240×274)을 위쪽에 크게, 아래엔 조작 버튼
-      const Y0 = -612, Y1 = 30;   // 윗덮개 전체(수화부~경첩)가 보이게: 액정이 화면 가운데쯤
+      const [Y0, Y1] = typing() ? [-445, -160] : [-612, 30];   // 평소엔 윗덮개 전체, 글 쓰는 중(자판이 뜸)엔 액정만 남은 공간에 맞춤
       s = Math.min((vw - 8) / 372, (vh - 30) / (Y1 - Y0), 2.6);
       tx = vw / 2; ty = vh / 2 - ((Y0 + Y1) / 2) * s;
     } else {
@@ -46,11 +47,18 @@
       s = Math.min((vw - 24) / 370, (vh - 64) / (y1 - y0), 1.5);
       tx = vw / 2; ty = vh / 2 - ((y0 + y1) / 2) * s - 6;
     }
+    tx += ox; ty += oy;
     wrap.classList.toggle("instant", !!instant);
     wrap.style.transform = `translate(${tx}px,${ty}px) scale(${s})`;
     if (instant) requestAnimationFrame(() => requestAnimationFrame(() => wrap.classList.remove("instant")));
   }
   addEventListener("resize", () => fit(true)); fit(true);
+  /* 모바일 자판: 보이는 영역(visualViewport)에 맞춰 액정이 자판 위로 올라오게 */
+  if (window.visualViewport) { visualViewport.addEventListener("resize", () => fit(true)); visualViewport.addEventListener("scroll", () => fit(true)); }
+  document.addEventListener("focusin", e => { if (e.target.tagName === "TEXTAREA") setTimeout(() => fit(true), 250); });
+  document.addEventListener("focusout", e => { if (e.target.tagName === "TEXTAREA") setTimeout(() => { try { scrollTo(0, 0); } catch (x) {} fit(true); }, 80); });
+  /* 글 쓰는 칸 밖(액정 제목줄·휴대폰 몸체·배경)을 누르면 자판이 내려감 */
+  document.addEventListener("pointerdown", e => { if (typing() && !e.target.closest(".ta, [data-sk]")) document.activeElement.blur(); }, true);
 
   function openPhone() {
     if (opened) return; opened = true; audio();
@@ -72,7 +80,9 @@
   lcd.addEventListener("click", e => { if (opened && !big) { e.stopImmediatePropagation(); setBig(true); } }, true);
   bigOff.addEventListener("click", () => setBig(false));
   /* 클로즈업 중 터치 조작: 화면 아래 글자(소프트키)도 누를 수 있음 */
-  lcd.addEventListener("click", e => { const sk = e.target.closest("[data-sk]"); if (sk && big) key(sk.dataset.sk); });
+  /* 소프트키 글자: 키보드가 떠 있어도 한 번에 눌리게 pointerdown 에서 처리 (글 쓰던 칸의 포커스를 뺏지 않음) */
+  lcd.addEventListener("pointerdown", e => { const sk = e.target.closest("[data-sk]"); if (!sk || !big) return; e.preventDefault(); e.stopPropagation(); key(sk.dataset.sk); }, true);
+  lcd.addEventListener("click", e => { if (e.target.closest("[data-sk]")) { e.stopPropagation(); } }, true);
   addEventListener("keydown", e => { if (e.key === "Escape" && !(e.target && e.target.tagName === "TEXTAREA")) closePhone(); });
 
   /* 바깥 작은 액정 */
@@ -111,7 +121,7 @@
   const ico = id => `<svg class="pi" viewBox="0 0 16 16">${ICON[id] || ""}</svg>`;
   const ANT = `<span class="ant"><b>T</b><i></i><i></i><i></i><i></i></span>`;
   const statusBar = () => `<div class="sb">${ANT}<span class="sbi">${(P.messages || []).some(m => !m.read) ? ico("msg") : ""}${M.on ? ico("music") : ""}</span><span class="r"><span data-sbt></span><span class="bat">${batHTML(P.battery ?? 2)}</span></span></div>`;
-  const frame = (title, body, l = "", r = "", o = {}) => `<div class="scr${o.cls ? " " + o.cls : ""}">${statusBar()}${title ? `<div class="title"><span>${esc(title)}</span>${o.right ? `<em>${esc(o.right)}</em>` : ""}</div>` : ""}<div class="body">${body}</div><div class="softbar"><span data-sk="sl">${esc(l)}</span><span class="mid">${o.mid !== undefined ? esc(o.mid) : "▲▼"}</span><span data-sk="sr">${esc(r)}</span></div></div>`;
+  const frame = (title, body, l = "", r = "", o = {}) => `<div class="scr${o.cls ? " " + o.cls : ""}">${statusBar()}${title ? `<div class="title"><span>${esc(title)}</span>${o.right ? `<em>${esc(o.right)}</em>` : ""}</div>` : ""}<div class="body">${body}</div><div class="softbar"><button type="button" data-sk="sl">${esc(l)}</button><span class="mid">${o.mid !== undefined ? esc(o.mid) : "▲▼"}</span><button type="button" data-sk="sr">${esc(r)}</button></div></div>`;
   const stamp = () => { const d = now(); return `${p2(d.getMonth() + 1)}/${p2(d.getDate())} ${p2(d.getHours())}:${p2(d.getMinutes())}`; };
   const bytes = s => [...s].reduce((n, c) => n + (c.charCodeAt(0) > 127 ? 2 : 1), 0);
 
@@ -120,6 +130,7 @@
   const listHTML = items => `<div class="list">${items.length ? items.map((it, i) => `<button class="li${i === S.sel ? " sel" : ""}" data-i="${i}"><span class="no">${i + 1}</span>${it.ic ? ico(it.ic) : ""}${it.dot ? `<i class="dot"></i>` : ""}<span class="lb">${esc(it.label)}</span><small>${esc(it.sub || "")}</small></button>`).join("") : `<div class="empty">No entries</div>`}</div>`;
   function render() {
     const n = S.name;
+    if (n !== "edit" && typing()) document.activeElement.blur();   // 전송·저장·취소하면 자판이 내려감
     if (n === "idle") {
       const missed = (P.calls || []).filter(c => c.dir === "missed").length, unread = (P.messages || []).filter(m => !m.read).length, d = now();
       lcd.innerHTML = frame("", `<div class="idle"><div class="ilogo">${esc(P.banner || "")}</div><div class="clk"><span data-clk></span><b data-ap></b></div><div class="dt">${WE[d.getDay()]}, ${MON[d.getMonth()]} ${p2(d.getDate())} ${d.getFullYear()}</div>
@@ -194,6 +205,8 @@
     if (here === "music") { if (M.i !== sel) { M.i = sel; M.t = 0; } M.on = true; return go("player", {}); }
   }
   function save() {   // 편집 화면에서 저장/전송
+    const ta = lcd.querySelector(".ta"); if (ta) S.text = ta.value;   // 조합 중인 글자까지 반영
+    if (typing()) document.activeElement.blur();
     const t = (S.text || "").trim();
     if (!t) return pop("Enter text");
     if (S.mode === "sms") { P.sent.unshift({ to: S.to, when: stamp(), text: t }); const b = S.backTo; S.name = "sending"; return pop("Message sent", () => msgMenu(1)); }
