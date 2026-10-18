@@ -195,6 +195,7 @@
       const r = S.r, on = !RA.paused && RA.src.endsWith(r.file);
       lcd.innerHTML = frame("Recorder", `<div class="player rec"><div class="art">${ico("rec")}<div class="eq${on ? " on" : ""}">${"<i></i>".repeat(7)}</div></div>
         <div class="trk">${esc(S.d)}  ${esc(r.time)}</div><div class="stl"><span>${esc(r.name)}</span></div>
+        <div class="rcap" data-rcap>${capAt(r, RA.src.endsWith(r.file) ? RA.currentTime : -1)}</div>
         <div class="pb"><i data-rpf style="width:${(RA.src.endsWith(r.file) ? RA.currentTime / (RA.duration || secs(r.len)) : 0) * 100}%"></i></div><div class="ptm"><span data-rpc>${mmss(RA.src.endsWith(r.file) ? RA.currentTime : 0)}</span><span>${esc(r.len)}</span></div>
         <div class="pctl"><button type="button" class="rbtn" data-sk="rplay">${on ? "❚❚" : "▶"}</button></div></div>`, on ? "Pause" : "Play", "Back", { mid: "" });
     } else if (n === "incoming") {
@@ -226,7 +227,8 @@
   /* 녹음기: 날짜 폴더 · 녹음 목록 · 재생 */
   const RECS = P.recordings || [];
   const RA = new Audio(); RA.preload = "none";
-  RA.addEventListener("timeupdate", () => { if (S.name !== "recplay") return; const d = RA.duration || secs(S.r.len); lcd.querySelectorAll("[data-rpf]").forEach(e => e.style.width = `${Math.min(100, RA.currentTime / (d || 1) * 100)}%`); lcd.querySelectorAll("[data-rpc]").forEach(e => e.textContent = mmss(RA.currentTime)); });
+  const capAt = (r, t) => { const L = (r.lines || []).filter(l => l.at <= t); return L.length ? esc(L[L.length - 1].t) : ""; };
+  RA.addEventListener("timeupdate", () => { if (S.name !== "recplay") return; const d = RA.duration || secs(S.r.len); lcd.querySelectorAll("[data-rpf]").forEach(e => e.style.width = `${Math.min(100, RA.currentTime / (d || 1) * 100)}%`); lcd.querySelectorAll("[data-rpc]").forEach(e => e.textContent = mmss(RA.currentTime)); const cp = lcd.querySelector("[data-rcap]"), h = capAt(S.r, RA.currentTime); if (cp && cp.innerHTML !== h) cp.innerHTML = h; });
   RA.addEventListener("ended", () => { if (S.name === "recplay") { RA.currentTime = 0; render(); } });
   const recDates = sel => go("list", { title: "Recorder", kind: "recdate", sel: sel || 0, lbl: "Open", backTo: () => mainMenu(5), items: RECS.map(d => ({ label: d.date, sub: `${d.items.length} file${d.items.length > 1 ? "s" : ""}`, ic: "rec", data: d })) });
   const recFiles = (di, sel) => go("list", { title: RECS[di].date, kind: "recfile", di, sel: sel || 0, lbl: "Play", backTo: () => recDates(di), items: RECS[di].items.map(r => ({ label: r.name, sub: `${r.time}  ${r.len}`, ic: "rec", data: r })) });

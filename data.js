@@ -227,10 +227,11 @@ window.PHONE = {
     { when: "94/11/28 23:10", text: "(임시) 메모 제목\n메모 내용이 들어갑니다." }
   ],
 
-  /* 녹음기: 날짜 폴더 → 녹음 파일 (file = audio 폴더의 mp3) */
+  /* 녹음기: 날짜 폴더 → 녹음 파일 (file = audio 폴더의 mp3)
+     lines: at = 몇 초에 나오는지, t = 대사 (재생 중 날짜와 재생바 사이에 표시) */
   recordings: [
-    { date: "1994-11-17", items: [ { name: "REC_001", time: "21:12", len: "0:20", file: "audio/smoke.mp3" } ] },
-    { date: "1994-11-28", items: [ { name: "REC_002", time: "16:47", len: "0:20", file: "audio/hit.mp3" } ] }
+    { date: "1994-11-17", items: [ { name: "REC_001", time: "21:12", len: "0:20", file: "audio/smoke.mp3", lines: [ { at: 1, t: "임시 대사 1" }, { at: 5, t: "임시 대사 2" }, { at: 9, t: "임시 대사 3" }, { at: 13, t: "임시 대사 4" }, { at: 17, t: "임시 대사 5" } ] } ] },
+    { date: "1994-11-28", items: [ { name: "REC_002", time: "16:47", len: "0:20", file: "audio/hit.mp3", lines: [ { at: 1, t: "임시 대사 1" }, { at: 5, t: "임시 대사 2" }, { at: 9, t: "임시 대사 3" }, { at: 13, t: "임시 대사 4" }, { at: 17, t: "임시 대사 5" } ] } ] }
   ],
 
   /* 음악: 1993~94년 미국 팝 (곡 정보만. 실제 음원은 넣지 않음) */
