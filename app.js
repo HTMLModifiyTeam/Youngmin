@@ -96,16 +96,19 @@
     { id: "camera", label: "카메라" }, { id: "album", label: "앨범" }, { id: "bell", label: "벨소리" },
     { id: "game", label: "게임" }, { id: "diary", label: "다이어리" }, { id: "settings", label: "환경설정" }
   ];
+  /* 번쩍이는 3D 느낌의 촌스러운 아이콘 (그라데이션 + 하이라이트) */
+  const gl = (id, c1, c2) => `<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient>`;
+  const shine = (x, y, w, h) => `<ellipse cx="${x}" cy="${y}" rx="${w}" ry="${h}" fill="#fff" opacity=".55"/>`;
   const ICON = {
-    contacts: `<rect x="7" y="4" width="18" height="24" rx="2" fill="#2f6fe0"/><rect x="10" y="7" width="12" height="18" fill="#fff"/><circle cx="16" cy="13" r="3" fill="#2f6fe0"/><path d="M11 22c1-4 9-4 10 0" fill="#2f6fe0"/>`,
-    messages: `<rect x="4" y="8" width="24" height="16" rx="2" fill="#ffcf3a" stroke="#c48a00"/><path d="M4 9l12 9 12-9" fill="none" stroke="#c48a00" stroke-width="2"/>`,
-    calls: `<path d="M9 5c2 0 4 5 3 6l-2 2c1 3 4 6 7 7l2-2c1-1 6 1 6 3s-3 5-5 5C12 26 6 20 5 12c0-3 2-7 4-7z" fill="#27a046"/>`,
-    camera: `<rect x="4" y="10" width="24" height="16" rx="3" fill="#5a6577"/><rect x="11" y="6" width="10" height="5" rx="1" fill="#5a6577"/><circle cx="16" cy="18" r="5" fill="#9fe7ff" stroke="#fff" stroke-width="2"/>`,
-    album: `<rect x="5" y="6" width="22" height="20" rx="2" fill="#fff" stroke="#888"/><path d="M7 23l6-7 4 4 3-3 5 6z" fill="#3aa64a"/><circle cx="21" cy="11" r="2.5" fill="#f5b800"/>`,
-    bell: `<path d="M16 5c5 0 8 4 8 9v6l3 3H5l3-3v-6c0-5 3-9 8-9z" fill="#f59e0b"/><circle cx="16" cy="26" r="2.5" fill="#f59e0b"/>`,
-    game: `<rect x="4" y="10" width="24" height="14" rx="7" fill="#7c4ddb"/><path d="M10 14v6M7 17h6" stroke="#fff" stroke-width="2"/><circle cx="21" cy="15.5" r="1.6" fill="#fff"/><circle cx="24" cy="18.5" r="1.6" fill="#fff"/>`,
-    diary: `<rect x="7" y="4" width="18" height="24" rx="2" fill="#e04f6b"/><rect x="10" y="8" width="12" height="3" fill="#fff"/><path d="M10 15h12M10 19h12M10 23h8" stroke="#fff" stroke-width="1.5"/>`,
-    settings: `<circle cx="16" cy="16" r="5" fill="none" stroke="#5a6577" stroke-width="3"/>${[0, 45, 90, 135, 180, 225, 270, 315].map(a => `<rect x="14.5" y="4" width="3" height="5" rx="1" fill="#5a6577" transform="rotate(${a} 16 16)"/>`).join("")}`
+    contacts: `<defs>${gl("gC", "#7fd3ff", "#1450c8")}</defs><rect x="6" y="3" width="20" height="26" rx="3" fill="url(#gC)" stroke="#0b2f80"/><rect x="9" y="6" width="14" height="20" rx="1" fill="#fff"/><circle cx="16" cy="12.5" r="3.2" fill="#ff6aa8" stroke="#a0185a" stroke-width=".8"/><path d="M10.5 23c1-4.5 10-4.5 11 0z" fill="#ff6aa8" stroke="#a0185a" stroke-width=".8"/>${shine(13, 6, 6, 2)}`,
+    messages: `<defs>${gl("gM", "#fff36b", "#ff9a00")}</defs><rect x="3" y="8" width="26" height="17" rx="3" fill="url(#gM)" stroke="#a85a00"/><path d="M3.5 9.5l12.5 9 12.5-9" fill="none" stroke="#a85a00" stroke-width="1.6"/><circle cx="25" cy="8" r="4" fill="#ff2a5a" stroke="#fff"/>${shine(12, 11, 7, 2)}`,
+    calls: `<defs>${gl("gK", "#a8ff6a", "#1f9a1f")}</defs><circle cx="16" cy="16" r="13" fill="url(#gK)" stroke="#0c5c0c"/><path d="M11 8.5c1.6 0 3 3.6 2.2 4.4l-1.4 1.4c.8 2.2 2.8 4.2 5 5l1.4-1.4c.8-.8 4.4.6 4.4 2.2s-2.2 3.6-3.6 3.6C13 23.7 8.3 19 8.3 12.1c0-1.4 1.3-3.6 2.7-3.6z" fill="#fff"/>${shine(16, 7, 8, 3)}`,
+    camera: `<defs>${gl("gA", "#e2e6ee", "#5a6377")}${gl("gL", "#9ff3ff", "#0a5fa8")}</defs><rect x="3" y="9" width="26" height="18" rx="4" fill="url(#gA)" stroke="#2a3040"/><rect x="10" y="5" width="9" height="5" rx="1.5" fill="#5a6377"/><circle cx="16" cy="18" r="6" fill="url(#gL)" stroke="#fff" stroke-width="2"/><circle cx="24.5" cy="12.5" r="1.6" fill="#ff3b3b"/>${shine(12, 11, 7, 1.6)}`,
+    album: `<defs>${gl("gP", "#ffb6f0", "#c2189b")}</defs><rect x="4" y="5" width="24" height="22" rx="3" fill="url(#gP)" stroke="#7a0b60"/><rect x="7" y="8" width="18" height="14" fill="#bff0ff"/><path d="M7 22l5-6 4 4 3-3 6 5z" fill="#2db83a"/><circle cx="21" cy="11.5" r="2" fill="#ffd800"/>${shine(12, 7, 7, 1.6)}`,
+    bell: `<defs>${gl("gB", "#fff59a", "#ff7a00")}</defs><path d="M16 4c5.5 0 8.5 4 8.5 9.2V19l3 3.4H4.5l3-3.4v-5.8C7.5 8 10.5 4 16 4z" fill="url(#gB)" stroke="#9a4a00"/><circle cx="16" cy="26" r="2.6" fill="#9a4a00"/><path d="M26 6l3-2M27 10l3 0M6 6L3 4M5 10H2" stroke="#ff2a8a" stroke-width="1.6"/>${shine(13, 9, 4, 3)}`,
+    game: `<defs>${gl("gG", "#d9a6ff", "#5a1fb8")}</defs><rect x="2" y="10" width="28" height="15" rx="7.5" fill="url(#gG)" stroke="#2e0a6a"/><path d="M9.5 14v7M6 17.5h7" stroke="#fff" stroke-width="2.4"/><circle cx="21" cy="15.5" r="2" fill="#ffe600"/><circle cx="25" cy="19.5" r="2" fill="#00e0ff"/>${shine(14, 12.5, 9, 1.8)}`,
+    diary: `<defs>${gl("gD", "#ffa6a6", "#d4143c")}</defs><rect x="6" y="3" width="21" height="26" rx="2" fill="url(#gD)" stroke="#7a0820"/><rect x="6" y="3" width="4" height="26" fill="#8a0a26"/><rect x="13" y="8" width="11" height="4" rx="1" fill="#fff"/><path d="M13 16h11M13 20h11M13 24h7" stroke="#ffe3e3" stroke-width="1.4"/>${shine(18, 5.5, 6, 1.6)}`,
+    settings: `<defs>${gl("gS", "#f0f4fa", "#6c7890")}</defs><g fill="url(#gS)" stroke="#2a3348" stroke-width=".8">${[0, 45, 90, 135, 180, 225, 270, 315].map(a => `<rect x="13.5" y="2.5" width="5" height="7" rx="1" transform="rotate(${a} 16 16)"/>`).join("")}<circle cx="16" cy="16" r="9.5"/></g><circle cx="16" cy="16" r="4" fill="#3ad0ff" stroke="#2a3348"/>${shine(14, 11, 5, 2)}`
   };
   const ANT = `<span class="ant"><b>T</b><i></i><i></i><i></i><i></i></span>`;
   const BELL = `<svg class="bell" viewBox="0 0 12 12"><path d="M6 1c2.2 0 3.4 1.6 3.4 3.6V7l1.3 1.6H1.3L2.6 7V4.6C2.6 2.6 3.8 1 6 1z" fill="#f2b400" stroke="#8a5a00" stroke-width=".8"/><circle cx="6" cy="10.2" r="1.1" fill="#8a5a00"/></svg>`;
@@ -123,7 +126,7 @@
     } else if (n === "dial") {
       lcd.innerHTML = frame("", `<div class="idle"><i class="sun"></i><i class="hill"></i><div class="dial">${esc(S.num)}</div></div>`, "저장", "지우기");
     } else if (n === "menu") {
-      lcd.innerHTML = frame("", `<div class="menuwall"></div><div class="mtitle">${S.sel + 1}:${esc(MENU[S.sel].label)}</div><div class="grid">${MENU.map((m, i) => `<button class="mi${i === S.sel ? " sel" : ""}" data-i="${i}"><svg viewBox="0 0 32 32">${ICON[m.id]}</svg></button>`).join("")}</div>`, "선택", "이전");
+      lcd.innerHTML = frame("", `<div class="menuwall"><i class="cl c1"></i><i class="cl c2"></i><i class="sunr"></i><i class="hl h1"></i><i class="hl h2"></i><i class="house"></i><i class="fl"></i></div><div class="mtitle">${esc(MENU[S.sel].label)}</div><div class="mno">${S.sel + 1}</div><div class="grid">${MENU.map((m, i) => `<button class="mi${i === S.sel ? " sel" : ""}" data-i="${i}"><svg viewBox="0 0 32 32">${ICON[m.id]}</svg></button>`).join("")}</div>`, "선택", "이전");
     } else if (n === "list") {
       lcd.innerHTML = frame(S.title, `<div class="list">${S.items.length ? S.items.map((it, i) => `<button class="li${i === S.sel ? " sel" : ""}" data-i="${i}"><span class="no">${i === S.sel ? "◆" : i + 1}</span>${it.ic ? `<span class="ic">${it.ic}</span>` : ""}<span>${esc(it.label)}</span><small>${esc(it.sub || "")}</small></button>`).join("") : `<div class="pop" style="position:absolute">저장된 항목이<br>없습니다</div>`}</div>`, S.items.length ? "선택" : "", "이전", { arrow: "◀▶" });
       const el = lcd.querySelector(".li.sel"); if (el) el.scrollIntoView({ block: "nearest" });

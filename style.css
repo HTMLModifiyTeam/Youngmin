@@ -121,3 +121,48 @@ body.big .lcd:after{background:repeating-linear-gradient(rgba(0,0,0,.05) 0 1px,t
 body.big .lcd{cursor:default}
 body.big .softbar span{cursor:pointer;padding:0 4px}
 body.big .softbar span:empty{display:none}
+
+/* ══ 촌스러운 옛날 폰 화면 (그라데이션 · 원색 · 번쩍임) ══ */
+.sb{background:linear-gradient(#ffffff,#d9ecff 60%,#b6d6ff);border-bottom:1px solid #7fa6e0}
+.title{background:linear-gradient(#b8ff8a 0%,#54c43a 48%,#2c9a1c 52%,#1f7a12 100%);border-top:1px solid #dfffc8;border-bottom:1px solid #0f4a08}
+.softbar{background:linear-gradient(#f3c6ff 0%,#b47bff 48%,#8a4ee6 52%,#6a32c4 100%);color:#fff;text-shadow:1px 1px 0 #3a137a;border-top:1px solid #f7e2ff}
+.body{background:linear-gradient(#ffffff,#eef6ff)}
+.cyan .body{background:linear-gradient(#e6fbff,#9fe3f2)}
+.li{border-bottom:1px dotted #9db4d8}
+.li:nth-child(even){background:linear-gradient(#f4f9ff,#e2eeff)}
+.li.sel{background:linear-gradient(#d6ff9e 0%,#62d23e 48%,#3aa81e 52%,#2e8e14 100%);text-shadow:1px 1px 0 #1d5a0f}
+.li .no{background:linear-gradient(#ffd27a,#ff7a1a 55%,#d4500a);box-shadow:inset 0 1px 0 #fff3c0}
+.read .box{background:linear-gradient(#fff,#f2fbff);border:1px solid #5bb7d0;box-shadow:inset 1px 1px 0 #fff}
+.pop{background:linear-gradient(#fbfdff,#b9ecf8 60%,#8fd8ec);border:2px solid #1e7fa6;border-radius:4px}
+.calling{background:linear-gradient(#fff7c2,#ffd0f0 50%,#c9b8ff)}
+
+/* 대기화면: 노을 하늘 + 반짝이 */
+.idle{background:linear-gradient(#3a1d8a 0%,#b03fa8 32%,#ff7a8a 55%,#ffc46a 72%,#3aa0d8 73%,#1a5a9a 100%)}
+.idle:before{content:"";position:absolute;inset:0;background:radial-gradient(1.5px 1.5px at 20% 12%,#fff,transparent),radial-gradient(1px 1px at 70% 20%,#fff,transparent),radial-gradient(1.5px 1.5px at 45% 6%,#fff,transparent),radial-gradient(1px 1px at 88% 9%,#fff,transparent),radial-gradient(1px 1px at 10% 30%,#fff,transparent)}
+.idle .sun{right:auto;left:50%;margin-left:-22px;top:auto;bottom:24%;width:44px;height:44px;background:radial-gradient(circle,#fffbd0,#ffd84a 45%,rgba(255,140,60,.0) 70%)}
+.idle .hill{bottom:-8%;height:30%;background:repeating-linear-gradient(175deg,rgba(255,255,255,.25) 0 1px,transparent 1px 7px),linear-gradient(#2a8fd0,#0d3f78)}
+.idle .clkbox{background:linear-gradient(#ffc6ff 0%,#ff5fc0 48%,#e01c8e 52%,#b80a6c 100%);border:1px solid #fff;box-shadow:0 2px 0 #6a0640,0 0 8px rgba(255,120,220,.8)}
+.idle .clk{text-shadow:2px 2px 0 #6a0640}
+.idle .dt{color:#fff6a0;text-shadow:1px 1px 0 #5a0f5a,-1px 0 0 #5a0f5a}
+.idle .note{background:linear-gradient(#fffde0,#ffe98a);border:1px solid #c98a00;color:#5a2a00}
+
+/* 메뉴: 위는 그림 배경(하늘·구름·언덕·집), 아래는 번쩍이는 아이콘 */
+.menuwall{position:absolute;left:0;right:0;top:0;height:46%;overflow:hidden;background:linear-gradient(#2a8cff 0%,#7cc8ff 55%,#d8f4ff 100%)}
+.menuwall .cl{position:absolute;height:12px;border-radius:8px;background:#fff;box-shadow:8px -5px 0 2px #fff,18px 0 0 #fff}
+.menuwall .c1{left:12px;top:14px;width:26px}.menuwall .c2{left:130px;top:24px;width:20px;opacity:.9}
+.menuwall .sunr{position:absolute;right:10px;top:6px;width:30px;height:30px;border-radius:50%;background:radial-gradient(circle,#fff8b0 0 35%,#ffcc00 36% 50%,transparent 52%),repeating-conic-gradient(#ffe25a 0 10deg,transparent 10deg 30deg)}
+.menuwall .hl{position:absolute;border-radius:50%}
+.menuwall .h1{left:-30px;bottom:-40px;width:180px;height:80px;background:radial-gradient(ellipse at 50% 20%,#a6ff5a,#2e9a1a)}
+.menuwall .h2{right:-40px;bottom:-46px;width:200px;height:84px;background:radial-gradient(ellipse at 40% 20%,#7cf04a,#1f7a12)}
+.menuwall .house{position:absolute;left:96px;bottom:14px;width:34px;height:22px;background:linear-gradient(#fff6d8,#f0c890);border:1px solid #8a5a2a}
+.menuwall .house:before{content:"";position:absolute;left:-6px;right:-6px;top:-16px;height:16px;background:linear-gradient(#ff6a6a,#c41a1a);clip-path:polygon(50% 0,100% 100%,0 100%)}
+.menuwall .house:after{content:"";position:absolute;left:12px;bottom:0;width:9px;height:12px;background:#8a4a1a}
+.menuwall .fl{position:absolute;left:20px;bottom:6px;width:60px;height:8px;background:radial-gradient(circle,#ff3aa0 2px,transparent 2.5px) 0 0/10px 8px,radial-gradient(circle,#ffe600 2px,transparent 2.5px) 5px 2px/10px 8px}
+.mtitle{top:6px;right:auto;left:8px;text-align:left;font-size:15px;color:#fff23a;text-shadow:2px 2px 0 #b0007a,-1px -1px 0 #b0007a,1px -1px 0 #b0007a,-1px 1px 0 #b0007a}
+.mno{position:absolute;left:8px;top:28px;width:18px;height:18px;border-radius:50%;background:linear-gradient(#fff,#ff8ad0);border:1px solid #b0007a;color:#b0007a;font:700 11px/16px "Galmuri11",monospace;text-align:center}
+.grid{top:47%;left:4px;right:4px;bottom:3px;gap:2px;padding:3px;background:linear-gradient(#ffffff,#dfe6f2);border-top:2px solid #8ab0e6}
+.mi{background:linear-gradient(#ffffff,#e8eef8);border:1px solid #c3cfe2;border-radius:6px}
+.mi svg{width:30px;height:30px;filter:drop-shadow(1px 2px 0 rgba(0,0,40,.25))}
+.mi.sel{background:linear-gradient(#fffbd0,#ffd84a);border:2px solid #ff7a00;box-shadow:0 0 6px #ffae00}
+.mi.sel svg{animation:bob .6s ease-in-out infinite alternate}
+@keyframes bob{to{transform:translateY(-2px) scale(1.06)}}
