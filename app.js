@@ -341,7 +341,7 @@
     if (n === "incoming") { if (k === "send" || k === "sl" || k === "ok") return answer(); if (k === "sr" || k === "end" || k === "clr") return missIncoming(); return; }
     if (k === "end") { if (S.name === "talk" && S.live && !S.logged) { S.logged = true; P.calls.unshift(S.c); } clearTimeout(talkT); stopCall(); return go("idle"); }
     if (n === "idle") {
-      if (digit) return go("dial", { num: k });
+      if (digit) return go("dial", { num: MY ? MY.number[0] : k });   // 어떤 숫자를 눌러도 그 번호가 한 자리씩
       if (k === "ok" || k === "sl") return mainMenu(0);
       if (k === "sr" || k === "down") return openMenu(0);
       if (k === "send" || k === "up") return openMenu(1);
@@ -350,7 +350,7 @@
       return;
     }
     if (n === "dial") {
-      if (digit) { S.num = (S.num + k).slice(0, 20); return render(); }
+      if (digit) { S.num = MY ? MY.number.slice(0, Math.min(MY.number.length, S.num.length + 1)) : (S.num + k).slice(0, 20); return render(); }
       if (k === "clr" || k === "sr") { S.num = S.num.slice(0, -1); return S.num ? render() : go("idle"); }
       if (k === "send" || k === "ok" || k === "sl") return startCall(MY ? MY.number : S.num);   // 아무 번호나 눌러도 그 번호로
       return;
