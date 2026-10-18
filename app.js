@@ -71,7 +71,7 @@
     if (!opened) return; opened = false;
     flip.classList.remove("open"); fit(); closeSnap();
     setBig(false); closeBtn.hidden = true; hint.style.opacity = 1; hint.textContent = "휴대폰을 누르면 열립니다";
-    stopCall();
+    stopCall(); RA.pause();
   }
   $("#lid").addEventListener("click", () => { if (!opened) openPhone(); });
   closeBtn.addEventListener("click", closePhone);
@@ -110,7 +110,7 @@
   (P.calls || []).sort((x, y) => String(y.when).localeCompare(String(x.when)));   // 통화목록은 최근 것부터
   const MENU = [
     { id: "contacts", label: "Phonebook" }, { id: "calls", label: "Call Log" },
-    { id: "msg", label: "Messages" }, { id: "memo", label: "Memo" }, { id: "music", label: "Music" }
+    { id: "msg", label: "Messages" }, { id: "memo", label: "Memo" }, { id: "music", label: "Music" }, { id: "rec", label: "Recorder" }
   ];
   /* 파란 단색 픽셀 아이콘 */
   const ICON = {
@@ -121,6 +121,7 @@
     inbox: `<path d="M2 9l2-5h8l2 5v4H2z" fill="none" stroke="currentColor"/><path d="M2 9h4l1 2h2l1-2h4" fill="none" stroke="currentColor"/>`,
     sent: `<path d="M2 8l12-5-4 11-2-4z" fill="none" stroke="currentColor"/>`,
     write: `<path d="M3 13l1-3 7-7 2 2-7 7z" fill="none" stroke="currentColor"/>`,
+    rec: `<rect x="6" y="1.5" width="4" height="8" rx="2" fill="currentColor"/><path d="M4 7.5a4 4 0 0 0 8 0M8 11.5V14M5.5 14h5" fill="none" stroke="currentColor" stroke-width="1.2"/>`,
     music: `<path d="M6 3l7-1.5V11" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M6 3v9" stroke="currentColor" stroke-width="1.4"/><ellipse cx="4.3" cy="12.2" rx="2.2" ry="1.7" fill="currentColor"/><ellipse cx="11.3" cy="11.2" rx="2.2" ry="1.7" fill="currentColor"/>`
   };
   const ico = id => `<svg class="pi" viewBox="0 0 16 16">${ICON[id] || ""}</svg>`;
@@ -132,7 +133,7 @@
 
   let S = { name: "off" }, popT = null, callT = [], talkT = null;
   let navNext = null;   // 목록에서 연 기록: 아래 바 가운데 ▲▼로 이전/다음 기록
-  function go(name, opt = {}) { S = { name, sel: 0, ...opt }; if (navNext && (name === "read" || name === "talk") && !S.live) S.nav = navNext; navNext = null; render(); }
+  function go(name, opt = {}) { if (S && S.name === "recplay" && name !== "recplay") { RA.pause(); } S = { name, sel: 0, ...opt }; if (navNext && (name === "read" || name === "talk") && !S.live) S.nav = navNext; navNext = null; render(); }
   const navHTML = () => {
     if (!S || !S.nav || S.live || (S.name !== "read" && S.name !== "talk")) return "";
     const i = S.nav.sel, L = S.nav.items.length;
@@ -190,6 +191,12 @@
       clearTimeout(talkT);
       if (S.n < c.talk.length) { talkT = setTimeout(() => { if (S.name === "talk" && S.c === c) { S.n++; render(); } }, S.n === 0 ? 700 : 1300 + Math.min(2600, (c.talk[S.n - 1]?.t.length || 10) * 70)); }
       else if (S.live && !S.logged) { S.logged = true; P.calls.unshift(c); talkT = setTimeout(() => { if (S.name === "talk" && S.c === c) go("idle"); }, 3500); }   // 실시간 통화가 끝나면 통화목록에 남음
+    } else if (n === "recplay") {
+      const r = S.r, on = !RA.paused && RA.src.endsWith(r.file);
+      lcd.innerHTML = frame("Recorder", `<div class="player rec"><div class="art">${ico("rec")}<div class="eq${on ? " on" : ""}">${"<i></i>".repeat(7)}</div></div>
+        <div class="trk">${esc(S.d)}  ${esc(r.time)}</div><div class="stl"><span>${esc(r.name)}</span></div>
+        <div class="pb"><i data-rpf style="width:${(RA.src.endsWith(r.file) ? RA.currentTime / (RA.duration || secs(r.len)) : 0) * 100}%"></i></div><div class="ptm"><span data-rpc>${mmss(RA.src.endsWith(r.file) ? RA.currentTime : 0)}</span><span>${esc(r.len)}</span></div>
+        <div class="pctl"><b>${on ? "❚❚" : "▶"}</b></div></div>`, on ? "Pause" : "Play", "Back", { mid: "" });
     } else if (n === "incoming") {
       lcd.innerHTML = frame("", `<div class="calling"><div class="ani">${ico("calls")}</div><div class="st">Incoming call</div><div class="who">${esc(S.who)}</div><div class="num">${esc(numberOf(S.who))}</div></div>`, "Answer", "Reject", { mid: "" });
     } else if (n === "calling") {
@@ -214,7 +221,15 @@
     if (id === "msg") return msgMenu(0);
     if (id === "memo") return memoList();
     if (id === "music") return musicList(M.i);
+    if (id === "rec") return recDates();
   }
+  /* 녹음기: 날짜 폴더 · 녹음 목록 · 재생 */
+  const RECS = P.recordings || [];
+  const RA = new Audio(); RA.preload = "none";
+  RA.addEventListener("timeupdate", () => { if (S.name !== "recplay") return; const d = RA.duration || secs(S.r.len); lcd.querySelectorAll("[data-rpf]").forEach(e => e.style.width = `${Math.min(100, RA.currentTime / (d || 1) * 100)}%`); lcd.querySelectorAll("[data-rpc]").forEach(e => e.textContent = mmss(RA.currentTime)); });
+  RA.addEventListener("ended", () => { if (S.name === "recplay") { RA.currentTime = 0; render(); } });
+  const recDates = sel => go("list", { title: "Recorder", kind: "recdate", sel: sel || 0, lbl: "Open", backTo: () => mainMenu(5), items: RECS.map(d => ({ label: d.date, sub: `${d.items.length} file${d.items.length > 1 ? "s" : ""}`, ic: "rec", data: d })) });
+  const recFiles = (di, sel) => go("list", { title: RECS[di].date, kind: "recfile", di, sel: sel || 0, lbl: "Play", backTo: () => recDates(di), items: RECS[di].items.map(r => ({ label: r.name, sub: `${r.time}  ${r.len}`, ic: "rec", data: r })) });
   /* 음악: 곡 목록 · 재생 화면 (재생은 화면 속에서만 흐름) */
   const SONGS = P.music || [];
   const secs = s => { const [m, x] = String(s).split(":").map(Number); return m * 60 + (x || 0); };
@@ -243,6 +258,8 @@
     if (here === "memo") return it.data ? go("read", { title: "Memo", meta: it.data.when, text: it.data.text, l: "Edit", memo: it.data, backTo: () => memoList(sel) })
                                        : go("edit", { title: "New Memo", text: "", l: "Save", max: 200, mode: "memo", backTo: () => memoList(0) });
     if (here === "pickTo") return compose(it.data.name, () => pickTo());
+    if (here === "recdate") return recFiles(sel);
+    if (here === "recfile") { const di = S.di; return go("recplay", { r: it.data, d: RECS[di].date, backTo: () => recFiles(di, sel) }); }
     if (here === "music") { if (M.i !== sel) { M.i = sel; M.t = 0; } M.on = true; return go("player", {}); }
   }
   function save() {   // 편집 화면에서 저장/전송
@@ -356,6 +373,11 @@
       if (S.live) { if (k === "sr" || k === "clr" || k === "end") { clearTimeout(talkT); if (!S.logged) { S.logged = true; P.calls.unshift(S.c); } return go("idle"); } return; }
       if (k === "send" || k === "sl") return startCall(numberOf(S.c.name));
       if (k === "clr" || k === "sr" || k === "left") { clearTimeout(talkT); return S.backTo(); }
+      return;
+    }
+    if (n === "recplay") {
+      if (k === "ok" || k === "sl") { const f = S.r.file; if (!RA.src.endsWith(f)) { RA.src = f; } if (RA.paused) RA.play().catch(() => {}); else RA.pause(); return setTimeout(render, 30); }
+      if (k === "clr" || k === "sr" || k === "left") return S.backTo();
       return;
     }
     if (n === "player") {

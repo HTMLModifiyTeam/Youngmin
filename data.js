@@ -227,6 +227,12 @@ window.PHONE = {
     { when: "94/11/28 23:10", text: "(임시) 메모 제목\n메모 내용이 들어갑니다." }
   ],
 
+  /* 녹음기: 날짜 폴더 → 녹음 파일 (file = audio 폴더의 mp3) */
+  recordings: [
+    { date: "1994-11-17", items: [ { name: "REC_001", time: "21:12", len: "0:20", file: "audio/smoke.mp3" } ] },
+    { date: "1994-11-28", items: [ { name: "REC_002", time: "16:47", len: "0:20", file: "audio/hit.mp3" } ] }
+  ],
+
   /* 음악: 1993~94년 미국 팝 (곡 정보만. 실제 음원은 넣지 않음) */
   music: [
     { title: "I'll Make Love to You", artist: "Boyz II Men", len: "3:58" },
