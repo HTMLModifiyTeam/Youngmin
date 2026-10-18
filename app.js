@@ -103,6 +103,7 @@
 
   /* ================= 큰 액정 화면 (흰색·회색·파랑의 옛 휴대폰 화면) ================= */
   P.sent = P.sent || []; P.memos = P.memos || [];
+  (P.calls || []).sort((x, y) => String(y.when).localeCompare(String(x.when)));   // 통화목록은 최근 것부터
   const MENU = [
     { id: "contacts", label: "Phonebook" }, { id: "calls", label: "Call Log" },
     { id: "msg", label: "Messages" }, { id: "memo", label: "Memo" }, { id: "music", label: "Music" }
@@ -158,7 +159,7 @@
       const st = lcd.querySelector(".stl span"); if (st && st.scrollWidth > st.parentNode.clientWidth) st.parentNode.classList.add("long");
     } else if (n === "talk") {   // 통화 녹음: 대화가 한 줄씩 올라옴
       const c = S.c, who = c.name;
-      lcd.innerHTML = frame("Call Rec.", `<div class="talk ruled"><div class="meta">${{ missed: "Missed", out: "Dialed", in: "Received" }[c.dir]} ${esc(c.when)}${c.dur ? " · " + esc(c.dur) : ""}</div>${c.talk.slice(0, S.n).map(l => `<div class="tl${l.me ? " me" : ""}"><b>${l.me ? "Me" : esc(who)}</b>${esc(l.t)}</div>`).join("")}${S.n < c.talk.length ? `<div class="tl wait">▪ ▪ ▪</div>` : `<div class="tl end">— End of call —</div>`}</div>`, "Call", "Back", { right: `${Math.min(S.n, c.talk.length)}/${c.talk.length}`, mid: S.n < c.talk.length ? "▶" : "■" });
+      lcd.innerHTML = frame("Call Rec.", `<div class="talk ruled"><div class="meta">${{ missed: "Missed", out: "Dialed", in: "Received" }[c.dir]} ${esc(c.when)}${c.dur ? " · " + esc(c.dur) : ""}</div>${c.talk.slice(0, S.n).map(l => `<div class="tl${l.me ? " me" : ""}${l.loud ? " loud" : ""}"><b>${l.me ? "Me" : esc(who)}</b>${esc(l.t)}</div>`).join("")}${S.n < c.talk.length ? `<div class="tl wait">▪ ▪ ▪</div>` : `<div class="tl end">— End of call —</div>`}</div>`, "Call", "Back", { right: `${Math.min(S.n, c.talk.length)}/${c.talk.length}`, mid: S.n < c.talk.length ? "▶" : "■" });
       const tk = lcd.querySelector(".talk"); tk.scrollTop = tk.scrollHeight;
       clearTimeout(talkT);
       if (S.n < c.talk.length) { const nx = c.talk[S.n]; talkT = setTimeout(() => { if (S.name === "talk" && S.c === c) { S.n++; render(); } }, S.n === 0 ? 700 : 1300 + Math.min(2600, (c.talk[S.n - 1]?.t.length || 10) * 70)); }
