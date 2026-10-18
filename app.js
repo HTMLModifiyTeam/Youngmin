@@ -72,7 +72,7 @@
   bigOff.addEventListener("click", () => setBig(false));
   /* 클로즈업 중 터치 조작: 화면 아래 글자(소프트키)도 누를 수 있음 */
   lcd.addEventListener("click", e => { const sk = e.target.closest("[data-sk]"); if (sk && big) key(sk.dataset.sk); });
-  addEventListener("keydown", e => { if (e.key === "Escape") closePhone(); });
+  addEventListener("keydown", e => { if (e.key === "Escape" && !(e.target && e.target.tagName === "TEXTAREA")) closePhone(); });
 
   /* 바깥 작은 액정 */
   const subT = $("[data-subtime]"), subD = $("[data-subdate]"), subIc = $("[data-subic]"), subN = $("[data-subnote]");
@@ -90,75 +90,97 @@
   }
   setInterval(tick, 1000);
 
-  /* ================= 큰 액정 화면 ================= */
+  /* ================= 큰 액정 화면 (흰색·회색·파랑의 옛 휴대폰 화면) ================= */
+  P.sent = P.sent || []; P.memos = P.memos || [];
   const MENU = [
-    { id: "contacts", label: "전화번호부" }, { id: "messages", label: "메시지" }, { id: "calls", label: "통화목록" },
-    { id: "camera", label: "카메라" }, { id: "album", label: "앨범" }, { id: "bell", label: "벨소리" },
-    { id: "game", label: "게임" }, { id: "diary", label: "다이어리" }, { id: "settings", label: "환경설정" }
+    { id: "contacts", label: "전화번호부" }, { id: "calls", label: "통화목록" },
+    { id: "msg", label: "문자" }, { id: "memo", label: "메모" }
   ];
-  /* 번쩍이는 3D 느낌의 촌스러운 아이콘 (그라데이션 + 하이라이트) */
-  const gl = (id, c1, c2) => `<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient>`;
-  const shine = (x, y, w, h) => `<ellipse cx="${x}" cy="${y}" rx="${w}" ry="${h}" fill="#fff" opacity=".55"/>`;
+  /* 파란 단색 픽셀 아이콘 */
   const ICON = {
-    contacts: `<defs>${gl("gC", "#7fd3ff", "#1450c8")}</defs><rect x="6" y="3" width="20" height="26" rx="3" fill="url(#gC)" stroke="#0b2f80"/><rect x="9" y="6" width="14" height="20" rx="1" fill="#fff"/><circle cx="16" cy="12.5" r="3.2" fill="#ff6aa8" stroke="#a0185a" stroke-width=".8"/><path d="M10.5 23c1-4.5 10-4.5 11 0z" fill="#ff6aa8" stroke="#a0185a" stroke-width=".8"/>${shine(13, 6, 6, 2)}`,
-    messages: `<defs>${gl("gM", "#fff36b", "#ff9a00")}</defs><rect x="3" y="8" width="26" height="17" rx="3" fill="url(#gM)" stroke="#a85a00"/><path d="M3.5 9.5l12.5 9 12.5-9" fill="none" stroke="#a85a00" stroke-width="1.6"/><circle cx="25" cy="8" r="4" fill="#ff2a5a" stroke="#fff"/>${shine(12, 11, 7, 2)}`,
-    calls: `<defs>${gl("gK", "#a8ff6a", "#1f9a1f")}</defs><circle cx="16" cy="16" r="13" fill="url(#gK)" stroke="#0c5c0c"/><path d="M11 8.5c1.6 0 3 3.6 2.2 4.4l-1.4 1.4c.8 2.2 2.8 4.2 5 5l1.4-1.4c.8-.8 4.4.6 4.4 2.2s-2.2 3.6-3.6 3.6C13 23.7 8.3 19 8.3 12.1c0-1.4 1.3-3.6 2.7-3.6z" fill="#fff"/>${shine(16, 7, 8, 3)}`,
-    camera: `<defs>${gl("gA", "#e2e6ee", "#5a6377")}${gl("gL", "#9ff3ff", "#0a5fa8")}</defs><rect x="3" y="9" width="26" height="18" rx="4" fill="url(#gA)" stroke="#2a3040"/><rect x="10" y="5" width="9" height="5" rx="1.5" fill="#5a6377"/><circle cx="16" cy="18" r="6" fill="url(#gL)" stroke="#fff" stroke-width="2"/><circle cx="24.5" cy="12.5" r="1.6" fill="#ff3b3b"/>${shine(12, 11, 7, 1.6)}`,
-    album: `<defs>${gl("gP", "#ffb6f0", "#c2189b")}</defs><rect x="4" y="5" width="24" height="22" rx="3" fill="url(#gP)" stroke="#7a0b60"/><rect x="7" y="8" width="18" height="14" fill="#bff0ff"/><path d="M7 22l5-6 4 4 3-3 6 5z" fill="#2db83a"/><circle cx="21" cy="11.5" r="2" fill="#ffd800"/>${shine(12, 7, 7, 1.6)}`,
-    bell: `<defs>${gl("gB", "#fff59a", "#ff7a00")}</defs><path d="M16 4c5.5 0 8.5 4 8.5 9.2V19l3 3.4H4.5l3-3.4v-5.8C7.5 8 10.5 4 16 4z" fill="url(#gB)" stroke="#9a4a00"/><circle cx="16" cy="26" r="2.6" fill="#9a4a00"/><path d="M26 6l3-2M27 10l3 0M6 6L3 4M5 10H2" stroke="#ff2a8a" stroke-width="1.6"/>${shine(13, 9, 4, 3)}`,
-    game: `<defs>${gl("gG", "#d9a6ff", "#5a1fb8")}</defs><rect x="2" y="10" width="28" height="15" rx="7.5" fill="url(#gG)" stroke="#2e0a6a"/><path d="M9.5 14v7M6 17.5h7" stroke="#fff" stroke-width="2.4"/><circle cx="21" cy="15.5" r="2" fill="#ffe600"/><circle cx="25" cy="19.5" r="2" fill="#00e0ff"/>${shine(14, 12.5, 9, 1.8)}`,
-    diary: `<defs>${gl("gD", "#ffa6a6", "#d4143c")}</defs><rect x="6" y="3" width="21" height="26" rx="2" fill="url(#gD)" stroke="#7a0820"/><rect x="6" y="3" width="4" height="26" fill="#8a0a26"/><rect x="13" y="8" width="11" height="4" rx="1" fill="#fff"/><path d="M13 16h11M13 20h11M13 24h7" stroke="#ffe3e3" stroke-width="1.4"/>${shine(18, 5.5, 6, 1.6)}`,
-    settings: `<defs>${gl("gS", "#f0f4fa", "#6c7890")}</defs><g fill="url(#gS)" stroke="#2a3348" stroke-width=".8">${[0, 45, 90, 135, 180, 225, 270, 315].map(a => `<rect x="13.5" y="2.5" width="5" height="7" rx="1" transform="rotate(${a} 16 16)"/>`).join("")}<circle cx="16" cy="16" r="9.5"/></g><circle cx="16" cy="16" r="4" fill="#3ad0ff" stroke="#2a3348"/>${shine(14, 11, 5, 2)}`
+    contacts: `<rect x="3" y="2" width="10" height="12" fill="none" stroke="currentColor"/><rect x="5.5" y="4" width="5" height="4" fill="currentColor"/><path d="M5 11h6M5 12.5h4" stroke="currentColor"/>`,
+    calls: `<path d="M4 2h2l1 3-1.5 1c.6 1.6 1.9 2.9 3.5 3.5L10 8l3 1v2c0 .8-.7 1.5-1.5 1.5C6.6 12.5 3 8.9 3 4c0-.8.4-2 1-2z" fill="currentColor"/>`,
+    msg: `<rect x="2" y="4" width="12" height="9" fill="none" stroke="currentColor"/><path d="M2 4l6 5 6-5" fill="none" stroke="currentColor"/>`,
+    memo: `<rect x="3" y="2" width="10" height="12" fill="none" stroke="currentColor"/><path d="M5 5h6M5 7.5h6M5 10h4" stroke="currentColor"/><path d="M11 10l2-2" stroke="currentColor"/>`,
+    inbox: `<path d="M2 9l2-5h8l2 5v4H2z" fill="none" stroke="currentColor"/><path d="M2 9h4l1 2h2l1-2h4" fill="none" stroke="currentColor"/>`,
+    sent: `<path d="M2 8l12-5-4 11-2-4z" fill="none" stroke="currentColor"/>`,
+    write: `<path d="M3 13l1-3 7-7 2 2-7 7z" fill="none" stroke="currentColor"/>`
   };
+  const ico = id => `<svg class="pi" viewBox="0 0 16 16">${ICON[id] || ""}</svg>`;
   const ANT = `<span class="ant"><b>T</b><i></i><i></i><i></i><i></i></span>`;
-  const BELL = `<svg class="bell" viewBox="0 0 12 12"><path d="M6 1c2.2 0 3.4 1.6 3.4 3.6V7l1.3 1.6H1.3L2.6 7V4.6C2.6 2.6 3.8 1 6 1z" fill="#f2b400" stroke="#8a5a00" stroke-width=".8"/><circle cx="6" cy="10.2" r="1.1" fill="#8a5a00"/></svg>`;
-  const statusBar = () => `<div class="sb">${ANT}${BELL}<span class="r"><span data-sbt></span><span class="bat">${batHTML(P.battery ?? 2)}</span></span></div>`;
-  const frame = (title, body, l = "", r = "", o = {}) => `<div class="scr${o.cyan ? " cyan" : ""}">${statusBar()}${title ? `<div class="title">${esc(title)}${o.arrow ? `<em>${o.arrow}</em>` : ""}</div>` : ""}<div class="body">${body}</div><div class="softbar"><span data-sk="sl">${esc(l)}</span><span data-sk="sr">${esc(r)}</span></div></div>`;
+  const statusBar = () => `<div class="sb">${ANT}<span class="sbi">${(P.messages || []).some(m => !m.read) ? ico("msg") : ""}</span><span class="r"><span data-sbt></span><span class="bat">${batHTML(P.battery ?? 2)}</span></span></div>`;
+  const frame = (title, body, l = "", r = "", o = {}) => `<div class="scr${o.cls ? " " + o.cls : ""}">${statusBar()}${title ? `<div class="title"><span>${esc(title)}</span>${o.right ? `<em>${esc(o.right)}</em>` : ""}</div>` : ""}<div class="body">${body}</div><div class="softbar"><span data-sk="sl">${esc(l)}</span><span class="mid">${o.mid !== undefined ? esc(o.mid) : "▲▼"}</span><span data-sk="sr">${esc(r)}</span></div></div>`;
+  const stamp = () => { const d = now(); return `${p2(d.getMonth() + 1)}/${p2(d.getDate())} ${p2(d.getHours())}:${p2(d.getMinutes())}`; };
+  const bytes = s => [...s].reduce((n, c) => n + (c.charCodeAt(0) > 127 ? 2 : 1), 0);
 
   let S = { name: "off" }, popT = null, callT = [];
   function go(name, opt = {}) { S = { name, sel: 0, ...opt }; render(); }
+  const listHTML = items => `<div class="list">${items.length ? items.map((it, i) => `<button class="li${i === S.sel ? " sel" : ""}" data-i="${i}"><span class="no">${i + 1}</span>${it.ic ? ico(it.ic) : ""}${it.dot ? `<i class="dot"></i>` : ""}<span class="lb">${esc(it.label)}</span><small>${esc(it.sub || "")}</small></button>`).join("") : `<div class="empty">저장된 항목이 없습니다</div>`}</div>`;
   function render() {
     const n = S.name;
     if (n === "idle") {
-      const missed = (P.calls || []).filter(c => c.dir === "missed").length, unread = (P.messages || []).filter(m => !m.read).length;
-      lcd.innerHTML = frame("", `<div class="idle"><i class="sun"></i><i class="hill"></i>${P.banner ? `<div class="ban">${esc(P.banner)}</div>` : ""}<div class="clkbox"><b data-ap></b><span class="clk" data-clk></span></div><div class="dt">${(() => { const d = now(); return `${d.getFullYear()}/${p2(d.getMonth() + 1)}/${p2(d.getDate())} (${W[d.getDay()]})`; })()}</div>
-        ${missed || unread ? `<div class="note">${missed ? `<span>☎ 부재중 전화 ${missed}통</span>` : ""}${unread ? `<span>✉ 새 메시지 ${unread}개</span>` : ""}</div>` : ""}</div>`, "메뉴", "전화부");
+      const missed = (P.calls || []).filter(c => c.dir === "missed").length, unread = (P.messages || []).filter(m => !m.read).length, d = now();
+      lcd.innerHTML = frame("", `<div class="idle"><div class="ilogo">${esc(P.banner || "")}</div><div class="clk"><span data-clk></span><b data-ap></b></div><div class="dt">${d.getFullYear()}.${p2(d.getMonth() + 1)}.${p2(d.getDate())} ${W[d.getDay()]}요일</div>
+        ${missed || unread ? `<div class="note">${missed ? `<span>${ico("calls")}부재중 전화 ${missed}통</span>` : ""}${unread ? `<span>${ico("msg")}새 문자 ${unread}개</span>` : ""}</div>` : ""}</div>`, "메뉴", "전화부", { cls: "home", mid: "" });
     } else if (n === "dial") {
-      lcd.innerHTML = frame("", `<div class="idle"><i class="sun"></i><i class="hill"></i><div class="dial">${esc(S.num)}</div></div>`, "저장", "지우기");
+      lcd.innerHTML = frame("", `<div class="idle"><div class="dial"><small>${esc(nameOf(S.num))}</small>${esc(S.num)}</div></div>`, "통화", "지우기", { cls: "home", mid: "" });
     } else if (n === "menu") {
-      lcd.innerHTML = frame("", `<div class="menuwall"><i class="cl c1"></i><i class="cl c2"></i><i class="sunr"></i><i class="hl h1"></i><i class="hl h2"></i><i class="house"></i><i class="fl"></i></div><div class="mtitle">${esc(MENU[S.sel].label)}</div><div class="mno">${S.sel + 1}</div><div class="grid">${MENU.map((m, i) => `<button class="mi${i === S.sel ? " sel" : ""}" data-i="${i}"><svg viewBox="0 0 32 32">${ICON[m.id]}</svg></button>`).join("")}</div>`, "선택", "이전");
+      lcd.innerHTML = frame("메뉴", `<div class="list mlist">${S.items.map((m, i) => `<button class="li big${i === S.sel ? " sel" : ""}" data-i="${i}"><span class="no">${i + 1}</span>${ico(m.id)}<span class="lb">${esc(m.label)}</span></button>`).join("")}</div>`, "선택", "이전", { right: S.right || "" });
     } else if (n === "list") {
-      lcd.innerHTML = frame(S.title, `<div class="list">${S.items.length ? S.items.map((it, i) => `<button class="li${i === S.sel ? " sel" : ""}" data-i="${i}"><span class="no">${i === S.sel ? "◆" : i + 1}</span>${it.ic ? `<span class="ic">${it.ic}</span>` : ""}<span>${esc(it.label)}</span><small>${esc(it.sub || "")}</small></button>`).join("") : `<div class="pop" style="position:absolute">저장된 항목이<br>없습니다</div>`}</div>`, S.items.length ? "선택" : "", "이전", { arrow: "◀▶" });
+      lcd.innerHTML = frame(S.title, listHTML(S.items), S.items.length ? (S.lbl || "선택") : "", "이전", { right: S.items.length ? `${S.sel + 1}/${S.items.length}` : "" });
       const el = lcd.querySelector(".li.sel"); if (el) el.scrollIntoView({ block: "nearest" });
     } else if (n === "read") {
-      lcd.innerHTML = frame(S.title, `<div class="read"><div class="meta">${esc(S.meta)}</div><div class="box">${esc(S.text)}</div></div>`, S.call ? "통화" : "", "이전", { cyan: true, arrow: "◀▶" });
+      lcd.innerHTML = frame(S.title, `<div class="read ruled"><div class="meta">${esc(S.meta)}</div><div class="txt">${esc(S.text)}</div></div>`, S.l || "", "이전", { right: S.right || "" });
+    } else if (n === "edit") {
+      lcd.innerHTML = frame(S.title, `<div class="edit">${S.to != null ? `<div class="to">받는사람: <b>${esc(S.to || "")}</b></div>` : ""}<textarea class="ta ruled" spellcheck="false" maxlength="${S.max || 80}">${esc(S.text || "")}</textarea></div>`, S.l || "저장", "취소", { right: "", mid: `${bytes(S.text || "")}/${S.max || 80}` });
+      const ta = lcd.querySelector(".ta"), cnt = lcd.querySelector(".softbar .mid");
+      ta.addEventListener("input", () => { S.text = ta.value; cnt.textContent = `${bytes(ta.value)}/${S.max || 80}`; });
+      if (!TOUCH || big) setTimeout(() => { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }, 30);
     } else if (n === "calling") {
-      lcd.innerHTML = frame("", `<div class="calling"><div class="ani">☎ · · ·</div><div class="who">${esc(S.who)}</div><div class="num">${esc(S.num)}</div><div class="st" data-cst>연결 중입니다</div></div>`, "", "종료", { cyan: true });
+      lcd.innerHTML = frame("", `<div class="calling"><div class="ani">${ico("calls")}</div><div class="who">${esc(S.who || "")}</div><div class="num">${esc(S.num)}</div><div class="st" data-cst>연결 중…</div></div>`, "", "종료", { mid: "" });
     }
     tick();
   }
-  function pop(msg, then) { const p = document.createElement("div"); p.className = "pop"; p.textContent = msg; lcd.querySelector(".body")?.appendChild(p); clearTimeout(popT); popT = setTimeout(() => { p.remove(); then && then(); }, 1300); }
+  function pop(msg, then, ms = 1300) { const p = document.createElement("div"); p.className = "pop"; p.textContent = msg; lcd.querySelector(".body")?.appendChild(p); clearTimeout(popT); popT = setTimeout(() => { p.remove(); then && then(); }, ms); }
   const numberOf = name => (P.contacts || []).find(c => c.name === name)?.number || name;
   const nameOf = num => (P.contacts || []).find(c => c.number === num)?.name || "";
 
+  const mainMenu = sel => go("menu", { items: MENU, sel: sel || 0, level: "main" });
+  const msgMenu = sel => go("menu", { items: [{ id: "inbox", label: "받은 문자함" }, { id: "sent", label: "보낸 문자함" }, { id: "write", label: "문자 작성" }], sel: sel || 0, level: "msg", title: "문자" });
   function openMenu(i) {
     const id = MENU[i].id;
-    if (id === "contacts") return go("list", { title: "전화번호부", kind: "contacts", back: ["menu", i], items: (P.contacts || []).map(c => ({ label: c.name, sub: c.number, data: c })) });
-    if (id === "messages") return go("list", { title: "받은 메시지", kind: "messages", back: ["menu", i], items: (P.messages || []).map(m => ({ label: m.from, sub: m.when, ic: m.read ? "✉" : "●", data: m })) });
-    if (id === "calls") return go("list", { title: "통화목록", kind: "calls", back: ["menu", i], items: (P.calls || []).map(c => ({ label: c.name, sub: c.when, ic: c.dir === "missed" ? "✖" : c.dir === "out" ? "↗" : "↙", data: c })) });
-    pop("준비 중입니다");
+    if (id === "contacts") return go("list", { title: "전화번호부", kind: "contacts", backTo: () => mainMenu(0), items: (P.contacts || []).map(c => ({ label: c.name, sub: c.number, data: c })) });
+    if (id === "calls") return go("list", { title: "통화목록", kind: "calls", backTo: () => mainMenu(1), items: (P.calls || []).map(c => ({ label: c.name, sub: c.when, ic: "calls", dot: c.dir === "missed", data: c })) });
+    if (id === "msg") return msgMenu(0);
+    if (id === "memo") return memoList();
   }
+  const inbox = sel => go("list", { title: "받은 문자함", kind: "inbox", sel: sel || 0, backTo: () => msgMenu(0), items: (P.messages || []).map(m => ({ label: m.from, sub: m.when, dot: !m.read, data: m })) });
+  const sentBox = sel => go("list", { title: "보낸 문자함", kind: "sent", sel: sel || 0, backTo: () => msgMenu(1), items: P.sent.map(m => ({ label: m.to, sub: m.when, data: m })) });
+  const memoList = sel => go("list", { title: "메모", kind: "memo", sel: sel || 0, lbl: "열기", backTo: () => mainMenu(3), items: [{ label: "새 메모 쓰기", ic: "write", data: null }, ...P.memos.map(m => ({ label: (m.text || "").split("\n")[0] || "(빈 메모)", sub: m.when, data: m }))] });
+  const pickTo = after => go("list", { title: "받는사람 선택", kind: "pickTo", after, backTo: () => msgMenu(2), items: (P.contacts || []).map(c => ({ label: c.name, sub: c.number, data: c })) });
+  const compose = (to, back) => go("edit", { title: "문자 작성", to, text: "", l: "전송", max: 80, mode: "sms", backTo: back });
   function pick() {
     const it = S.items[S.sel]; if (!it) return;
-    if (S.kind === "contacts") return go("read", { title: it.data.name, meta: "휴대폰", text: it.data.number, call: it.data.number, back: S });
-    if (S.kind === "messages") { it.data.read = true; return go("read", { title: "받은 메시지", meta: `${it.data.from}  ·  ${it.data.when}`, text: it.data.text, call: numberOf(it.data.from), back: { ...S, items: S.items.map(x => x === it ? { ...x, ic: "✉" } : x) } }); }
-    if (S.kind === "calls") return go("read", { title: "통화목록", meta: { missed: "부재중", out: "발신", in: "수신" }[it.data.dir] + "  ·  " + it.data.when, text: `${it.data.name}\n${numberOf(it.data.name)}`, call: numberOf(it.data.name), back: S });
+    const here = S.kind, sel = S.sel;
+    if (here === "contacts") return go("read", { title: it.data.name, meta: "휴대폰", text: it.data.number, call: it.data.number, smsTo: it.data.name, l: "통화", backTo: () => openMenu(0) });
+    if (here === "calls") return go("read", { title: "통화목록", meta: { missed: "부재중 전화", out: "건 전화", in: "받은 전화" }[it.data.dir] + "  " + it.data.when, text: `${it.data.name}\n${numberOf(it.data.name)}`, call: numberOf(it.data.name), l: "통화", backTo: () => { openMenu(1); S.sel = sel; render(); } });
+    if (here === "inbox") { it.data.read = true; const i = P.messages.indexOf(it.data); return go("read", { title: "받은 문자", right: `${i + 1}/${P.messages.length}`, meta: `${it.data.from}  ${it.data.when}`, text: it.data.text, call: numberOf(it.data.from), smsTo: it.data.from, l: "답장", backTo: () => inbox(sel) }); }
+    if (here === "sent") return go("read", { title: "보낸 문자", meta: `${it.data.to}  ${it.data.when}`, text: it.data.text, call: numberOf(it.data.to), l: "통화", backTo: () => sentBox(sel) });
+    if (here === "memo") return it.data ? go("read", { title: "메모", meta: it.data.when, text: it.data.text, l: "수정", memo: it.data, backTo: () => memoList(sel) })
+                                       : go("edit", { title: "새 메모", text: "", l: "저장", max: 200, mode: "memo", backTo: () => memoList(0) });
+    if (here === "pickTo") return compose(it.data.name, () => pickTo());
+  }
+  function save() {   // 편집 화면에서 저장/전송
+    const t = (S.text || "").trim();
+    if (!t) return pop("내용을 입력하세요");
+    if (S.mode === "sms") { P.sent.unshift({ to: S.to, when: stamp(), text: t }); const b = S.backTo; S.name = "sending"; return pop("메시지를 보냈습니다", () => msgMenu(1)); }
+    if (S.mode === "memo") { if (S.memo) { S.memo.text = t; S.memo.when = stamp(); } else P.memos.unshift({ text: t, when: stamp() }); return pop("저장되었습니다", () => memoList(S.memo ? P.memos.indexOf(S.memo) + 1 : 1)); }
   }
   function startCall(num) {
     stopCall(); const who = nameOf(num) || (P.contacts || []).find(c => c.name === num)?.name || "";
-    go("calling", { num: numberOf(num), who: who || "" });
+    go("calling", { num: numberOf(num), who });
     tone([440, 480], 1.2, .03, .4); tone([440, 480], 1.2, .03, 4.4);
-    callT.push(setTimeout(() => { const s = lcd.querySelector("[data-cst]"); if (s) s.textContent = "상대방이 전화를 받지 않습니다"; }, 7000));
+    callT.push(setTimeout(() => { const s = lcd.querySelector("[data-cst]"); if (s) s.textContent = "상대방이 받지 않습니다"; }, 7000));
     callT.push(setTimeout(() => { if (S.name === "calling") go("idle"); }, 9000));
   }
   function stopCall() { callT.forEach(clearTimeout); callT = []; }
@@ -168,44 +190,59 @@
     if (!opened) return;
     keyBeep(k);
     if (k === "menu") k = "sl";
+    if (k === "jump" || k === "cam" || k === "nate") return;   // 쓰지 않는 키
     if (k === "ph") { stopCall(); return openMenu(0); }   // 위쪽 전화부 키
-    if (k === "jump" || k === "cam" || k === "nate") { if (S.name === "calling") return; return pop(k === "nate" ? "무선인터넷에 연결할 수 없습니다" : "준비 중입니다"); }
     const n = S.name, digit = /^[0-9*#]$/.test(k);
     if (k === "end") { stopCall(); return go("idle"); }
     if (n === "idle") {
       if (digit) return go("dial", { num: k });
-      if (k === "ok" || k === "sl") return go("menu");
+      if (k === "ok" || k === "sl") return mainMenu(0);
       if (k === "sr" || k === "down") return openMenu(0);
-      if (k === "send" || k === "up") return openMenu(2);
-      if (k === "left") return openMenu(1);
+      if (k === "send" || k === "up") return openMenu(1);
+      if (k === "left") return openMenu(2);
+      if (k === "right") return openMenu(3);
       return;
     }
     if (n === "dial") {
       if (digit) { S.num = (S.num + k).slice(0, 20); return render(); }
       if (k === "clr" || k === "sr") { S.num = S.num.slice(0, -1); return S.num ? render() : go("idle"); }
-      if (k === "send" || k === "ok") return startCall(S.num);
+      if (k === "send" || k === "ok" || k === "sl") return startCall(S.num);
       return;
     }
     if (n === "menu") {
-      const mv = { up: -3, down: 3, left: -1, right: 1 }[k];
-      if (mv) { S.sel = (S.sel + mv + 9) % 9; return render(); }
-      if (k === "ok" || k === "sl") return openMenu(S.sel);
-      if (/^[1-9]$/.test(k)) { S.sel = +k - 1; render(); return openMenu(S.sel); }
-      if (k === "clr" || k === "sr") return go("idle");
+      const L = S.items.length;
+      if (k === "up" || k === "down") { S.sel = (S.sel + (k === "up" ? -1 : 1) + L) % L; return render(); }
+      const open = i => { if (S.level === "main") return openMenu(i); const id = S.items[i].id; return id === "inbox" ? inbox() : id === "sent" ? sentBox() : pickTo(); };
+      if (k === "ok" || k === "sl" || k === "right") return open(S.sel);
+      if (/^[1-9]$/.test(k) && +k <= L) { S.sel = +k - 1; render(); return open(S.sel); }
+      if (k === "clr" || k === "sr" || k === "left") return S.level === "main" ? go("idle") : mainMenu(2);
       return;
     }
     if (n === "list") {
       if (k === "up" || k === "down") { if (!S.items.length) return; S.sel = (S.sel + (k === "up" ? -1 : 1) + S.items.length) % S.items.length; return render(); }
-      if (k === "ok" || k === "sl") return pick();
-      if (k === "send" && S.items[S.sel]) { const d = S.items[S.sel].data; return startCall(d.number || numberOf(d.name || d.from)); }
+      if (k === "ok" || k === "sl" || k === "right") return pick();
+      if (k === "send" && S.items[S.sel] && S.kind !== "memo") { const d = S.items[S.sel].data; return d && startCall(d.number || numberOf(d.name || d.from || d.to)); }
       if (/^[1-9]$/.test(k) && S.items[+k - 1]) { S.sel = +k - 1; render(); return pick(); }
-      if (k === "clr" || k === "sr") return go("menu", { sel: S.back ? S.back[1] : 0 });
+      if (k === "clr" || k === "sr" || k === "left") return S.backTo ? S.backTo() : mainMenu(0);
       return;
     }
     if (n === "read") {
-      if (k === "up" || k === "down") { const r = lcd.querySelector(".read"); r.scrollTop += k === "up" ? -40 : 40; return; }
-      if ((k === "send" || k === "sl") && S.call) return startCall(S.call);
-      if (k === "clr" || k === "sr") { const b = S.back; S = b; return render(); }
+      if (k === "up" || k === "down") { const r = lcd.querySelector(".read"); r.scrollTop += k === "up" ? -36 : 36; return; }
+      if (k === "send" && S.call) return startCall(S.call);
+      if (k === "ok" || k === "sl") {
+        if (S.memo) return go("edit", { title: "메모 수정", text: S.memo.text, l: "저장", max: 200, mode: "memo", memo: S.memo, backTo: S.backTo });
+        if (S.l === "답장" && S.smsTo) { const back = S.backTo; return compose(S.smsTo, back); }
+        if (S.call) return startCall(S.call);
+        return;
+      }
+      if (k === "clr" || k === "sr" || k === "left") return S.backTo ? S.backTo() : go("idle");
+      return;
+    }
+    if (n === "edit") {
+      if (k === "ok" || k === "sl") return save();
+      if (k === "sr") return S.backTo ? S.backTo() : go("idle");
+      if (k === "clr") { if (S.text) { S.text = S.text.slice(0, -1); return render(); } return S.backTo ? S.backTo() : go("idle"); }
+      if (digit) { S.text = (S.text || "") + k; return render(); }
       return;
     }
     if (n === "calling") { if (k === "sr" || k === "clr") { stopCall(); go("idle"); } }
@@ -217,11 +254,15 @@
   /* 화면을 직접 눌러도 선택 */
   lcd.addEventListener("click", e => {
     const b = e.target.closest("[data-i]"); if (!b) return; const i = +b.dataset.i;
-    if (S.name === "menu") { S.sel = i; render(); openMenu(i); } else if (S.name === "list") { S.sel = i; render(); pick(); }
+    if (S.name === "menu" || S.name === "list") { S.sel = i; render(); key("ok"); }
   });
-  /* 키보드로도 조작 (PC) */
+  /* 키보드로도 조작 (PC). 글 쓰는 중에는 글자 입력이 우선 */
   const KB = { ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right", Enter: "ok", Backspace: "clr", F1: "sl", F2: "sr" };
-  addEventListener("keydown", e => { if (!opened) return; const k = KB[e.key] || (/^[0-9*#]$/.test(e.key) ? e.key : null); if (k) { e.preventDefault(); key(k); } });
+  addEventListener("keydown", e => {
+    if (!opened) return;
+    if (e.target && e.target.tagName === "TEXTAREA") { if (e.key === "Escape") { e.preventDefault(); key("sr"); } return; }
+    const k = KB[e.key] || (/^[0-9*#]$/.test(e.key) ? e.key : null); if (k) { e.preventDefault(); key(k); }
+  });
 
   go("off");
   tick();

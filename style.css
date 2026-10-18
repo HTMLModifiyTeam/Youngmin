@@ -63,106 +63,84 @@ body.big .lcd:after{background:repeating-linear-gradient(rgba(0,0,0,.05) 0 1px,t
 .bat:after{content:"";position:absolute;right:-3px;top:1.5px;width:2px;height:3px;background:currentColor}
 .bat i{position:absolute;top:1px;bottom:1px;width:3px;background:currentColor}
 
-/* ── 큰 액정 화면 (애니콜 시절 메뉴 화면 느낌) ── */
 @font-face{font-family:"Galmuri11";src:url("fonts/Galmuri11.woff2") format("woff2");font-weight:400;font-display:swap}
 @font-face{font-family:"Galmuri11";src:url("fonts/Galmuri11-Bold.woff2") format("woff2");font-weight:700;font-display:swap}
-.lcd .scr{position:absolute;inset:0;display:flex;flex-direction:column}
-.sb{flex:none;height:17px;display:flex;align-items:center;justify-content:space-between;padding:0 5px;background:#fff;color:#1a2a6a;border-bottom:1px solid #d6dbe6}
-.sb .ant{color:#d04a1a}.sb .ant b{color:#1a2a6a}
-.sb .bell{width:11px;height:11px}
-.sb .r{display:flex;align-items:center;gap:5px;font:700 10px/1 "Galmuri11",monospace}
-.sb .bat{color:#2b5bd6}
-.title{flex:none;height:22px;display:flex;align-items:center;justify-content:center;position:relative;color:#fff;font-weight:700;font-size:14px;letter-spacing:.06em;
-  background:repeating-linear-gradient(90deg,rgba(0,0,0,.08) 0 1px,transparent 1px 3px),linear-gradient(#56b84a,#2f8a2a);text-shadow:1px 1px 0 #1d5a17,-1px 0 0 #1d5a17,0 -1px 0 #1d5a17}
-.title em{position:absolute;right:5px;font-style:normal;font-size:10px;letter-spacing:0}
-.body{flex:1;min-height:0;overflow:hidden;background:#fff;position:relative}
-.softbar{flex:none;height:17px;display:flex;justify-content:space-between;align-items:center;padding:0 6px;background:linear-gradient(#cdd3f2,#aab3e3);color:#1b2560;font-size:11px;font-weight:700;border-top:1px solid #8c96cf}
-.cyan .body{background:#c6eff7}
+/* ── 큰 액정: 흰색·회색·파랑 (2000년대 초 STN 컬러 액정) ── */
+:root{--ink:#14206b;--ink2:#3c4a8f;--lav1:#dfe5f8;--lav2:#b9c5ee;--blue1:#6f86dc;--blue2:#2b3f9e;--navy:#18267a;--gray:#e8ebf2;--line:#9aa6d2}
+.lcd{background:var(--lav2);color:var(--ink)}
+/* 화면 질감: 미세 노이즈 + 픽셀 격자 + 백라이트 얼룩 + 가장자리 그림자 */
+.lcd:before{content:"";position:absolute;inset:0;z-index:21;pointer-events:none;opacity:.16;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .1  0 0 0 0 .12  0 0 0 0 .3  0 0 0 .9 0'/></filter><rect width='120' height='120' filter='url(%23n)'/></svg>");
+  animation:grain .5s steps(3) infinite}
+@keyframes grain{0%{background-position:0 0}33%{background-position:-37px 21px}66%{background-position:19px -43px}100%{background-position:0 0}}
+.lcd:after{background:
+  repeating-linear-gradient(rgba(20,30,90,.09) 0 1px,transparent 1px 3px),
+  repeating-linear-gradient(90deg,rgba(20,30,90,.05) 0 1px,transparent 1px 3px),
+  radial-gradient(120% 90% at 35% 25%,rgba(255,255,255,.18),transparent 55%),
+  radial-gradient(140% 120% at 50% 50%,transparent 60%,rgba(10,20,70,.28)) !important;
+  box-shadow:inset 0 0 6px rgba(0,0,30,.45),inset 0 1px 2px rgba(0,0,0,.5)}
+body.big .lcd:after{background:
+  repeating-linear-gradient(rgba(20,30,90,.05) 0 1px,transparent 1px 3px),
+  repeating-linear-gradient(90deg,rgba(20,30,90,.03) 0 1px,transparent 1px 3px),
+  radial-gradient(120% 90% at 35% 25%,rgba(255,255,255,.15),transparent 55%),
+  radial-gradient(140% 120% at 50% 50%,transparent 60%,rgba(10,20,70,.24)) !important}
+.lcd .scr{position:absolute;inset:0;display:flex;flex-direction:column;animation:flick .12s steps(2) 1}
+@keyframes flick{0%{opacity:.6;filter:brightness(1.25)}100%{opacity:1}}
 
-/* 대기화면 */
-.idle{position:absolute;inset:0;overflow:hidden;background:linear-gradient(#2e7fd6 0%,#7cc6f0 45%,#bfe9f6 58%,#2a9fc7 59%,#14678f 100%)}
-.idle .sun{position:absolute;right:18px;top:14px;width:26px;height:26px;border-radius:50%;background:radial-gradient(circle,#fffbd0,#ffe066 55%,rgba(255,224,102,0) 70%)}
-.idle .hill{position:absolute;left:-10%;right:-10%;bottom:-6%;height:34%;background:repeating-linear-gradient(170deg,rgba(255,255,255,.18) 0 2px,transparent 2px 9px),linear-gradient(#1e88b8,#0d4f73);border-radius:50% 50% 0 0/30% 30% 0 0}
-.idle .clkbox{position:absolute;left:12px;right:12px;top:30px;display:flex;align-items:center;justify-content:center;gap:6px;padding:6px 4px;border-radius:6px;background:linear-gradient(#ff7bb0,#e8467f);box-shadow:0 2px 0 #9c1f50,inset 0 1px 0 rgba(255,255,255,.5)}
-.idle .clkbox b{font:700 13px/1 "Galmuri11",monospace;color:#fff;background:#9c1f50;padding:3px 4px;border-radius:3px}
-.idle .clk{font:700 34px/1 "Galmuri11",monospace;color:#fff;text-shadow:2px 2px 0 #9c1f50;letter-spacing:.02em}
-.idle .dt{position:absolute;left:0;right:0;top:84px;text-align:center;color:#fff;font-weight:700;font-size:12px;text-shadow:1px 1px 0 #0d3f78}
-.idle .ban{position:absolute;left:0;right:0;top:6px;text-align:center;color:#fff;font-weight:700;font-size:11px;text-shadow:1px 1px 0 #0d3f78}
-.idle .note{position:absolute;left:10px;right:10px;bottom:8px;padding:4px 6px;background:#c6eff7;border:1px solid #2a8fb0;color:#0e2e5c;font-size:11px;display:flex;gap:3px;flex-direction:column}
-.dial{position:absolute;left:0;right:0;bottom:0;padding:6px 8px;background:#fff;border-top:2px solid #2f8a2a;font:700 22px/1.15 "Galmuri11",monospace;color:#13245a;text-align:right;word-break:break-all}
+.sb{flex:none;height:16px;display:flex;align-items:center;gap:5px;padding:0 5px;background:linear-gradient(#f4f6fc,#d6dcef);border-bottom:1px solid var(--line);color:var(--ink);font:700 10px/1 "Galmuri11",monospace}
+.sb .ant{color:var(--ink)}
+.sb .sbi .pi{width:11px;height:11px;color:var(--blue2)}
+.sb .r{margin-left:auto;display:flex;align-items:center;gap:5px}
+.sb .bat{color:var(--ink)}
+.title{flex:none;height:21px;display:flex;align-items:center;padding:0 7px;background:linear-gradient(#8ea2ea,var(--blue1) 45%,var(--blue2));border-bottom:1px solid #1a2670;color:#fff;font-weight:700;font-size:13px;letter-spacing:.03em;text-shadow:1px 1px 0 #121b5c}
+.title span{flex:1;text-align:center}
+.title em{position:absolute;right:6px;font-style:normal;font-size:10px;font-weight:400;color:#dfe6ff}
+.body{flex:1;min-height:0;overflow:hidden;position:relative;background:linear-gradient(var(--lav1),var(--lav2))}
+.softbar{flex:none;height:18px;display:flex;align-items:center;padding:0 6px;background:linear-gradient(#3a4fb2,var(--navy));border-top:1px solid #8ea2ea;color:#fff;font-size:11px;font-weight:700}
+.softbar [data-sk]{flex:1}.softbar [data-sk="sr"]{text-align:right}
+.softbar .mid{flex:none;font:400 10px "Galmuri11",monospace;color:#b9c6ff}
+.pi{width:13px;height:13px;flex:none;color:var(--blue2);shape-rendering:crispEdges}
 
-/* 메뉴: 배경 그림 위 아이콘 */
-.menuwall{position:absolute;inset:0;background:linear-gradient(#3d8fe0 0%,#8fd3f5 50%,#2a9fc7 51%,#0f5a80 100%)}
-.mtitle{position:absolute;left:0;right:0;top:4px;text-align:center;color:#fff;font-weight:700;font-size:14px;text-shadow:1px 1px 0 #0b3570,-1px 0 0 #0b3570,0 -1px 0 #0b3570,1px 0 0 #0b3570}
-.grid{position:absolute;left:8px;right:8px;top:28px;bottom:6px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:4px}
-.mi{display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.8)}
-.mi svg{width:32px;height:32px}
-.mi.sel{background:#fff6b8;border:2px solid #ff8a00;box-shadow:0 0 0 1px #fff}
+/* 대기화면: 회청색 바탕 + 큰 시계 */
+.idle{position:absolute;inset:0;background:
+  repeating-linear-gradient(135deg,rgba(255,255,255,.18) 0 2px,transparent 2px 7px),
+  linear-gradient(#eef1fb 0%,#c6d0f1 55%,#9fb0e6 100%)}
+.idle .ilogo{position:absolute;left:0;right:0;top:12px;text-align:center;font-size:11px;font-weight:700;color:var(--ink2)}
+.idle .clk{position:absolute;left:0;right:0;top:40px;display:flex;align-items:flex-end;justify-content:center;gap:4px;color:var(--navy)}
+.idle .clk span{font:700 42px/1 "Galmuri11",monospace;letter-spacing:.01em;text-shadow:2px 2px 0 rgba(255,255,255,.7),3px 3px 0 rgba(20,38,122,.15)}
+.idle .clk b{font:700 12px/1 "Galmuri11",monospace;margin-bottom:6px;padding:2px 3px;background:var(--navy);color:#fff}
+.idle .dt{position:absolute;left:0;right:0;top:94px;text-align:center;font-size:12px;font-weight:700;color:var(--ink2)}
+.idle .note{position:absolute;left:12px;right:12px;bottom:10px;padding:5px 7px;background:rgba(255,255,255,.75);border:1px solid var(--line);font-size:11px;display:flex;flex-direction:column;gap:3px;color:var(--ink)}
+.idle .note span{display:flex;align-items:center;gap:5px}
+.dial{position:absolute;left:8px;right:8px;bottom:10px;padding:6px 8px;background:#fff;border:1px solid var(--line);text-align:right;font:700 22px/1.15 "Galmuri11",monospace;color:var(--navy);word-break:break-all}
+.dial small{display:block;font-size:11px;font-weight:400;color:var(--ink2);text-align:left}
 
-/* 목록 */
-.list{position:absolute;inset:0;overflow:auto}
-.li{display:flex;align-items:center;gap:5px;width:100%;height:22px;padding:0 4px;border-bottom:1px solid #d9dde5;font-size:12px;text-align:left;color:#111;white-space:nowrap;overflow:hidden}
-.li .no{flex:none;width:12px;height:13px;background:linear-gradient(#f2a24a,#c4621a);color:#fff;font:700 10px/13px "Galmuri11",monospace;text-align:center;border-radius:1px}
-.li small{margin-left:auto;font-size:10px;color:#566}
-.li.sel{background:#5cc13c;color:#fff;font-weight:700}
-.li.sel small{color:#eaffdf}
-.li.sel .no{background:none;color:#c8102e;font-size:12px;width:12px;text-shadow:0 0 1px #fff}
-.li .ic{flex:none;font-size:10px}
-.read{position:absolute;inset:0;overflow:auto;padding:6px 8px;font-size:12px;line-height:1.55;color:#111;white-space:pre-wrap;word-break:break-all;-webkit-user-select:text;user-select:text}
-.cyan .read{padding:8px}
-.read .meta{text-align:center;font-weight:700;color:#0e2e5c;margin-bottom:6px}
-.read .box{background:#fff;border:1px solid #8fc9d8;padding:6px;min-height:60%}
-.pop{position:absolute;left:14px;right:14px;top:50%;transform:translateY(-50%);padding:16px 8px;background:#c6eff7;border:2px solid #2a8fb0;box-shadow:2px 2px 0 rgba(0,0,0,.25);text-align:center;font-weight:700;font-size:12px;line-height:1.5;color:#0e2e5c}
-.calling{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;color:#0e2e5c;font-weight:700;text-align:center;background:#c6eff7}
-.calling .who{font-size:15px}.calling .num{font:700 13px "Galmuri11",monospace}
-.calling .st{font-size:11px;color:#2f8a2a}
-.calling .ani{font-size:18px;letter-spacing:4px;animation:pulse 1s infinite}
-@keyframes pulse{50%{opacity:.3}}
+/* 목록 (메뉴 · 전화번호부 · 문자함 · 메모) */
+.list{position:absolute;inset:0;overflow:auto;background:repeating-linear-gradient(transparent 0 21px,rgba(60,74,143,.18) 21px 22px)}
+.li{display:flex;align-items:center;gap:5px;width:100%;height:22px;padding:0 5px;font-size:12px;text-align:left;color:var(--ink);white-space:nowrap;overflow:hidden}
+.li.big{height:30px;font-size:13px;border-bottom:1px solid rgba(60,74,143,.25)}
+.li .no{flex:none;width:13px;height:13px;border:1px solid var(--blue2);color:var(--blue2);font:700 10px/11px "Galmuri11",monospace;text-align:center;background:#fff}
+.li .lb{overflow:hidden;text-overflow:ellipsis}
+.li small{margin-left:auto;padding-left:6px;font-size:10px;color:var(--ink2)}
+.li .dot{flex:none;width:6px;height:6px;background:#d8263a}
+.li.sel{background:linear-gradient(#3b52bb,var(--navy));color:#fff}
+.li.sel .no{background:#fff;color:var(--navy);border-color:#fff}
+.li.sel small{color:#c6d0ff}.li.sel .pi{color:#fff}
+.empty{position:absolute;left:12px;right:12px;top:40%;padding:10px;text-align:center;background:#fff;border:1px solid var(--line);font-size:12px}
+
+/* 읽기 · 쓰기: 줄 노트 */
+.ruled{background:repeating-linear-gradient(transparent 0 17px,rgba(60,74,143,.35) 17px 18px),#eef1fb;background-attachment:local}
+.read{position:absolute;inset:0;overflow:auto;padding:0 7px 6px;font-size:12px;line-height:18px;color:var(--ink);white-space:pre-wrap;word-break:break-all;-webkit-user-select:text;user-select:text}
+.read .meta{font-size:10.5px;color:var(--ink2);height:18px;line-height:18px;border-bottom:1px solid var(--blue2)}
+.edit{position:absolute;inset:0;display:flex;flex-direction:column}
+.edit .to{flex:none;height:19px;line-height:19px;padding:0 6px;font-size:11px;background:#fff;border-bottom:1px solid var(--blue2);color:var(--ink2)}
+.edit .to b{color:var(--navy)}
+.ta{flex:1;width:100%;border:0;outline:none;resize:none;padding:0 7px;font:12px/18px "Galmuri11","Nanum Gothic",sans-serif;color:var(--ink);caret-color:var(--navy);-webkit-user-select:text;user-select:text}
+.pop{position:absolute;left:14px;right:14px;top:50%;transform:translateY(-50%);padding:12px 8px;background:#fff;border:2px solid var(--blue2);box-shadow:3px 3px 0 rgba(20,32,107,.35);text-align:center;font-weight:700;font-size:12px;line-height:1.5;color:var(--navy);z-index:5}
+.calling{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;color:var(--navy);font-weight:700}
+.calling .ani .pi{width:30px;height:30px;animation:pulse 1s steps(2) infinite}
+.calling .who{font-size:15px}.calling .num{font:700 13px "Galmuri11",monospace;color:var(--ink2)}
+.calling .st{font-size:11px;color:var(--ink2)}
+@keyframes pulse{50%{opacity:.25}}
 body.big .lcd{cursor:default}
-body.big .softbar span{cursor:pointer;padding:0 4px}
-body.big .softbar span:empty{display:none}
-
-/* ══ 촌스러운 옛날 폰 화면 (그라데이션 · 원색 · 번쩍임) ══ */
-.sb{background:linear-gradient(#ffffff,#d9ecff 60%,#b6d6ff);border-bottom:1px solid #7fa6e0}
-.title{background:linear-gradient(#b8ff8a 0%,#54c43a 48%,#2c9a1c 52%,#1f7a12 100%);border-top:1px solid #dfffc8;border-bottom:1px solid #0f4a08}
-.softbar{background:linear-gradient(#f3c6ff 0%,#b47bff 48%,#8a4ee6 52%,#6a32c4 100%);color:#fff;text-shadow:1px 1px 0 #3a137a;border-top:1px solid #f7e2ff}
-.body{background:linear-gradient(#ffffff,#eef6ff)}
-.cyan .body{background:linear-gradient(#e6fbff,#9fe3f2)}
-.li{border-bottom:1px dotted #9db4d8}
-.li:nth-child(even){background:linear-gradient(#f4f9ff,#e2eeff)}
-.li.sel{background:linear-gradient(#d6ff9e 0%,#62d23e 48%,#3aa81e 52%,#2e8e14 100%);text-shadow:1px 1px 0 #1d5a0f}
-.li .no{background:linear-gradient(#ffd27a,#ff7a1a 55%,#d4500a);box-shadow:inset 0 1px 0 #fff3c0}
-.read .box{background:linear-gradient(#fff,#f2fbff);border:1px solid #5bb7d0;box-shadow:inset 1px 1px 0 #fff}
-.pop{background:linear-gradient(#fbfdff,#b9ecf8 60%,#8fd8ec);border:2px solid #1e7fa6;border-radius:4px}
-.calling{background:linear-gradient(#fff7c2,#ffd0f0 50%,#c9b8ff)}
-
-/* 대기화면: 노을 하늘 + 반짝이 */
-.idle{background:linear-gradient(#3a1d8a 0%,#b03fa8 32%,#ff7a8a 55%,#ffc46a 72%,#3aa0d8 73%,#1a5a9a 100%)}
-.idle:before{content:"";position:absolute;inset:0;background:radial-gradient(1.5px 1.5px at 20% 12%,#fff,transparent),radial-gradient(1px 1px at 70% 20%,#fff,transparent),radial-gradient(1.5px 1.5px at 45% 6%,#fff,transparent),radial-gradient(1px 1px at 88% 9%,#fff,transparent),radial-gradient(1px 1px at 10% 30%,#fff,transparent)}
-.idle .sun{right:auto;left:50%;margin-left:-22px;top:auto;bottom:24%;width:44px;height:44px;background:radial-gradient(circle,#fffbd0,#ffd84a 45%,rgba(255,140,60,.0) 70%)}
-.idle .hill{bottom:-8%;height:30%;background:repeating-linear-gradient(175deg,rgba(255,255,255,.25) 0 1px,transparent 1px 7px),linear-gradient(#2a8fd0,#0d3f78)}
-.idle .clkbox{background:linear-gradient(#ffc6ff 0%,#ff5fc0 48%,#e01c8e 52%,#b80a6c 100%);border:1px solid #fff;box-shadow:0 2px 0 #6a0640,0 0 8px rgba(255,120,220,.8)}
-.idle .clk{text-shadow:2px 2px 0 #6a0640}
-.idle .dt{color:#fff6a0;text-shadow:1px 1px 0 #5a0f5a,-1px 0 0 #5a0f5a}
-.idle .note{background:linear-gradient(#fffde0,#ffe98a);border:1px solid #c98a00;color:#5a2a00}
-
-/* 메뉴: 위는 그림 배경(하늘·구름·언덕·집), 아래는 번쩍이는 아이콘 */
-.menuwall{position:absolute;left:0;right:0;top:0;height:46%;overflow:hidden;background:linear-gradient(#2a8cff 0%,#7cc8ff 55%,#d8f4ff 100%)}
-.menuwall .cl{position:absolute;height:12px;border-radius:8px;background:#fff;box-shadow:8px -5px 0 2px #fff,18px 0 0 #fff}
-.menuwall .c1{left:12px;top:14px;width:26px}.menuwall .c2{left:130px;top:24px;width:20px;opacity:.9}
-.menuwall .sunr{position:absolute;right:10px;top:6px;width:30px;height:30px;border-radius:50%;background:radial-gradient(circle,#fff8b0 0 35%,#ffcc00 36% 50%,transparent 52%),repeating-conic-gradient(#ffe25a 0 10deg,transparent 10deg 30deg)}
-.menuwall .hl{position:absolute;border-radius:50%}
-.menuwall .h1{left:-30px;bottom:-40px;width:180px;height:80px;background:radial-gradient(ellipse at 50% 20%,#a6ff5a,#2e9a1a)}
-.menuwall .h2{right:-40px;bottom:-46px;width:200px;height:84px;background:radial-gradient(ellipse at 40% 20%,#7cf04a,#1f7a12)}
-.menuwall .house{position:absolute;left:96px;bottom:14px;width:34px;height:22px;background:linear-gradient(#fff6d8,#f0c890);border:1px solid #8a5a2a}
-.menuwall .house:before{content:"";position:absolute;left:-6px;right:-6px;top:-16px;height:16px;background:linear-gradient(#ff6a6a,#c41a1a);clip-path:polygon(50% 0,100% 100%,0 100%)}
-.menuwall .house:after{content:"";position:absolute;left:12px;bottom:0;width:9px;height:12px;background:#8a4a1a}
-.menuwall .fl{position:absolute;left:20px;bottom:6px;width:60px;height:8px;background:radial-gradient(circle,#ff3aa0 2px,transparent 2.5px) 0 0/10px 8px,radial-gradient(circle,#ffe600 2px,transparent 2.5px) 5px 2px/10px 8px}
-.mtitle{top:6px;right:auto;left:8px;text-align:left;font-size:15px;color:#fff23a;text-shadow:2px 2px 0 #b0007a,-1px -1px 0 #b0007a,1px -1px 0 #b0007a,-1px 1px 0 #b0007a}
-.mno{position:absolute;left:8px;top:28px;width:18px;height:18px;border-radius:50%;background:linear-gradient(#fff,#ff8ad0);border:1px solid #b0007a;color:#b0007a;font:700 11px/16px "Galmuri11",monospace;text-align:center}
-.grid{top:47%;left:4px;right:4px;bottom:3px;gap:2px;padding:3px;background:linear-gradient(#ffffff,#dfe6f2);border-top:2px solid #8ab0e6}
-.mi{background:linear-gradient(#ffffff,#e8eef8);border:1px solid #c3cfe2;border-radius:6px}
-.mi svg{width:30px;height:30px;filter:drop-shadow(1px 2px 0 rgba(0,0,40,.25))}
-.mi.sel{background:linear-gradient(#fffbd0,#ffd84a);border:2px solid #ff7a00;box-shadow:0 0 6px #ffae00}
-.mi.sel svg{animation:bob .6s ease-in-out infinite alternate}
-@keyframes bob{to{transform:translateY(-2px) scale(1.06)}}
+body.big .softbar [data-sk]{cursor:pointer}
