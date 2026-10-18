@@ -5,7 +5,7 @@
 
 window.PHONE = {
   owner: "강민재",
-  date: "1999-11-05",        // 휴대폰 속 날짜 (YYYY-MM-DD)
+  date: "1994-12-08",        // 휴대폰 속 날짜 (YYYY-MM-DD)
   time: "23:40:00",          // 처음 연 순간의 시각. 이후 실제 시간만큼 흘러감
   battery: 2,                // 배터리 칸 수 (0~3)
   banner: "",                // 대기화면 문구 (비우면 표시 안 함)
@@ -50,7 +50,7 @@ window.PHONE = {
       { t: "남들은 가고 싶어도 못 가는 데다. 처음엔 다 힘든 거다. 버텨라." },
       { me: true, t: "……" },
       { me: true, t: "……알겠어요." } ] },
-    { name: "아빠", dir: "out", when: "99/10/30 00:41", dur: "2:37", talk: [
+    { name: "아빠", dir: "out", when: "94/12/03 00:41", dur: "2:37", talk: [
       { t: "여보세요. …민재냐? 이 시간에 웬일이야." },
       { me: true, t: "아빠, 저 진짜 못 하겠어요." },
       { t: "또 그 소리야?" },
@@ -74,21 +74,21 @@ window.PHONE = {
       { me: true, t: "응. 근데 형… 점심은 그냥 밖에서 혼자 먹는 게 편해." },
       { t: "왜, 식당은 별로야?" },
       { me: true, t: "……그냥. 시끄러워서." } ] },
-    { name: "수일이 형", dir: "out", when: "95/12/24 19:12", dur: "5:37", talk: [
-      { me: true, t: "형, 메리 크리스마스. 여기 눈 엄청 와." },
-      { t: "너도 메리 크리스마스. 크리스마스에 뭐 해?" },
+    { name: "수일이 형", dir: "out", when: "94/11/24 19:12", dur: "5:37", talk: [
+      { me: true, t: "형, 여기 오늘 추수감사절이야. 벌써 눈도 와." },
+      { t: "아, 땡스기빙? 다들 칠면조 먹는다며. 너는 뭐 해?" },
       { me: true, t: "그냥 방에 있어. 창밖 보면서." },
       { t: "……혼자?" },
       { me: true, t: "응. 괜찮아. 조용해서 좋아." },
-      { t: "형이 카드 보냈다. 곧 도착할 거야." } ] },
-    { name: "수일이 형", dir: "in", when: "97/05/11 20:30", dur: "2:54", talk: [
+      { t: "형이 소포 하나 보냈다. 라면이랑 김. 곧 도착할 거야." } ] },
+    { name: "수일이 형", dir: "in", when: "94/09/11 20:30", dur: "2:54", talk: [
       { t: "요즘 통 연락이 없네. 바쁘냐?" },
       { me: true, t: "응… 그냥." },
       { t: "목소리에 힘이 하나도 없다. 밥은 먹고 다녀?" },
       { me: true, t: "…입맛이 없어." },
       { t: "민재야, 무슨 일 있으면—" },
       { me: true, t: "형, 나 수업 들어가야 돼. 끊을게." } ] },
-    { name: "수일이 형", dir: "out", when: "98/09/07 23:55", dur: "3:19", talk: [
+    { name: "수일이 형", dir: "out", when: "94/10/07 23:55", dur: "3:19", talk: [
       { t: "민재야? 이 시간에 웬일이야." },
       { me: true, t: "그냥… 형 목소리 듣고 싶어서." },
       { t: "오늘따라 목소리가 안 좋다. 무슨 일 있어?" },
@@ -97,7 +97,7 @@ window.PHONE = {
       { me: true, t: "아니야. 아무것도 아니야." },
       { t: "민재야." },
       { me: true, t: "진짜야. 그냥 좀 피곤해서 그래." } ] },
-    { name: "수일이 형", dir: "in", when: "99/03/02 21:05", dur: "6:41", talk: [
+    { name: "수일이 형", dir: "in", when: "94/11/13 21:05", dur: "6:41", talk: [
       { t: "요즘은 좀 어때?" },
       { me: true, t: "그냥… 그렇지 뭐." },
       { t: "괜찮은 거지?" },
@@ -105,7 +105,7 @@ window.PHONE = {
       { t: "응." },
       { me: true, t: "……아니다. 다음에 얘기할게." },
       { t: "그래. 다음에 꼭 해." } ] },
-    { name: "수일이 형", dir: "out", when: "99/10/30 01:20", dur: "4:08", talk: [
+    { name: "수일이 형", dir: "out", when: "94/12/03 01:20", dur: "4:08", talk: [
       { me: true, t: "형, 나…" },
       { t: "응, 말해." },
       { me: true, t: "……" },
@@ -168,30 +168,30 @@ window.PHONE = {
       { t: "Tomorrow. Behind the gym. Don't make me come find you.", ko: "내일. 체육관 뒤. 내가 찾아가게 만들지 마." } ]
   },
 
-  /* 문자: 받은 메시지 (최신순). ko = 한국어 해석, pic = 첨부 사진(locker·tray·toilet·desk·floor·book), cap = 사진 설명
+  /* 문자: 받은 메시지 (최신순). ko = 한국어 해석, pic = 사진 첨부 (회색 칸으로만 표시)
      read: false 면 안 읽은 문자 */
   messages: [
-    { from: "Marcus Lee", when: "99/11/05 23:12", read: false, text: "Behind the gym tomorrow. 7:30. Come alone, monkey. If you're late we start with your fingers.", ko: "내일 체육관 뒤. 7시 반. 혼자 와라, 원숭이. 늦으면 손가락부터 시작한다." },
-    { from: "Jake", when: "99/11/05 22:47", read: false, text: "heard u cried in the nurses office lmao. ching chong boo hoo. ur mommy cant hear u from china", ko: "양호실에서 질질 짰다며 ㅋㅋ 칭챙 엉엉. 중국에선 엄마가 니 소리 못 들어." },
-    { from: "019-338-0412", when: "99/11/04 01:03", read: false, text: "Nobody at this school wants you breathing the same air. Pack up and go back to whatever rice paddy you crawled out of.", ko: "이 학교에선 아무도 너랑 같은 공기 마시는 거 안 원해. 짐 싸서 기어 나온 논바닥으로 돌아가." },
-    { from: "Ryan", when: "99/11/02 16:20", pic: "floor", cap: "(사진: 복도 벽에 기대 바닥에 웅크린 민재의 뒷모습)", text: "look at this lil yellow bitch. sitting in the hallway like a stray dog. framed it lol", ko: "이 노란 새끼 봐라. 복도에 길바닥 개처럼 앉아 있네. 액자에 걸었음 ㅋㅋ" },
-    { from: "Ethan Miller", when: "99/10/29 21:58", text: "You actually told the teacher? Bold move, slant-eyes. She laughed about it in the lounge btw. Nobody's coming to save you.", ko: "진짜 선생한테 말했냐? 배짱 좋네, 찢눈아. 그 선생 교무실에서 그거 얘기하면서 웃더라. 아무도 너 구하러 안 와." },
-    { from: "Marcus Lee", when: "99/10/27 23:40", text: "Your face looked better with the blood on it. More color. Same time Monday.", ko: "피 묻으니까 얼굴이 더 낫더라. 혈색 돌고. 월요일 같은 시간에." },
-    { from: "Jake", when: "99/10/22 12:14", pic: "tray", cap: "(사진: 식당 바닥에 엎어진 민재의 식판)", text: "lunch is served, rice rat. eat it off the floor like back home", ko: "점심 나왔다, 쌀쥐야. 고향에서처럼 바닥에서 주워 먹어." },
-    { from: "Ethan Miller", when: "99/10/18 21:36", text: "So how do you like the cigarette burn I gave you on your wrist today? Suits you, rice rat. Want a matching one on the other side?", ko: "오늘 손목에 새겨 준 담배빵은 마음에 드냐? 잘 어울리더라, 쌀쥐야. 반대쪽에도 똑같이 하나 해 줄까?" },
-    { from: "Ryan", when: "99/09/15 08:02", text: "Dog-eater. Did your family eat the dog or did the dog eat your family? Asking for science.", ko: "개 먹는 놈. 너네 가족이 개를 먹었냐, 개가 너네 가족을 먹었냐? 과학적으로 궁금해서." },
-    { from: "019-338-0412", when: "99/05/09 02:31", text: "We know where you live. Nice house for a chink. Shame if something happened to it.", ko: "너 어디 사는지 안다. 짱깨치고 집 좋더라. 무슨 일 생기면 안타깝겠다." },
-    { from: "Ethan Miller", when: "98/10/01 19:45", pic: "book", cap: "(사진: 찢겨서 젖은 민재의 교과서와 공책)", text: "Oops. Guess the bookworm's gonna fail now. Daddy's money can't buy you a new brain, yellow.", ko: "어이쿠. 책벌레 이제 낙제하겠네. 아빠 돈으로 새 뇌는 못 사, 옐로우." },
-    { from: "Marcus Lee", when: "98/03/24 22:10", text: "If you skip school again I'll come get you myself. You don't get to hide, monkey.", ko: "또 학교 빠지면 내가 직접 데리러 간다. 넌 숨을 자격 없어, 원숭이." },
-    { from: "Jake", when: "97/09/17 15:33", text: "everyone saw u piss urself in gym class LMAO. smelled like fish sauce", ko: "체육 시간에 너 오줌 지린 거 다 봤음 ㅋㅋㅋㅋ 액젓 냄새 나더라" },
-    { from: "Ryan", when: "97/02/08 07:51", pic: "toilet", cap: "(사진: 변기 안에 처박힌 민재의 가방)", text: "found ur backpack. it was where u belong", ko: "니 가방 찾았다. 니가 있어야 할 데 있더라" },
-    { from: "Ethan Miller", when: "96/08/30 20:04", text: "Welcome back, ching-chong. Did you miss us? We missed you. Lots of plans this year.", ko: "돌아온 걸 환영한다, 칭챙. 우리 보고 싶었냐? 우린 보고 싶었는데. 올해 계획이 많거든." },
-    { from: "Marcus Lee", when: "96/06/11 23:55", text: "Enjoy summer. Pray you don't come back. We'll be waiting.", ko: "여름 잘 보내라. 돌아오지 않게 기도나 해. 기다리고 있을게." },
-    { from: "Jake", when: "95/11/03 13:27", pic: "desk", cap: "(사진: 칼로 'RICE RAT'이라고 새겨진 민재의 책상)", text: "made u a name tag lol. now everyone knows whos desk it is", ko: "이름표 만들어 줬다 ㅋㅋ 이제 다들 누구 책상인지 알겠지" },
-    { from: "019-338-0412", when: "95/05/26 00:48", text: "go home. go home. go home. go home. go home. nobody wants you here.", ko: "꺼져. 꺼져. 꺼져. 꺼져. 꺼져. 여기 아무도 너 안 원해." },
-    { from: "Ryan", when: "94/10/18 18:36", text: "Do your eyes even open all the way? How do you read with those slits lmao", ko: "니 눈 끝까지 떠지긴 하냐? 그 찢어진 틈으로 어떻게 글 읽어 ㅋㅋ" },
+    { from: "Marcus Lee", when: "94/12/08 23:12", read: false, text: "Behind the gym tomorrow. 7:30. Come alone, monkey. If you're late we start with your fingers.", ko: "내일 체육관 뒤. 7시 반. 혼자 와라, 원숭이. 늦으면 손가락부터 시작한다." },
+    { from: "Jake", when: "94/12/08 22:47", read: false, text: "heard u cried in the nurses office lmao. ching chong boo hoo. ur mommy cant hear u from china", ko: "양호실에서 질질 짰다며 ㅋㅋ 칭챙 엉엉. 중국에선 엄마가 니 소리 못 들어." },
+    { from: "019-338-0412", when: "94/12/07 01:03", read: false, text: "Nobody at this school wants you breathing the same air. Pack up and go back to whatever rice paddy you crawled out of.", ko: "이 학교에선 아무도 너랑 같은 공기 마시는 거 안 원해. 짐 싸서 기어 나온 논바닥으로 돌아가." },
+    { from: "Ryan", when: "94/12/05 16:20", pic: "floor", text: "look at this lil yellow bitch. sitting in the hallway like a stray dog. framed it lol", ko: "이 노란 새끼 봐라. 복도에 길바닥 개처럼 앉아 있네. 액자에 걸었음 ㅋㅋ" },
+    { from: "Ethan Miller", when: "94/12/01 21:58", text: "You actually told the teacher? Bold move, slant-eyes. She laughed about it in the lounge btw. Nobody's coming to save you.", ko: "진짜 선생한테 말했냐? 배짱 좋네, 찢눈아. 그 선생 교무실에서 그거 얘기하면서 웃더라. 아무도 너 구하러 안 와." },
+    { from: "Marcus Lee", when: "94/11/28 23:40", text: "Your face looked better with the blood on it. More color. Same time Monday.", ko: "피 묻으니까 얼굴이 더 낫더라. 혈색 돌고. 월요일 같은 시간에." },
+    { from: "Jake", when: "94/11/22 12:14", pic: "tray", text: "lunch is served, rice rat. eat it off the floor like back home", ko: "점심 나왔다, 쌀쥐야. 고향에서처럼 바닥에서 주워 먹어." },
+    { from: "Ethan Miller", when: "94/11/17 21:36", text: "So how do you like the cigarette burn I gave you on your wrist today? Suits you, rice rat. Want a matching one on the other side?", ko: "오늘 손목에 새겨 준 담배빵은 마음에 드냐? 잘 어울리더라, 쌀쥐야. 반대쪽에도 똑같이 하나 해 줄까?" },
+    { from: "Ryan", when: "94/11/09 08:02", text: "Dog-eater. Did your family eat the dog or did the dog eat your family? Asking for science.", ko: "개 먹는 놈. 너네 가족이 개를 먹었냐, 개가 너네 가족을 먹었냐? 과학적으로 궁금해서." },
+    { from: "019-338-0412", when: "94/11/03 02:31", text: "We know where you live. Nice house for a chink. Shame if something happened to it.", ko: "너 어디 사는지 안다. 짱깨치고 집 좋더라. 무슨 일 생기면 안타깝겠다." },
+    { from: "Ethan Miller", when: "94/10/26 19:45", pic: "book", text: "Oops. Guess the bookworm's gonna fail now. Daddy's money can't buy you a new brain, yellow.", ko: "어이쿠. 책벌레 이제 낙제하겠네. 아빠 돈으로 새 뇌는 못 사, 옐로우." },
+    { from: "Marcus Lee", when: "94/10/20 22:10", text: "If you skip school again I'll come get you myself. You don't get to hide, monkey.", ko: "또 학교 빠지면 내가 직접 데리러 간다. 넌 숨을 자격 없어, 원숭이." },
+    { from: "Jake", when: "94/10/12 15:33", text: "everyone saw u piss urself in gym class LMAO. smelled like fish sauce", ko: "체육 시간에 너 오줌 지린 거 다 봤음 ㅋㅋㅋㅋ 액젓 냄새 나더라" },
+    { from: "Ryan", when: "94/10/04 07:51", pic: "toilet", text: "found ur backpack. it was where u belong", ko: "니 가방 찾았다. 니가 있어야 할 데 있더라" },
+    { from: "Ethan Miller", when: "94/08/30 20:04", text: "Welcome back, ching-chong. Did you miss us? We missed you. Lots of plans this year.", ko: "돌아온 걸 환영한다, 칭챙. 우리 보고 싶었냐? 우린 보고 싶었는데. 올해 계획이 많거든." },
+    { from: "Marcus Lee", when: "94/06/11 23:55", text: "Enjoy summer. Pray you don't come back. We'll be waiting.", ko: "여름 잘 보내라. 돌아오지 않게 기도나 해. 기다리고 있을게." },
+    { from: "Jake", when: "94/06/03 13:27", pic: "desk", text: "made u a name tag lol. now everyone knows whos desk it is", ko: "이름표 만들어 줬다 ㅋㅋ 이제 다들 누구 책상인지 알겠지" },
+    { from: "019-338-0412", when: "94/05/26 00:48", text: "go home. go home. go home. go home. go home. nobody wants you here.", ko: "꺼져. 꺼져. 꺼져. 꺼져. 꺼져. 여기 아무도 너 안 원해." },
+    { from: "Ryan", when: "94/05/18 18:36", text: "Do your eyes even open all the way? How do you read with those slits lmao", ko: "니 눈 끝까지 떠지긴 하냐? 그 찢어진 틈으로 어떻게 글 읽어 ㅋㅋ" },
     { from: "Ethan Miller", when: "94/05/07 21:12", text: "Tell anyone and next time it won't be your locker. It'll be your face.", ko: "누구한테 말하면 다음엔 사물함이 아니라 니 얼굴이야." },
-    { from: "Jake", when: "94/05/06 08:15", pic: "locker", cap: "(사진: 'GO HOME YELLOW' 낙서로 뒤덮인 민재의 사물함)", text: "good morning yellow :) check ur locker", ko: "좋은 아침, 옐로우 :) 니 사물함 확인해 봐" },
+    { from: "Jake", when: "94/05/06 08:15", pic: "locker", text: "good morning yellow :) check ur locker", ko: "좋은 아침, 옐로우 :) 니 사물함 확인해 봐" },
     { from: "Marcus Lee", when: "94/04/23 16:40", text: "Stop looking at me in class, slant-eyes. You look at me again I break your glasses.", ko: "수업 시간에 나 쳐다보지 마, 찢눈아. 또 쳐다보면 안경 부숴 버린다." },
     { from: "Ryan", when: "94/04/15 20:09", text: "Hey Mr. Miyagi. Wax on wax off lol. Do u even speak english or just ching chong", ko: "어이 쿵푸 사부님. 아뵤~ 한번 해 봐 ㅋㅋ 영어는 하냐 아님 칭챙만 하냐" },
     { from: "Jake", when: "94/04/09 22:31", text: "hey new kid. ur the yellow one right? welcome to america lol. u wont last", ko: "어이 전학생. 니가 그 노란 애 맞지? 미국에 온 걸 환영한다 ㅋㅋ 오래 못 버틸걸" },
@@ -201,27 +201,27 @@ window.PHONE = {
 
   /* 보낸 문자 */
   sent: [
-    { to: "수일이 형", when: "11/03 22:41", text: "(임시 내용) 보낸 문자입니다." }
+    { to: "수일이 형", when: "94/12/02 22:41", text: "(임시 내용) 보낸 문자입니다." }
   ],
 
   /* 메모 (첫 줄이 목록 제목) */
   memos: [
-    { when: "10/28 23:10", text: "(임시) 메모 제목\n메모 내용이 들어갑니다." }
+    { when: "94/11/28 23:10", text: "(임시) 메모 제목\n메모 내용이 들어갑니다." }
   ],
 
-  /* 음악: 90년대 말 미국 팝 (곡 정보만. 실제 음원은 넣지 않음) */
+  /* 음악: 1993~94년 미국 팝 (곡 정보만. 실제 음원은 넣지 않음) */
   music: [
-    { title: "...Baby One More Time", artist: "Britney Spears", len: "3:30" },
-    { title: "I Want It That Way", artist: "Backstreet Boys", len: "3:33" },
-    { title: "Genie in a Bottle", artist: "Christina Aguilera", len: "3:36" },
-    { title: "No Scrubs", artist: "TLC", len: "3:34" },
-    { title: "Livin' la Vida Loca", artist: "Ricky Martin", len: "4:03" },
-    { title: "Smooth", artist: "Santana feat. Rob Thomas", len: "4:56" },
-    { title: "Iris", artist: "Goo Goo Dolls", len: "4:49" },
-    { title: "Tearin' Up My Heart", artist: "*NSYNC", len: "3:31" },
-    { title: "Bills, Bills, Bills", artist: "Destiny's Child", len: "4:16" },
-    { title: "All Star", artist: "Smash Mouth", len: "3:20" },
-    { title: "Semi-Charmed Life", artist: "Third Eye Blind", len: "4:28" },
-    { title: "MMMBop", artist: "Hanson", len: "3:58" }
+    { title: "I'll Make Love to You", artist: "Boyz II Men", len: "3:58" },
+    { title: "The Sign", artist: "Ace of Base", len: "3:09" },
+    { title: "I Swear", artist: "All-4-One", len: "4:20" },
+    { title: "Stay (I Missed You)", artist: "Lisa Loeb", len: "3:02" },
+    { title: "Hero", artist: "Mariah Carey", len: "4:19" },
+    { title: "Again", artist: "Janet Jackson", len: "3:47" },
+    { title: "All for Love", artist: "Bryan Adams, Rod Stewart & Sting", len: "4:42" },
+    { title: "Linger", artist: "The Cranberries", len: "4:34" },
+    { title: "Can You Feel the Love Tonight", artist: "Elton John", len: "4:00" },
+    { title: "Whatta Man", artist: "Salt-N-Pepa feat. En Vogue", len: "4:28" },
+    { title: "Wild Night", artist: "John Mellencamp & Me'Shell Ndegeocello", len: "3:28" },
+    { title: "Creep", artist: "TLC", len: "4:28" }
   ]
 };
