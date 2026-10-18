@@ -138,26 +138,34 @@ window.PHONE = {
       { t: "괜찮아. 말 안 해도 돼." },
       { t: "준비되면 말해. 형 여기 있을게." } ],
     "Jake": [
-      { t: "Who's this?" },
-      { me: true, t: "It's… it's Minjae." },
-      { t: "No fucking way. The monkey's calling me." },
-      { t: "Yo, guys! Yellow's on the phone!" },
-      { t: "What, you gonna cry to me now? Get the fuck off my line, freak." } ],
-    "Ethan Miller": [
-      { t: "Why the hell are you calling me, Kang?" },
-      { me: true, t: "I just wanted to ask you to stop—" },
-      { t: "Stop what? Stop what, you little nerd?" },
-      { t: "Who gave you my number? Call me again and I'll break your fucking fingers." } ],
-    "Ryan": [
-      { t: "Hello? …Oh, it's the yellow bookworm." },
-      { t: "Hey, say something in monkey. Go on. We're all listening." },
+      { t: "Who's this?", ko: "누구야?" },
       { me: true, t: "……" },
-      { t: "Pathetic. Can't even talk. Go back to your fucking rice paddy." } ],
+      { t: "Hello? …Oh shit, it's the slant-eyed monkey.", ko: "여보세요? …아 씨발, 그 째진 눈 원숭이 새끼네." },
+      { t: "Yo, guys! Yellow's calling me! Shut up, listen to him breathe!", ko: "야, 얘들아! 옐로우가 나한테 전화했어! 조용히 해 봐, 숨 쉬는 소리 들어 봐!" },
+      { me: true, t: "……" },
+      { t: "What'd you eat tonight, dog? I can smell it through the fucking phone.", ko: "오늘 저녁엔 뭐 처먹었냐, 개? 전화기 너머로도 냄새가 나." },
+      { t: "Get the fuck off my line, freak.", ko: "내 전화에서 꺼져, 괴물 새끼야." } ],
+    "Ethan Miller": [
+      { t: "What.", ko: "뭐." },
+      { me: true, t: "……" },
+      { t: "Are you fucking serious? The yellow nerd's calling my house now?", ko: "장난하냐? 이제 옐로우 범생이가 우리 집까지 전화를 해?" },
+      { t: "Who gave you this number, you rice-eating little rat?", ko: "이 번호 누가 줬어, 쌀이나 처먹는 쥐새끼야?" },
+      { me: true, t: "……" },
+      { t: "Call here again and I'll break every one of your fucking fingers. Then try dialing, monkey.", ko: "한 번만 더 걸면 손가락 전부 부러뜨려 줄게. 그 다음에 전화해 봐, 원숭이." } ],
+    "Ryan": [
+      { t: "Herro? Herro? Ching-chong?", ko: "헬로? 헬로? 칭챙총?" },
+      { me: true, t: "……" },
+      { t: "C'mon, say something in monkey. We're all listening, bookworm.", ko: "어서, 원숭이 말로 뭐라고 좀 해 봐. 다 듣고 있어, 범생아." },
+      { t: "Can't even talk. Pathetic. Your own parents shipped you off, you know that?", ko: "말도 못 하네. 한심해. 네 부모도 널 내다 버린 거 알지?" },
+      { me: true, t: "……" },
+      { t: "Nobody wants you here, yellow. Nobody wants you anywhere.", ko: "여기선 아무도 너 안 원해, 옐로우. 어디서도 아무도 안 원해." } ],
     "Marcus Lee": [
-      { t: "You've got some balls calling me." },
-      { me: true, t: "Please. I won't tell anyone, I just—" },
-      { t: "Damn right you won't. You tell anyone, monkey, you're dead. Hear me?" },
-      { t: "Tomorrow. Behind the gym. Don't make me come looking for you." } ]
+      { t: "You've got some balls calling me, monkey.", ko: "나한테 전화를 다 하고, 간이 부었네, 원숭이." },
+      { me: true, t: "……" },
+      { t: "What, you gonna rat us out? Go ahead. Nobody's gonna believe some yellow freak.", ko: "뭐, 꼰지르게? 해 봐. 옐로우 괴물 말을 누가 믿겠냐." },
+      { t: "You tell anyone, and you're fucking dead. You hear me?", ko: "누구한테든 말하면 넌 뒤졌어. 알아들어?" },
+      { me: true, t: "……" },
+      { t: "Tomorrow. Behind the gym. Don't make me come find you.", ko: "내일. 체육관 뒤. 내가 찾아가게 만들지 마." } ]
   },
 
   /* 문자: 받은 메시지 */

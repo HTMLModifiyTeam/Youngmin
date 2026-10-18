@@ -98,6 +98,8 @@
     subIc.innerHTML = (unread ? `<span class="sl-ic">✉</span>` : "") + (missed ? `<span class="sl-ic">☎</span>` : "");
     subN.textContent = missed ? `${missed} Missed call${missed > 1 ? "s" : ""}` : unread ? `${unread} New msg` : "";
     lcd.querySelectorAll("[data-sbt]").forEach(e => e.textContent = `${p2(d.getHours())}:${p2(d.getMinutes())}`);
+    let st0 = 0; try { st0 = S.t0; } catch (e) {}
+    if (st0) { const S = { t0: st0 }; const s = Math.floor((Date.now() - S.t0) / 1000); lcd.querySelectorAll("[data-ctm]").forEach(e => e.textContent = `${p2(Math.floor(s / 60))}:${p2(s % 60)}`); }
   }
   setInterval(tick, 1000);
 
@@ -160,7 +162,16 @@
     } else if (n === "talk") {   // 통화 녹음: 대화가 한 줄씩 올라옴
       const c = S.c, who = c.name;
       const done = S.n >= c.talk.length;
-      lcd.innerHTML = frame(S.live ? (done ? "Call Ended" : "Connected") : "Call Rec.", `<div class="talk ruled"><div class="meta">${S.live ? esc(who) : `${{ missed: "Missed", out: "Dialed", in: "Received" }[c.dir]} ${esc(c.when)}${c.dur ? " · " + esc(c.dur) : ""}`}</div>${c.talk.slice(0, S.n).map(l => `<div class="tl${l.me ? " me" : ""}"><b>${l.me ? "Me" : esc(who)}</b>${esc(l.t)}</div>`).join("")}${S.n < c.talk.length ? `<div class="tl wait">▪ ▪ ▪</div>` : `<div class="tl end">— End of call —</div>`}</div>`, S.live ? "" : "Call", S.live ? (done ? "OK" : "End") : "Back", { right: `${Math.min(S.n, c.talk.length)}/${c.talk.length}`, mid: S.n < c.talk.length ? "▶" : "■" });
+      if (S.live) {   // 실시간 통화: 통화 화면 + 아래 자막
+        const cur = S.n > 0 ? c.talk[S.n - 1] : null;
+        lcd.innerHTML = frame("", `<div class="incall"><div class="ava">${ico("calls")}</div><div class="who">${esc(who)}</div><div class="num">${esc(numberOf(who))}</div><div class="cst">${done ? "Call ended" : "Connected"} <span data-ctm></span></div>
+          <div class="cap${cur ? " on" : ""}">${cur ? `<b>${cur.me ? "Me" : esc(who)}</b><span>${esc(cur.t)}</span>${cur.ko ? `<small>(${esc(cur.ko)})</small>` : ""}` : ""}</div></div>`, "", done ? "OK" : "End", { mid: "" });
+        clearTimeout(talkT);
+        if (!done) talkT = setTimeout(() => { if (S.name === "talk" && S.c === c) { S.n++; render(); } }, S.n === 0 ? 900 : 1500 + Math.min(3000, ((cur && cur.t.length) || 10) * 75));
+        else if (!S.logged) { S.logged = true; P.calls.unshift(c); talkT = setTimeout(() => { if (S.name === "talk" && S.c === c) go("idle"); }, 3500); }
+        tick(); return;
+      }
+      lcd.innerHTML = frame(S.live ? (done ? "Call Ended" : "Connected") : "Call Rec.", `<div class="talk ruled"><div class="meta">${S.live ? esc(who) : `${{ missed: "Missed", out: "Dialed", in: "Received" }[c.dir]} ${esc(c.when)}${c.dur ? " · " + esc(c.dur) : ""}`}</div>${c.talk.slice(0, S.n).map(l => `<div class="tl${l.me ? " me" : ""}"><b>${l.me ? "Me" : esc(who)}</b>${esc(l.t)}${l.ko ? `<small class="ko">(${esc(l.ko)})</small>` : ""}</div>`).join("")}${S.n < c.talk.length ? `<div class="tl wait">▪ ▪ ▪</div>` : `<div class="tl end">— End of call —</div>`}</div>`, S.live ? "" : "Call", S.live ? (done ? "OK" : "End") : "Back", { right: `${Math.min(S.n, c.talk.length)}/${c.talk.length}`, mid: S.n < c.talk.length ? "▶" : "■" });
       const tk = lcd.querySelector(".talk"); tk.scrollTop = tk.scrollHeight;
       clearTimeout(talkT);
       if (S.n < c.talk.length) { talkT = setTimeout(() => { if (S.name === "talk" && S.c === c) { S.n++; render(); } }, S.n === 0 ? 700 : 1300 + Math.min(2600, (c.talk[S.n - 1]?.t.length || 10) * 70)); }
@@ -229,7 +240,7 @@
     const sc = (P.scripts || {})[who];
     if (sc) {   // 전화번호부에서 건 전화: 상대가 받으면 대본이 한 줄씩
       callT.push(setTimeout(() => { if (S.name !== "calling") return; click(.3, 0, 1600); const d = now();
-        go("talk", { live: true, n: 0, c: { name: who, dir: "out", when: `${String(d.getFullYear()).slice(2)}/${stamp()}`, dur: "", talk: sc } }); }, 2600));
+        go("talk", { live: true, n: 0, t0: Date.now(), c: { name: who, dir: "out", when: `${String(d.getFullYear()).slice(2)}/${stamp()}`, dur: "", talk: sc } }); }, 2600));
       return;
     }
     tone([440, 480], 1.2, .03, 4.4);

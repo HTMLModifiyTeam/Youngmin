@@ -176,3 +176,15 @@ body.big .softbar [data-sk]{cursor:pointer}
 .talk .tl.me b{background:var(--navy);border-color:var(--navy);color:#fff}
 .talk .tl.wait{color:var(--ink2);letter-spacing:2px;animation:pulse 1s steps(2) infinite}
 .talk .tl.end{text-align:center;font-size:10.5px;color:var(--ink2)}
+
+/* 실시간 통화 화면 + 자막 */
+.incall{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;padding-top:14px;background:linear-gradient(#e4e8f5,#b9c3e6);color:var(--navy);text-align:center}
+.incall .ava{width:46px;height:46px;border:1px solid var(--blue2);background:linear-gradient(#fff,#d4dbf2);display:flex;align-items:center;justify-content:center}
+.incall .ava .pi{width:26px;height:26px}
+.incall .who{margin-top:6px;font-weight:700;font-size:15px}
+.incall .num{font:11px "Galmuri11",monospace;color:var(--ink2)}
+.incall .cst{margin-top:3px;font:10px "Galmuri11",monospace;color:var(--ink2)}
+.incall .cap{position:absolute;left:6px;right:6px;bottom:6px;min-height:58px;padding:5px 6px;background:rgba(255,255,255,.92);border:1px solid var(--blue2);text-align:left;font-size:12px;line-height:16px;word-break:keep-all;overflow-wrap:anywhere;visibility:hidden}
+.incall .cap.on{visibility:visible}
+.incall .cap b{display:inline-block;margin-right:5px;padding:0 3px;font-size:10px;line-height:13px;background:var(--navy);color:#fff;vertical-align:1px}
+.incall .cap small,.talk .tl small.ko{display:block;font-size:10.5px;line-height:14px;color:var(--ink2)}
