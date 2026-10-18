@@ -227,7 +227,7 @@
   /* 녹음기: 날짜 폴더 · 녹음 목록 · 재생 */
   const RECS = P.recordings || [];
   const RA = new Audio(); RA.preload = "none";
-  const capAt = (r, t) => { const L = (r.lines || []).filter(l => l.at <= t); return L.length ? esc(L[L.length - 1].t) : ""; };
+  const capAt = (r, t) => { const L = (r.lines || []).filter(l => l.at <= t); if (!L.length) return ""; const l = L[L.length - 1]; return `${l.who ? `<b>${esc(l.who)}</b>` : ""}<span>${esc(l.t)}</span>`; };
   RA.addEventListener("timeupdate", () => { if (S.name !== "recplay") return; const d = RA.duration || secs(S.r.len); lcd.querySelectorAll("[data-rpf]").forEach(e => e.style.width = `${Math.min(100, RA.currentTime / (d || 1) * 100)}%`); lcd.querySelectorAll("[data-rpc]").forEach(e => e.textContent = mmss(RA.currentTime)); const cp = lcd.querySelector("[data-rcap]"), h = capAt(S.r, RA.currentTime); if (cp && cp.innerHTML !== h) cp.innerHTML = h; });
   RA.addEventListener("ended", () => { if (S.name === "recplay") { RA.currentTime = 0; render(); } });
   const recDates = sel => go("list", { title: "Recorder", kind: "recdate", sel: sel || 0, lbl: "Open", backTo: () => mainMenu(5), items: RECS.map(d => ({ label: d.date, sub: `${d.items.length} file${d.items.length > 1 ? "s" : ""}`, ic: "rec", data: d })) });
