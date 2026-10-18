@@ -196,7 +196,7 @@
       lcd.innerHTML = frame("Recorder", `<div class="player rec"><div class="art">${ico("rec")}<div class="eq${on ? " on" : ""}">${"<i></i>".repeat(7)}</div></div>
         <div class="trk">${esc(S.d)}  ${esc(r.time)}</div><div class="stl"><span>${esc(r.name)}</span></div>
         <div class="pb"><i data-rpf style="width:${(RA.src.endsWith(r.file) ? RA.currentTime / (RA.duration || secs(r.len)) : 0) * 100}%"></i></div><div class="ptm"><span data-rpc>${mmss(RA.src.endsWith(r.file) ? RA.currentTime : 0)}</span><span>${esc(r.len)}</span></div>
-        <div class="pctl"><b>${on ? "❚❚" : "▶"}</b></div></div>`, on ? "Pause" : "Play", "Back", { mid: "" });
+        <div class="pctl"><button type="button" class="rbtn" data-sk="rplay">${on ? "❚❚" : "▶"}</button></div></div>`, on ? "Pause" : "Play", "Back", { mid: "" });
     } else if (n === "incoming") {
       lcd.innerHTML = frame("", `<div class="calling"><div class="ani">${ico("calls")}</div><div class="st">Incoming call</div><div class="who">${esc(S.who)}</div><div class="num">${esc(numberOf(S.who))}</div></div>`, "Answer", "Reject", { mid: "" });
     } else if (n === "calling") {
@@ -376,7 +376,7 @@
       return;
     }
     if (n === "recplay") {
-      if (k === "ok" || k === "sl") { const f = S.r.file; if (!RA.src.endsWith(f)) { RA.src = f; } if (RA.paused) RA.play().catch(() => {}); else RA.pause(); return setTimeout(render, 30); }
+      if (k === "ok" || k === "sl" || k === "rplay") { const f = S.r.file; if (!RA.src.endsWith(f)) { RA.src = f; } if (RA.paused) RA.play().catch(() => {}); else RA.pause(); return setTimeout(render, 30); }
       if (k === "clr" || k === "sr" || k === "left") return S.backTo();
       return;
     }
