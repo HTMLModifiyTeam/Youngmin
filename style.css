@@ -41,63 +41,83 @@ body.big .hint{opacity:0}
 .hk:active,.hk.press{background:radial-gradient(closest-side,rgba(0,20,60,.22),rgba(0,20,60,.08) 70%,transparent)}
 
 /* 큰 액정 자리: 펼친 사진의 (64,166) 240×274 */
-.lcd{cursor:zoom-in;position:absolute;left:64px;top:166px;width:240px;height:274px;overflow:hidden;background:#0d0f0e;font-size:12px;color:#111;border-radius:2px}
-.lcd:after{content:"";position:absolute;inset:0;z-index:20;pointer-events:none;background:repeating-linear-gradient(rgba(0,0,0,.05) 0 1px,transparent 1px 3px),linear-gradient(135deg,rgba(255,255,255,.12),transparent 40%)}
+.lcd{cursor:zoom-in;position:absolute;left:64px;top:166px;width:240px;height:274px;overflow:hidden;background:#fff;font:12px/1.3 "Galmuri11","Nanum Gothic",sans-serif;color:#111;border-radius:2px;-webkit-font-smoothing:none;font-smooth:never}
+.lcd:after{content:"";position:absolute;inset:0;z-index:20;pointer-events:none;background:repeating-linear-gradient(rgba(0,0,0,.09) 0 1px,transparent 1px 3px),linear-gradient(135deg,rgba(255,255,255,.12),transparent 40%)}
+body.big .lcd:after{background:repeating-linear-gradient(rgba(0,0,0,.05) 0 1px,transparent 1px 3px),linear-gradient(135deg,rgba(255,255,255,.1),transparent 40%)}
 
 /* 닫힌 사진의 바깥 액정 자리: (188,498)~(452,708) × 0.547 */
-.sub-lcd{position:absolute;left:103px;top:273px;width:144px;height:114px;border-radius:9px;background:linear-gradient(#dfe5dc,#cfd6cc);color:#273024;font-family:"Nanum Gothic Coding",monospace;padding:7px 9px;display:flex;flex-direction:column;box-shadow:inset 0 1px 3px rgba(0,0,0,.18)}
-.sub-lcd:after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:repeating-linear-gradient(rgba(0,0,0,.045) 0 1px,transparent 1px 3px)}
-.sl-top{display:flex;justify-content:space-between;align-items:center;font-size:10px;line-height:1}
-.sl-time{flex:1;display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:700;letter-spacing:-.03em}
-.sl-time small{font-size:13px;margin-left:2px;align-self:flex-end;margin-bottom:10px}
-.sl-date{text-align:center;font-size:13px;font-weight:700}
+.sub-lcd{position:absolute;left:103px;top:273px;width:144px;height:114px;border-radius:9px;background:radial-gradient(120% 90% at 50% 40%,#7fdcfb,#3cb4e6 60%,#2393cb);color:#06274f;font-family:"Galmuri11","Nanum Gothic Coding",monospace;-webkit-font-smoothing:none;padding:6px 8px 7px;display:flex;flex-direction:column;box-shadow:inset 0 1px 4px rgba(0,30,70,.45),0 0 10px rgba(80,200,255,.35)}
+.sub-lcd:after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:repeating-linear-gradient(rgba(0,20,60,.09) 0 1px,transparent 1px 3px)}
+.sl-top{display:flex;align-items:center;gap:4px;font-size:10px;line-height:1;height:11px}
+.sl-top .gap{flex:1}
+.sl-ic{font-size:10px;font-weight:700}
+.sl-time{flex:1;display:flex;align-items:center;justify-content:center;font:700 34px/1 "Galmuri11","Nanum Gothic Coding",monospace;letter-spacing:-.02em}
+.sl-time small{font-size:12px;margin-left:2px;align-self:flex-end;margin-bottom:9px}
+.sl-date{text-align:center;font-size:12px;font-weight:700;letter-spacing:.02em}
+.sl-note{text-align:center;font-size:10px;line-height:1.2;margin-top:2px;min-height:12px}
+.ant{display:inline-flex;align-items:flex-end;gap:1px;height:9px}
+.ant b{font:700 10px/1 "Galmuri11",monospace;margin-right:1px}
+.ant i{width:2px;background:currentColor}
+.ant i:nth-of-type(1){height:3px}.ant i:nth-of-type(2){height:5px}.ant i:nth-of-type(3){height:7px}.ant i:nth-of-type(4){height:9px}
 .bat{display:inline-block;width:16px;height:8px;border:1.5px solid currentColor;border-radius:1px;position:relative}
 .bat:after{content:"";position:absolute;right:-3px;top:1.5px;width:2px;height:3px;background:currentColor}
 .bat i{position:absolute;top:1px;bottom:1px;width:3px;background:currentColor}
 
-/* ── 큰 액정 화면 (176×220 정도의 컬러 액정 느낌) ── */
+/* ── 큰 액정 화면 (애니콜 시절 메뉴 화면 느낌) ── */
+@font-face{font-family:"Galmuri11";src:url("fonts/Galmuri11.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Galmuri11";src:url("fonts/Galmuri11-Bold.woff2") format("woff2");font-weight:700;font-display:swap}
 .lcd .scr{position:absolute;inset:0;display:flex;flex-direction:column}
-.sb{flex:none;height:16px;display:flex;align-items:center;gap:3px;padding:0 4px;background:linear-gradient(#fff,#cfd8ea);font:700 10px/1 "Nanum Gothic Coding",monospace;color:#1d2b55}
-.sb .r{margin-left:auto;display:flex;align-items:center;gap:4px}
-.title{flex:none;height:20px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#3f6fd8,#1d3f9a);color:#fff;font-weight:800;font-size:12px;letter-spacing:.04em;text-shadow:0 1px 0 #0b2160}
-.body{flex:1;min-height:0;overflow:hidden;background:linear-gradient(#f7f9ff,#dfe7f7);position:relative}
-.softbar{flex:none;height:18px;display:flex;justify-content:space-between;align-items:center;padding:0 6px;background:linear-gradient(#5e7fd0,#23439a);color:#fff;font-size:11px;font-weight:700}
+.sb{flex:none;height:17px;display:flex;align-items:center;justify-content:space-between;padding:0 5px;background:#fff;color:#1a2a6a;border-bottom:1px solid #d6dbe6}
+.sb .ant{color:#d04a1a}.sb .ant b{color:#1a2a6a}
+.sb .bell{width:11px;height:11px}
+.sb .r{display:flex;align-items:center;gap:5px;font:700 10px/1 "Galmuri11",monospace}
+.sb .bat{color:#2b5bd6}
+.title{flex:none;height:22px;display:flex;align-items:center;justify-content:center;position:relative;color:#fff;font-weight:700;font-size:14px;letter-spacing:.06em;
+  background:repeating-linear-gradient(90deg,rgba(0,0,0,.08) 0 1px,transparent 1px 3px),linear-gradient(#56b84a,#2f8a2a);text-shadow:1px 1px 0 #1d5a17,-1px 0 0 #1d5a17,0 -1px 0 #1d5a17}
+.title em{position:absolute;right:5px;font-style:normal;font-size:10px;letter-spacing:0}
+.body{flex:1;min-height:0;overflow:hidden;background:#fff;position:relative}
+.softbar{flex:none;height:17px;display:flex;justify-content:space-between;align-items:center;padding:0 6px;background:linear-gradient(#cdd3f2,#aab3e3);color:#1b2560;font-size:11px;font-weight:700;border-top:1px solid #8c96cf}
+.cyan .body{background:#c6eff7}
 
 /* 대기화면 */
-.idle{position:absolute;inset:0;background:linear-gradient(#7fb2ff 0%,#bfe0ff 45%,#9ed39a 46%,#5aa65d 100%);overflow:hidden}
-.idle .sun{position:absolute;right:16px;top:14px;width:30px;height:30px;border-radius:50%;background:radial-gradient(circle,#fff6b0,#ffd23a 60%,rgba(255,210,58,0) 70%)}
-.idle .hill{position:absolute;left:-20%;right:-20%;bottom:-40%;height:80%;border-radius:50%;background:radial-gradient(ellipse at 50% 20%,#7ccf6f,#2f7a38)}
-.idle .clk{position:absolute;left:0;right:0;top:52px;text-align:center;color:#fff;font:800 40px/1 "Nanum Gothic Coding",monospace;text-shadow:0 2px 0 #1d3f9a,0 0 6px rgba(0,0,0,.35);letter-spacing:-.02em}
-.idle .clk small{font-size:15px;margin-left:2px}
-.idle .dt{position:absolute;left:0;right:0;top:98px;text-align:center;color:#fff;font-weight:800;font-size:13px;text-shadow:0 1px 0 #1d3f9a}
-.idle .ban{position:absolute;left:0;right:0;top:4px;text-align:center;color:#103a8a;font-weight:800;font-size:11px}
-.idle .note{position:absolute;left:8px;right:8px;bottom:6px;padding:3px 6px;border-radius:4px;background:rgba(255,255,255,.85);color:#1d2b55;font-size:11px;font-weight:700;display:flex;gap:6px;flex-direction:column}
-.dial{position:absolute;left:0;right:0;bottom:0;padding:6px 8px;background:rgba(255,255,255,.92);font:800 24px/1.1 "Nanum Gothic Coding",monospace;color:#13245a;text-align:right;word-break:break-all}
+.idle{position:absolute;inset:0;overflow:hidden;background:linear-gradient(#2e7fd6 0%,#7cc6f0 45%,#bfe9f6 58%,#2a9fc7 59%,#14678f 100%)}
+.idle .sun{position:absolute;right:18px;top:14px;width:26px;height:26px;border-radius:50%;background:radial-gradient(circle,#fffbd0,#ffe066 55%,rgba(255,224,102,0) 70%)}
+.idle .hill{position:absolute;left:-10%;right:-10%;bottom:-6%;height:34%;background:repeating-linear-gradient(170deg,rgba(255,255,255,.18) 0 2px,transparent 2px 9px),linear-gradient(#1e88b8,#0d4f73);border-radius:50% 50% 0 0/30% 30% 0 0}
+.idle .clkbox{position:absolute;left:12px;right:12px;top:30px;display:flex;align-items:center;justify-content:center;gap:6px;padding:6px 4px;border-radius:6px;background:linear-gradient(#ff7bb0,#e8467f);box-shadow:0 2px 0 #9c1f50,inset 0 1px 0 rgba(255,255,255,.5)}
+.idle .clkbox b{font:700 13px/1 "Galmuri11",monospace;color:#fff;background:#9c1f50;padding:3px 4px;border-radius:3px}
+.idle .clk{font:700 34px/1 "Galmuri11",monospace;color:#fff;text-shadow:2px 2px 0 #9c1f50;letter-spacing:.02em}
+.idle .dt{position:absolute;left:0;right:0;top:84px;text-align:center;color:#fff;font-weight:700;font-size:12px;text-shadow:1px 1px 0 #0d3f78}
+.idle .ban{position:absolute;left:0;right:0;top:6px;text-align:center;color:#fff;font-weight:700;font-size:11px;text-shadow:1px 1px 0 #0d3f78}
+.idle .note{position:absolute;left:10px;right:10px;bottom:8px;padding:4px 6px;background:#c6eff7;border:1px solid #2a8fb0;color:#0e2e5c;font-size:11px;display:flex;gap:3px;flex-direction:column}
+.dial{position:absolute;left:0;right:0;bottom:0;padding:6px 8px;background:#fff;border-top:2px solid #2f8a2a;font:700 22px/1.15 "Galmuri11",monospace;color:#13245a;text-align:right;word-break:break-all}
 
-/* 메뉴 */
-.grid{position:absolute;inset:4px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:3px}
-.mi{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-radius:5px;font-size:10px;font-weight:700;color:#1d2b55}
-.mi svg{width:30px;height:30px}
-.mi.sel{background:linear-gradient(#ffe066,#ffb703);box-shadow:0 0 0 1px #c47f00}
-.mname{flex:none;height:16px;text-align:center;font-size:11px;font-weight:800;color:#1d2b55;background:#fff}
+/* 메뉴: 배경 그림 위 아이콘 */
+.menuwall{position:absolute;inset:0;background:linear-gradient(#3d8fe0 0%,#8fd3f5 50%,#2a9fc7 51%,#0f5a80 100%)}
+.mtitle{position:absolute;left:0;right:0;top:4px;text-align:center;color:#fff;font-weight:700;font-size:14px;text-shadow:1px 1px 0 #0b3570,-1px 0 0 #0b3570,0 -1px 0 #0b3570,1px 0 0 #0b3570}
+.grid{position:absolute;left:8px;right:8px;top:28px;bottom:6px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:4px}
+.mi{display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.8)}
+.mi svg{width:32px;height:32px}
+.mi.sel{background:#fff6b8;border:2px solid #ff8a00;box-shadow:0 0 0 1px #fff}
 
 /* 목록 */
 .list{position:absolute;inset:0;overflow:auto}
-.li{display:flex;align-items:center;gap:6px;width:100%;padding:5px 6px;border-bottom:1px solid #c9d3ea;font-size:12px;text-align:left;color:#14204a}
-.li .no{flex:none;width:16px;height:16px;border-radius:3px;background:#2448a6;color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center}
-.li small{margin-left:auto;font-size:10px;color:#5b6890;white-space:nowrap}
-.li.sel{background:linear-gradient(#ffe066,#ffc533)}
-.li .ic{flex:none;font-size:11px}
-.read{position:absolute;inset:0;overflow:auto;padding:6px 8px;font-size:12.5px;line-height:1.5;color:#14204a;white-space:pre-wrap;word-break:break-all;-webkit-user-select:text;user-select:text}
-.read .meta{font-size:10.5px;color:#5b6890;border-bottom:1px dashed #9fb0d8;padding-bottom:4px;margin-bottom:6px}
-.pop{position:absolute;left:10px;right:10px;top:50%;transform:translateY(-50%);padding:12px 8px;border-radius:6px;background:#fff;border:2px solid #2448a6;text-align:center;font-weight:800;font-size:12px;color:#14204a;box-shadow:0 4px 10px rgba(0,0,0,.3)}
-.calling{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#14204a;font-weight:800;text-align:center}
-.calling .who{font-size:16px}.calling .num{font:700 13px "Nanum Gothic Coding",monospace;color:#3a4a7a}
-.calling .st{font-size:12px;color:#2448a6}
-.calling .ani{font-size:20px;letter-spacing:4px;animation:pulse 1s infinite}
+.li{display:flex;align-items:center;gap:5px;width:100%;height:22px;padding:0 4px;border-bottom:1px solid #d9dde5;font-size:12px;text-align:left;color:#111;white-space:nowrap;overflow:hidden}
+.li .no{flex:none;width:12px;height:13px;background:linear-gradient(#f2a24a,#c4621a);color:#fff;font:700 10px/13px "Galmuri11",monospace;text-align:center;border-radius:1px}
+.li small{margin-left:auto;font-size:10px;color:#566}
+.li.sel{background:#5cc13c;color:#fff;font-weight:700}
+.li.sel small{color:#eaffdf}
+.li.sel .no{background:none;color:#c8102e;font-size:12px;width:12px;text-shadow:0 0 1px #fff}
+.li .ic{flex:none;font-size:10px}
+.read{position:absolute;inset:0;overflow:auto;padding:6px 8px;font-size:12px;line-height:1.55;color:#111;white-space:pre-wrap;word-break:break-all;-webkit-user-select:text;user-select:text}
+.cyan .read{padding:8px}
+.read .meta{text-align:center;font-weight:700;color:#0e2e5c;margin-bottom:6px}
+.read .box{background:#fff;border:1px solid #8fc9d8;padding:6px;min-height:60%}
+.pop{position:absolute;left:14px;right:14px;top:50%;transform:translateY(-50%);padding:16px 8px;background:#c6eff7;border:2px solid #2a8fb0;box-shadow:2px 2px 0 rgba(0,0,0,.25);text-align:center;font-weight:700;font-size:12px;line-height:1.5;color:#0e2e5c}
+.calling{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;color:#0e2e5c;font-weight:700;text-align:center;background:#c6eff7}
+.calling .who{font-size:15px}.calling .num{font:700 13px "Galmuri11",monospace}
+.calling .st{font-size:11px;color:#2f8a2a}
+.calling .ani{font-size:18px;letter-spacing:4px;animation:pulse 1s infinite}
 @keyframes pulse{50%{opacity:.3}}
-.off-lcd{position:absolute;inset:0;background:#000}
-
 body.big .lcd{cursor:default}
 body.big .softbar span{cursor:pointer;padding:0 4px}
 body.big .softbar span:empty{display:none}

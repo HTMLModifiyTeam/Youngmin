@@ -75,13 +75,17 @@
   addEventListener("keydown", e => { if (e.key === "Escape") closePhone(); });
 
   /* 바깥 작은 액정 */
-  const subT = $("[data-subtime]"), subD = $("[data-subdate]");
+  const subT = $("[data-subtime]"), subD = $("[data-subdate]"), subIc = $("[data-subic]"), subN = $("[data-subnote]");
   const batHTML = n => Array.from({ length: Math.max(0, Math.min(3, n)) }, (_, i) => `<i style="left:${1 + i * 4}px"></i>`).join("");
   document.querySelectorAll("[data-bat]").forEach(b => b.innerHTML = batHTML(P.battery ?? 2));
   function tick() {
     const d = now(), [t, ap] = hm12(d);
     subT.innerHTML = `${t}<small>${ap}</small>`; subD.textContent = `${d.getMonth() + 1}/${p2(d.getDate())} (${W[d.getDay()]})`;
-    lcd.querySelectorAll("[data-clk]").forEach(e => e.innerHTML = `${t}<small>${ap === "A" ? "AM" : "PM"}</small>`);
+    lcd.querySelectorAll("[data-clk]").forEach(e => e.textContent = t);
+    lcd.querySelectorAll("[data-ap]").forEach(e => e.textContent = ap === "A" ? "AM" : "PM");
+    const missed = (P.calls || []).filter(c => c.dir === "missed").length, unread = (P.messages || []).filter(m => !m.read).length;
+    subIc.innerHTML = (unread ? `<span class="sl-ic">✉</span>` : "") + (missed ? `<span class="sl-ic">☎</span>` : "");
+    subN.textContent = missed ? `부재중 ${missed}통` : unread ? `새 메시지 ${unread}개` : "";
     lcd.querySelectorAll("[data-sbt]").forEach(e => e.textContent = `${p2(d.getHours())}:${p2(d.getMinutes())}`);
   }
   setInterval(tick, 1000);
@@ -103,8 +107,10 @@
     diary: `<rect x="7" y="4" width="18" height="24" rx="2" fill="#e04f6b"/><rect x="10" y="8" width="12" height="3" fill="#fff"/><path d="M10 15h12M10 19h12M10 23h8" stroke="#fff" stroke-width="1.5"/>`,
     settings: `<circle cx="16" cy="16" r="5" fill="none" stroke="#5a6577" stroke-width="3"/>${[0, 45, 90, 135, 180, 225, 270, 315].map(a => `<rect x="14.5" y="4" width="3" height="5" rx="1" fill="#5a6577" transform="rotate(${a} 16 16)"/>`).join("")}`
   };
-  const statusBar = () => `<div class="sb"><b>▂▄▆█</b><span class="r"><b data-sbt></b><span class="bat">${batHTML(P.battery ?? 2)}</span></span></div>`;
-  const frame = (title, body, l = "", r = "") => `<div class="scr">${statusBar()}${title ? `<div class="title">${esc(title)}</div>` : ""}<div class="body">${body}</div><div class="softbar"><span data-sk="sl">${esc(l)}</span><span data-sk="sr">${esc(r)}</span></div></div>`;
+  const ANT = `<span class="ant"><b>T</b><i></i><i></i><i></i><i></i></span>`;
+  const BELL = `<svg class="bell" viewBox="0 0 12 12"><path d="M6 1c2.2 0 3.4 1.6 3.4 3.6V7l1.3 1.6H1.3L2.6 7V4.6C2.6 2.6 3.8 1 6 1z" fill="#f2b400" stroke="#8a5a00" stroke-width=".8"/><circle cx="6" cy="10.2" r="1.1" fill="#8a5a00"/></svg>`;
+  const statusBar = () => `<div class="sb">${ANT}${BELL}<span class="r"><span data-sbt></span><span class="bat">${batHTML(P.battery ?? 2)}</span></span></div>`;
+  const frame = (title, body, l = "", r = "", o = {}) => `<div class="scr${o.cyan ? " cyan" : ""}">${statusBar()}${title ? `<div class="title">${esc(title)}${o.arrow ? `<em>${o.arrow}</em>` : ""}</div>` : ""}<div class="body">${body}</div><div class="softbar"><span data-sk="sl">${esc(l)}</span><span data-sk="sr">${esc(r)}</span></div></div>`;
 
   let S = { name: "off" }, popT = null, callT = [];
   function go(name, opt = {}) { S = { name, sel: 0, ...opt }; render(); }
@@ -112,20 +118,19 @@
     const n = S.name;
     if (n === "idle") {
       const missed = (P.calls || []).filter(c => c.dir === "missed").length, unread = (P.messages || []).filter(m => !m.read).length;
-      lcd.innerHTML = frame("", `<div class="idle"><i class="sun"></i><i class="hill"></i>${P.banner ? `<div class="ban">${esc(P.banner)}</div>` : ""}<div class="clk" data-clk></div><div class="dt">${(() => { const d = now(); return `${d.getMonth() + 1}월 ${d.getDate()}일 (${W[d.getDay()]})`; })()}</div>
+      lcd.innerHTML = frame("", `<div class="idle"><i class="sun"></i><i class="hill"></i>${P.banner ? `<div class="ban">${esc(P.banner)}</div>` : ""}<div class="clkbox"><b data-ap></b><span class="clk" data-clk></span></div><div class="dt">${(() => { const d = now(); return `${d.getFullYear()}/${p2(d.getMonth() + 1)}/${p2(d.getDate())} (${W[d.getDay()]})`; })()}</div>
         ${missed || unread ? `<div class="note">${missed ? `<span>☎ 부재중 전화 ${missed}통</span>` : ""}${unread ? `<span>✉ 새 메시지 ${unread}개</span>` : ""}</div>` : ""}</div>`, "메뉴", "전화부");
     } else if (n === "dial") {
       lcd.innerHTML = frame("", `<div class="idle"><i class="sun"></i><i class="hill"></i><div class="dial">${esc(S.num)}</div></div>`, "저장", "지우기");
     } else if (n === "menu") {
-      lcd.innerHTML = frame("메뉴", `<div class="grid">${MENU.map((m, i) => `<button class="mi${i === S.sel ? " sel" : ""}" data-i="${i}"><svg viewBox="0 0 32 32">${ICON[m.id]}</svg>${i + 1}</button>`).join("")}</div>`, "선택", "이전")
-        .replace('<div class="softbar">', `<div class="mname">${esc(MENU[S.sel].label)}</div><div class="softbar">`);
+      lcd.innerHTML = frame("", `<div class="menuwall"></div><div class="mtitle">${S.sel + 1}:${esc(MENU[S.sel].label)}</div><div class="grid">${MENU.map((m, i) => `<button class="mi${i === S.sel ? " sel" : ""}" data-i="${i}"><svg viewBox="0 0 32 32">${ICON[m.id]}</svg></button>`).join("")}</div>`, "선택", "이전");
     } else if (n === "list") {
-      lcd.innerHTML = frame(S.title, `<div class="list">${S.items.length ? S.items.map((it, i) => `<button class="li${i === S.sel ? " sel" : ""}" data-i="${i}"><span class="no">${i + 1}</span>${it.ic ? `<span class="ic">${it.ic}</span>` : ""}<span>${esc(it.label)}</span><small>${esc(it.sub || "")}</small></button>`).join("") : `<div class="read">저장된 항목이 없습니다.</div>`}</div>`, S.items.length ? "선택" : "", "이전");
+      lcd.innerHTML = frame(S.title, `<div class="list">${S.items.length ? S.items.map((it, i) => `<button class="li${i === S.sel ? " sel" : ""}" data-i="${i}"><span class="no">${i === S.sel ? "◆" : i + 1}</span>${it.ic ? `<span class="ic">${it.ic}</span>` : ""}<span>${esc(it.label)}</span><small>${esc(it.sub || "")}</small></button>`).join("") : `<div class="pop" style="position:absolute">저장된 항목이<br>없습니다</div>`}</div>`, S.items.length ? "선택" : "", "이전", { arrow: "◀▶" });
       const el = lcd.querySelector(".li.sel"); if (el) el.scrollIntoView({ block: "nearest" });
     } else if (n === "read") {
-      lcd.innerHTML = frame(S.title, `<div class="read"><div class="meta">${esc(S.meta)}</div>${esc(S.text)}</div>`, S.call ? "통화" : "", "이전");
+      lcd.innerHTML = frame(S.title, `<div class="read"><div class="meta">${esc(S.meta)}</div><div class="box">${esc(S.text)}</div></div>`, S.call ? "통화" : "", "이전", { cyan: true, arrow: "◀▶" });
     } else if (n === "calling") {
-      lcd.innerHTML = frame("", `<div class="calling"><div class="ani">☎ · · ·</div><div class="who">${esc(S.who)}</div><div class="num">${esc(S.num)}</div><div class="st" data-cst>연결 중입니다</div></div>`, "", "종료");
+      lcd.innerHTML = frame("", `<div class="calling"><div class="ani">☎ · · ·</div><div class="who">${esc(S.who)}</div><div class="num">${esc(S.num)}</div><div class="st" data-cst>연결 중입니다</div></div>`, "", "종료", { cyan: true });
     }
     tick();
   }
