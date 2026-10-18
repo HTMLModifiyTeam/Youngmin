@@ -196,8 +196,7 @@
       lcd.innerHTML = frame("Recorder", `<div class="player rec"><div class="art">${ico("rec")}<div class="eq${on ? " on" : ""}">${"<i></i>".repeat(7)}</div></div>
         <div class="trk">${esc(S.d)}  ${esc(r.time)}</div><div class="stl"><span>${esc(r.name)}</span></div>
         <div class="rcap" data-rcap>${capAt(r, RA.src.endsWith(r.file) ? RA.currentTime : -1)}</div>
-        <div class="pb"><i data-rpf style="width:${(RA.src.endsWith(r.file) ? RA.currentTime / (RA.duration || secs(r.len)) : 0) * 100}%"></i></div><div class="ptm"><span data-rpc>${mmss(RA.src.endsWith(r.file) ? RA.currentTime : 0)}</span><span>${esc(r.len)}</span></div>
-        <div class="pctl"><button type="button" class="rbtn" data-sk="rplay">${on ? "❚❚" : "▶"}</button></div></div>`, on ? "Pause" : "Play", "Back", { mid: "" });
+        <div class="pb"><i data-rpf style="width:${(RA.src.endsWith(r.file) ? RA.currentTime / (RA.duration || secs(r.len)) : 0) * 100}%"></i></div><div class="ptm"><span data-rpc>${mmss(RA.src.endsWith(r.file) ? RA.currentTime : 0)}</span><button type="button" class="rbtn" data-sk="rplay">${on ? "❚❚" : "▶"}</button><span>${esc(r.len)}</span></div></div>`, on ? "Pause" : "Play", "Back", { mid: "" });
     } else if (n === "incoming") {
       lcd.innerHTML = frame("", `<div class="calling"><div class="ani">${ico("calls")}</div><div class="st">Incoming call</div><div class="who">${esc(S.who)}</div><div class="num">${esc(numberOf(S.who))}</div></div>`, "Answer", "Reject", { mid: "" });
     } else if (n === "calling") {
@@ -266,6 +265,16 @@
   }
   /* 문자 답장: 몇 초 뒤 받은 문자함에 도착 */
   const sentN = {};
+  /* 새 문자 알림: 알림음 + 화면 위쪽 배너 (닫혀 있으면 바깥 액정에 표시) */
+  let nbT = null;
+  function newMsgAlert(who) {
+    [0, .5].forEach(t => { tone([1568], .09, .06, t, "square"); tone([2093], .12, .06, t + .1, "square"); });
+    let nb = document.getElementById("nbanner");
+    if (!nb) { nb = document.createElement("div"); nb.id = "nbanner"; lcd.parentNode.appendChild(nb); }
+    nb.innerHTML = `${ico("msg")}<div><b>New message</b><span>${esc(who)}</span></div>`;
+    nb.classList.remove("show"); void nb.offsetWidth; nb.classList.add("show");
+    clearTimeout(nbT); nbT = setTimeout(() => nb.classList.remove("show"), 3000);
+  }
   function replyFrom(who) {
     const C = (P.msgReplies || {})[who]; if (!C) return;
     const k = sentN[who] = (sentN[who] ?? -1) + 1;
@@ -273,7 +282,7 @@
     if (!txt) return;
     setTimeout(() => {
       P.messages.unshift({ from: who, when: `${String(now().getFullYear()).slice(2)}/${stamp()}`, read: false, text: txt });
-      tone([1320], .12, .05); tone([990], .14, .05, .16);
+      newMsgAlert(who);
       if (S.name === "idle") render(); else if (S.name === "list" && S.kind === "inbox") inbox(0);
     }, 3500 + Math.random() * 3000);
   }

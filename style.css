@@ -26,11 +26,11 @@ body.big .hint{opacity:0}
 .layer{position:absolute;background-repeat:no-repeat;filter:drop-shadow(0 14px 18px rgba(20,30,60,.22))}
 
 /* 펼친 사진(362×1230, 경첩 축 y=605) */
-.open-bot{left:-184px;top:0;width:362px;height:625px;background-image:url("img/open.webp?v=202610182221");background-size:362px 1230px;background-position:0 -605px}
-.open-top{left:-184px;top:-605px;width:362px;height:605px;background-image:url("img/open.webp?v=202610182221");background-size:362px 1230px;background-position:0 0;
+.open-bot{left:-184px;top:0;width:362px;height:625px;background-image:url("img/open.webp?v=202610182235");background-size:362px 1230px;background-position:0 -605px}
+.open-top{left:-184px;top:-605px;width:362px;height:605px;background-image:url("img/open.webp?v=202610182235");background-size:362px 1230px;background-position:0 0;
   transform-origin:50% 100%;transform:rotateX(-90deg);backface-visibility:hidden;transition:transform .32s cubic-bezier(.2,.6,.3,1.15) .2s;visibility:hidden}
 /* 닫힌 사진(618×1419 를 0.547배 → 338×776, 경첩 축 y=126) */
-.closed{left:-173px;top:-126px;width:338px;height:776px;background-image:url("img/closed.webp?v=202610182221");background-size:338px 776px;cursor:pointer;
+.closed{left:-173px;top:-126px;width:338px;height:776px;background-image:url("img/closed.webp?v=202610182235");background-size:338px 776px;cursor:pointer;
   transform-origin:50% 126px;transition:transform .22s cubic-bezier(.6,0,.9,.5),opacity .01s .21s;backface-visibility:hidden}
 .flip.open .closed{transform:rotateX(90deg);opacity:0;pointer-events:none}
 .flip.open .open-top{transform:none;visibility:visible}
@@ -208,3 +208,16 @@ body.big .softbar .mid.nav button:not(:disabled):active{color:#fff;background:rg
 .player.rec .rcap{width:100%;height:46px;margin:6px 0 4px;padding:3px 5px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:11.5px;line-height:15px;color:var(--ink);background:rgba(255,255,255,.55);border:1px solid var(--line);overflow:hidden;word-break:keep-all;overflow-wrap:anywhere}
 .player.rec .rcap{flex-direction:column;gap:2px}
 .player.rec .rcap b{padding:0 4px;background:var(--navy);color:#fff;font-size:10px;line-height:13px}
+#nbanner{position:absolute;left:68px;top:184px;width:232px;z-index:6;display:flex;align-items:center;gap:6px;padding:5px 7px;background:#fff;border:2px solid var(--blue2);box-shadow:2px 2px 0 rgba(20,32,107,.35);color:var(--navy);font:11px/1.3 "Galmuri11",sans-serif;pointer-events:none;opacity:0;transform:translateY(-6px);transition:opacity .15s steps(2),transform .15s steps(2)}
+#nbanner.show{opacity:1;transform:none;animation:nbblink .5s steps(1) 2}
+#nbanner .pi{width:16px;height:16px;flex:none}
+#nbanner b{display:block;font-size:11px}#nbanner span{display:block;font-size:10.5px;color:var(--ink2)}
+@keyframes nbblink{50%{background:var(--lav1)}}
+.player.rec{overflow-y:auto}
+.player.rec .rcap{height:auto;min-height:46px;flex:none}
+.player.rec>*{flex:none}
+.player.rec .art{width:70px;height:50px}.player.rec .art .pi{width:24px;height:24px}
+.player.rec .eq{height:10px}
+.player.rec .ptm{align-items:center;margin-top:3px}
+.player.rec .rbtn{width:28px;height:20px}
+.player.rec .rcap{margin:4px 0 3px}
