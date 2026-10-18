@@ -9,7 +9,7 @@
   const T0 = Date.now(), BASE = new Date(`${P.date}T${P.time}`);
   const now = () => new Date(BASE.getTime() + (Date.now() - T0));
   const p2 = n => String(n).padStart(2, "0");
-  const W = "일월화수목금토";
+  const W = "일월화수목금토", WE = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"], MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const hm12 = d => { const h = d.getHours() % 12 || 12; return [`${h}:${p2(d.getMinutes())}`, d.getHours() < 12 ? "A" : "P"]; };
 
   /* ================= 소리 ================= */
@@ -38,8 +38,9 @@
     const vw = innerWidth, vh = innerHeight;
     let s, tx, ty;
     if (opened && big) {   // 액정 크게: 액정(경첩 축 기준 중심 0,-302 · 240×274)을 위쪽에 크게, 아래엔 조작 버튼
-      s = Math.min((vw - 20) / 240, (vh - 90) / 274, 3);
-      tx = vw / 2; ty = vh / 2 + 10 + 302 * s;
+      const Y0 = -612, Y1 = 30;   // 윗덮개 전체(수화부~경첩)가 보이게: 액정이 화면 가운데쯤
+      s = Math.min((vw - 8) / 372, (vh - 30) / (Y1 - Y0), 2.6);
+      tx = vw / 2; ty = vh / 2 - ((Y0 + Y1) / 2) * s;
     } else {
       const [y0, y1] = opened ? [-605, 625] : [-126, 650];   // 경첩 축 기준 위·아래 끝
       s = Math.min((vw - 24) / 370, (vh - 64) / (y1 - y0), 1.5);
@@ -80,12 +81,12 @@
   document.querySelectorAll("[data-bat]").forEach(b => b.innerHTML = batHTML(P.battery ?? 2));
   function tick() {
     const d = now(), [t, ap] = hm12(d);
-    subT.innerHTML = `${t}<small>${ap}</small>`; subD.textContent = `${d.getMonth() + 1}/${p2(d.getDate())} (${W[d.getDay()]})`;
+    subT.innerHTML = `${t}<small>${ap}</small>`; subD.textContent = `${d.getMonth() + 1}/${p2(d.getDate())} ${WE[d.getDay()]}`;
     lcd.querySelectorAll("[data-clk]").forEach(e => e.textContent = t);
     lcd.querySelectorAll("[data-ap]").forEach(e => e.textContent = ap === "A" ? "AM" : "PM");
     const missed = (P.calls || []).filter(c => c.dir === "missed").length, unread = (P.messages || []).filter(m => !m.read).length;
     subIc.innerHTML = (unread ? `<span class="sl-ic">✉</span>` : "") + (missed ? `<span class="sl-ic">☎</span>` : "");
-    subN.textContent = missed ? `부재중 ${missed}통` : unread ? `새 메시지 ${unread}개` : "";
+    subN.textContent = missed ? `${missed} Missed call${missed > 1 ? "s" : ""}` : unread ? `${unread} New msg` : "";
     lcd.querySelectorAll("[data-sbt]").forEach(e => e.textContent = `${p2(d.getHours())}:${p2(d.getMinutes())}`);
   }
   setInterval(tick, 1000);
@@ -93,8 +94,8 @@
   /* ================= 큰 액정 화면 (흰색·회색·파랑의 옛 휴대폰 화면) ================= */
   P.sent = P.sent || []; P.memos = P.memos || [];
   const MENU = [
-    { id: "contacts", label: "전화번호부" }, { id: "calls", label: "통화목록" },
-    { id: "msg", label: "문자" }, { id: "memo", label: "메모" }
+    { id: "contacts", label: "Phonebook" }, { id: "calls", label: "Call Log" },
+    { id: "msg", label: "Messages" }, { id: "memo", label: "Memo" }, { id: "music", label: "Music" }
   ];
   /* 파란 단색 픽셀 아이콘 */
   const ICON = {
@@ -104,40 +105,48 @@
     memo: `<rect x="3" y="2" width="10" height="12" fill="none" stroke="currentColor"/><path d="M5 5h6M5 7.5h6M5 10h4" stroke="currentColor"/><path d="M11 10l2-2" stroke="currentColor"/>`,
     inbox: `<path d="M2 9l2-5h8l2 5v4H2z" fill="none" stroke="currentColor"/><path d="M2 9h4l1 2h2l1-2h4" fill="none" stroke="currentColor"/>`,
     sent: `<path d="M2 8l12-5-4 11-2-4z" fill="none" stroke="currentColor"/>`,
-    write: `<path d="M3 13l1-3 7-7 2 2-7 7z" fill="none" stroke="currentColor"/>`
+    write: `<path d="M3 13l1-3 7-7 2 2-7 7z" fill="none" stroke="currentColor"/>`,
+    music: `<path d="M6 3l7-1.5V11" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M6 3v9" stroke="currentColor" stroke-width="1.4"/><ellipse cx="4.3" cy="12.2" rx="2.2" ry="1.7" fill="currentColor"/><ellipse cx="11.3" cy="11.2" rx="2.2" ry="1.7" fill="currentColor"/>`
   };
   const ico = id => `<svg class="pi" viewBox="0 0 16 16">${ICON[id] || ""}</svg>`;
   const ANT = `<span class="ant"><b>T</b><i></i><i></i><i></i><i></i></span>`;
-  const statusBar = () => `<div class="sb">${ANT}<span class="sbi">${(P.messages || []).some(m => !m.read) ? ico("msg") : ""}</span><span class="r"><span data-sbt></span><span class="bat">${batHTML(P.battery ?? 2)}</span></span></div>`;
+  const statusBar = () => `<div class="sb">${ANT}<span class="sbi">${(P.messages || []).some(m => !m.read) ? ico("msg") : ""}${M.on ? ico("music") : ""}</span><span class="r"><span data-sbt></span><span class="bat">${batHTML(P.battery ?? 2)}</span></span></div>`;
   const frame = (title, body, l = "", r = "", o = {}) => `<div class="scr${o.cls ? " " + o.cls : ""}">${statusBar()}${title ? `<div class="title"><span>${esc(title)}</span>${o.right ? `<em>${esc(o.right)}</em>` : ""}</div>` : ""}<div class="body">${body}</div><div class="softbar"><span data-sk="sl">${esc(l)}</span><span class="mid">${o.mid !== undefined ? esc(o.mid) : "▲▼"}</span><span data-sk="sr">${esc(r)}</span></div></div>`;
   const stamp = () => { const d = now(); return `${p2(d.getMonth() + 1)}/${p2(d.getDate())} ${p2(d.getHours())}:${p2(d.getMinutes())}`; };
   const bytes = s => [...s].reduce((n, c) => n + (c.charCodeAt(0) > 127 ? 2 : 1), 0);
 
   let S = { name: "off" }, popT = null, callT = [];
   function go(name, opt = {}) { S = { name, sel: 0, ...opt }; render(); }
-  const listHTML = items => `<div class="list">${items.length ? items.map((it, i) => `<button class="li${i === S.sel ? " sel" : ""}" data-i="${i}"><span class="no">${i + 1}</span>${it.ic ? ico(it.ic) : ""}${it.dot ? `<i class="dot"></i>` : ""}<span class="lb">${esc(it.label)}</span><small>${esc(it.sub || "")}</small></button>`).join("") : `<div class="empty">저장된 항목이 없습니다</div>`}</div>`;
+  const listHTML = items => `<div class="list">${items.length ? items.map((it, i) => `<button class="li${i === S.sel ? " sel" : ""}" data-i="${i}"><span class="no">${i + 1}</span>${it.ic ? ico(it.ic) : ""}${it.dot ? `<i class="dot"></i>` : ""}<span class="lb">${esc(it.label)}</span><small>${esc(it.sub || "")}</small></button>`).join("") : `<div class="empty">No entries</div>`}</div>`;
   function render() {
     const n = S.name;
     if (n === "idle") {
       const missed = (P.calls || []).filter(c => c.dir === "missed").length, unread = (P.messages || []).filter(m => !m.read).length, d = now();
-      lcd.innerHTML = frame("", `<div class="idle"><div class="ilogo">${esc(P.banner || "")}</div><div class="clk"><span data-clk></span><b data-ap></b></div><div class="dt">${d.getFullYear()}.${p2(d.getMonth() + 1)}.${p2(d.getDate())} ${W[d.getDay()]}요일</div>
-        ${missed || unread ? `<div class="note">${missed ? `<span>${ico("calls")}부재중 전화 ${missed}통</span>` : ""}${unread ? `<span>${ico("msg")}새 문자 ${unread}개</span>` : ""}</div>` : ""}</div>`, "메뉴", "전화부", { cls: "home", mid: "" });
+      lcd.innerHTML = frame("", `<div class="idle"><div class="ilogo">${esc(P.banner || "")}</div><div class="clk"><span data-clk></span><b data-ap></b></div><div class="dt">${WE[d.getDay()]}, ${MON[d.getMonth()]} ${p2(d.getDate())} ${d.getFullYear()}</div>
+        ${missed || unread ? `<div class="note">${missed ? `<span>${ico("calls")}${missed} Missed call${missed > 1 ? "s" : ""}</span>` : ""}${unread ? `<span>${ico("msg")}${unread} New message${unread > 1 ? "s" : ""}</span>` : ""}</div>` : ""}</div>`, "Menu", "Contacts", { cls: "home", mid: "" });
     } else if (n === "dial") {
-      lcd.innerHTML = frame("", `<div class="idle"><div class="dial"><small>${esc(nameOf(S.num))}</small>${esc(S.num)}</div></div>`, "통화", "지우기", { cls: "home", mid: "" });
+      lcd.innerHTML = frame("", `<div class="idle"><div class="dial"><small>${esc(nameOf(S.num))}</small>${esc(S.num)}</div></div>`, "Call", "Clear", { cls: "home", mid: "" });
     } else if (n === "menu") {
-      lcd.innerHTML = frame("메뉴", `<div class="list mlist">${S.items.map((m, i) => `<button class="li big${i === S.sel ? " sel" : ""}" data-i="${i}"><span class="no">${i + 1}</span>${ico(m.id)}<span class="lb">${esc(m.label)}</span></button>`).join("")}</div>`, "선택", "이전", { right: S.right || "" });
+      lcd.innerHTML = frame(S.title || "Menu", `<div class="list mlist">${S.items.map((m, i) => `<button class="li big${i === S.sel ? " sel" : ""}" data-i="${i}"><span class="no">${i + 1}</span>${ico(m.id)}<span class="lb">${esc(m.label)}</span></button>`).join("")}</div>`, "Select", "Back", { right: S.right || "" });
     } else if (n === "list") {
-      lcd.innerHTML = frame(S.title, listHTML(S.items), S.items.length ? (S.lbl || "선택") : "", "이전", { right: S.items.length ? `${S.sel + 1}/${S.items.length}` : "" });
+      lcd.innerHTML = frame(S.title, listHTML(S.items), S.items.length ? (S.lbl || "Select") : "", "Back", { right: S.items.length ? `${S.sel + 1}/${S.items.length}` : "" });
       const el = lcd.querySelector(".li.sel"); if (el) el.scrollIntoView({ block: "nearest" });
     } else if (n === "read") {
-      lcd.innerHTML = frame(S.title, `<div class="read ruled"><div class="meta">${esc(S.meta)}</div><div class="txt">${esc(S.text)}</div></div>`, S.l || "", "이전", { right: S.right || "" });
+      lcd.innerHTML = frame(S.title, `<div class="read ruled"><div class="meta">${esc(S.meta)}</div><div class="txt">${esc(S.text)}</div></div>`, S.l || "", "Back", { right: S.right || "" });
     } else if (n === "edit") {
-      lcd.innerHTML = frame(S.title, `<div class="edit">${S.to != null ? `<div class="to">받는사람: <b>${esc(S.to || "")}</b></div>` : ""}<textarea class="ta ruled" spellcheck="false" maxlength="${S.max || 80}">${esc(S.text || "")}</textarea></div>`, S.l || "저장", "취소", { right: "", mid: `${bytes(S.text || "")}/${S.max || 80}` });
+      lcd.innerHTML = frame(S.title, `<div class="edit">${S.to != null ? `<div class="to">To: <b>${esc(S.to || "")}</b></div>` : ""}<textarea class="ta ruled" spellcheck="false" maxlength="${S.max || 80}">${esc(S.text || "")}</textarea></div>`, S.l || "Save", "Cancel", { right: "", mid: `${bytes(S.text || "")}/${S.max || 80}` });
       const ta = lcd.querySelector(".ta"), cnt = lcd.querySelector(".softbar .mid");
       ta.addEventListener("input", () => { S.text = ta.value; cnt.textContent = `${bytes(ta.value)}/${S.max || 80}`; });
       if (!TOUCH || big) setTimeout(() => { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }, 30);
+    } else if (n === "player") {
+      const s = SONGS[M.i] || {}, L = secs(s.len || "0:00");
+      lcd.innerHTML = frame("Now Playing", `<div class="player"><div class="art">${ico("music")}<div class="eq${M.on ? " on" : ""}">${"<i></i>".repeat(7)}</div></div>
+        <div class="trk">${M.i + 1}/${SONGS.length}</div><div class="stl"><span>${esc(s.title || "")}</span></div><div class="sar">${esc(s.artist || "")}</div>
+        <div class="pb"><i data-pf style="width:${(M.t / (L || 1)) * 100}%"></i></div><div class="ptm"><span data-pc>${mmss(M.t)}</span><span>${esc(s.len || "")}</span></div>
+        <div class="pctl"><span>|◀◀</span><b>${M.on ? "❚❚" : "▶"}</b><span>▶▶|</span></div></div>`, M.on ? "Pause" : "Play", "Back", { mid: "" });
+      const st = lcd.querySelector(".stl span"); if (st && st.scrollWidth > st.parentNode.clientWidth) st.parentNode.classList.add("long");
     } else if (n === "calling") {
-      lcd.innerHTML = frame("", `<div class="calling"><div class="ani">${ico("calls")}</div><div class="who">${esc(S.who || "")}</div><div class="num">${esc(S.num)}</div><div class="st" data-cst>연결 중…</div></div>`, "", "종료", { mid: "" });
+      lcd.innerHTML = frame("", `<div class="calling"><div class="ani">${ico("calls")}</div><div class="who">${esc(S.who || "")}</div><div class="num">${esc(S.num)}</div><div class="st" data-cst>Calling…</div></div>`, "", "End", { mid: "" });
     }
     tick();
   }
@@ -146,41 +155,55 @@
   const nameOf = num => (P.contacts || []).find(c => c.number === num)?.name || "";
 
   const mainMenu = sel => go("menu", { items: MENU, sel: sel || 0, level: "main" });
-  const msgMenu = sel => go("menu", { items: [{ id: "inbox", label: "받은 문자함" }, { id: "sent", label: "보낸 문자함" }, { id: "write", label: "문자 작성" }], sel: sel || 0, level: "msg", title: "문자" });
+  const msgMenu = sel => go("menu", { items: [{ id: "inbox", label: "Inbox" }, { id: "sent", label: "Sent" }, { id: "write", label: "Write New" }], sel: sel || 0, level: "msg", title: "Messages" });
   function openMenu(i) {
     const id = MENU[i].id;
-    if (id === "contacts") return go("list", { title: "전화번호부", kind: "contacts", backTo: () => mainMenu(0), items: (P.contacts || []).map(c => ({ label: c.name, sub: c.number, data: c })) });
-    if (id === "calls") return go("list", { title: "통화목록", kind: "calls", backTo: () => mainMenu(1), items: (P.calls || []).map(c => ({ label: c.name, sub: c.when, ic: "calls", dot: c.dir === "missed", data: c })) });
+    if (id === "contacts") return go("list", { title: "Phonebook", kind: "contacts", backTo: () => mainMenu(0), items: (P.contacts || []).map(c => ({ label: c.name, sub: c.number, data: c })) });
+    if (id === "calls") return go("list", { title: "Call Log", kind: "calls", backTo: () => mainMenu(1), items: (P.calls || []).map(c => ({ label: c.name, sub: c.when, ic: "calls", dot: c.dir === "missed", data: c })) });
     if (id === "msg") return msgMenu(0);
     if (id === "memo") return memoList();
+    if (id === "music") return musicList(M.i);
   }
-  const inbox = sel => go("list", { title: "받은 문자함", kind: "inbox", sel: sel || 0, backTo: () => msgMenu(0), items: (P.messages || []).map(m => ({ label: m.from, sub: m.when, dot: !m.read, data: m })) });
-  const sentBox = sel => go("list", { title: "보낸 문자함", kind: "sent", sel: sel || 0, backTo: () => msgMenu(1), items: P.sent.map(m => ({ label: m.to, sub: m.when, data: m })) });
-  const memoList = sel => go("list", { title: "메모", kind: "memo", sel: sel || 0, lbl: "열기", backTo: () => mainMenu(3), items: [{ label: "새 메모 쓰기", ic: "write", data: null }, ...P.memos.map(m => ({ label: (m.text || "").split("\n")[0] || "(빈 메모)", sub: m.when, data: m }))] });
-  const pickTo = after => go("list", { title: "받는사람 선택", kind: "pickTo", after, backTo: () => msgMenu(2), items: (P.contacts || []).map(c => ({ label: c.name, sub: c.number, data: c })) });
-  const compose = (to, back) => go("edit", { title: "문자 작성", to, text: "", l: "전송", max: 80, mode: "sms", backTo: back });
+  /* 음악: 곡 목록 · 재생 화면 (재생은 화면 속에서만 흐름) */
+  const SONGS = P.music || [];
+  const secs = s => { const [m, x] = String(s).split(":").map(Number); return m * 60 + (x || 0); };
+  const mmss = t => `${Math.floor(t / 60)}:${p2(Math.floor(t % 60))}`;
+  const M = { i: 0, t: 0, on: false, iv: null };
+  function musicTick() {
+    if (!M.on) return; M.t += 1;
+    if (M.t >= secs(SONGS[M.i].len)) { M.i = (M.i + 1) % SONGS.length; M.t = 0; if (S.name === "player") return render(); }
+    if (S.name === "player") { const f = lcd.querySelector("[data-pf]"), c = lcd.querySelector("[data-pc]"); if (f) f.style.width = (M.t / secs(SONGS[M.i].len) * 100) + "%"; if (c) c.textContent = mmss(M.t); }
+  }
+  setInterval(musicTick, 1000);
+  const musicList = sel => go("list", { title: "Music", kind: "music", sel: sel || 0, lbl: "Play", backTo: () => mainMenu(4), items: SONGS.map(s => ({ label: s.title, sub: s.artist, ic: "music", data: s })) });
+  const inbox = sel => go("list", { title: "Inbox", kind: "inbox", sel: sel || 0, backTo: () => msgMenu(0), items: (P.messages || []).map(m => ({ label: m.from, sub: m.when, dot: !m.read, data: m })) });
+  const sentBox = sel => go("list", { title: "Sent", kind: "sent", sel: sel || 0, backTo: () => msgMenu(1), items: P.sent.map(m => ({ label: m.to, sub: m.when, data: m })) });
+  const memoList = sel => go("list", { title: "Memo", kind: "memo", sel: sel || 0, lbl: "Open", backTo: () => mainMenu(3), items: [{ label: "New Memo", ic: "write", data: null }, ...P.memos.map(m => ({ label: (m.text || "").split("\n")[0] || "(Empty)", sub: m.when, data: m }))] });
+  const pickTo = after => go("list", { title: "Select Recipient", kind: "pickTo", after, backTo: () => msgMenu(2), items: (P.contacts || []).map(c => ({ label: c.name, sub: c.number, data: c })) });
+  const compose = (to, back) => go("edit", { title: "Write Message", to, text: "", l: "Send", max: 80, mode: "sms", backTo: back });
   function pick() {
     const it = S.items[S.sel]; if (!it) return;
     const here = S.kind, sel = S.sel;
-    if (here === "contacts") return go("read", { title: it.data.name, meta: "휴대폰", text: it.data.number, call: it.data.number, smsTo: it.data.name, l: "통화", backTo: () => openMenu(0) });
-    if (here === "calls") return go("read", { title: "통화목록", meta: { missed: "부재중 전화", out: "건 전화", in: "받은 전화" }[it.data.dir] + "  " + it.data.when, text: `${it.data.name}\n${numberOf(it.data.name)}`, call: numberOf(it.data.name), l: "통화", backTo: () => { openMenu(1); S.sel = sel; render(); } });
-    if (here === "inbox") { it.data.read = true; const i = P.messages.indexOf(it.data); return go("read", { title: "받은 문자", right: `${i + 1}/${P.messages.length}`, meta: `${it.data.from}  ${it.data.when}`, text: it.data.text, call: numberOf(it.data.from), smsTo: it.data.from, l: "답장", backTo: () => inbox(sel) }); }
-    if (here === "sent") return go("read", { title: "보낸 문자", meta: `${it.data.to}  ${it.data.when}`, text: it.data.text, call: numberOf(it.data.to), l: "통화", backTo: () => sentBox(sel) });
-    if (here === "memo") return it.data ? go("read", { title: "메모", meta: it.data.when, text: it.data.text, l: "수정", memo: it.data, backTo: () => memoList(sel) })
-                                       : go("edit", { title: "새 메모", text: "", l: "저장", max: 200, mode: "memo", backTo: () => memoList(0) });
+    if (here === "contacts") return go("read", { title: it.data.name, meta: "Mobile", text: it.data.number, call: it.data.number, smsTo: it.data.name, l: "Call", backTo: () => openMenu(0) });
+    if (here === "calls") return go("read", { title: "Call Log", meta: { missed: "Missed", out: "Dialed", in: "Received" }[it.data.dir] + "  " + it.data.when, text: `${it.data.name}\n${numberOf(it.data.name)}`, call: numberOf(it.data.name), l: "Call", backTo: () => { openMenu(1); S.sel = sel; render(); } });
+    if (here === "inbox") { it.data.read = true; const i = P.messages.indexOf(it.data); return go("read", { title: "Message", right: `${i + 1}/${P.messages.length}`, meta: `${it.data.from}  ${it.data.when}`, text: it.data.text, call: numberOf(it.data.from), smsTo: it.data.from, l: "Reply", backTo: () => inbox(sel) }); }
+    if (here === "sent") return go("read", { title: "Sent", meta: `${it.data.to}  ${it.data.when}`, text: it.data.text, call: numberOf(it.data.to), l: "Call", backTo: () => sentBox(sel) });
+    if (here === "memo") return it.data ? go("read", { title: "Memo", meta: it.data.when, text: it.data.text, l: "Edit", memo: it.data, backTo: () => memoList(sel) })
+                                       : go("edit", { title: "New Memo", text: "", l: "Save", max: 200, mode: "memo", backTo: () => memoList(0) });
     if (here === "pickTo") return compose(it.data.name, () => pickTo());
+    if (here === "music") { if (M.i !== sel) { M.i = sel; M.t = 0; } M.on = true; return go("player", {}); }
   }
   function save() {   // 편집 화면에서 저장/전송
     const t = (S.text || "").trim();
-    if (!t) return pop("내용을 입력하세요");
-    if (S.mode === "sms") { P.sent.unshift({ to: S.to, when: stamp(), text: t }); const b = S.backTo; S.name = "sending"; return pop("메시지를 보냈습니다", () => msgMenu(1)); }
-    if (S.mode === "memo") { if (S.memo) { S.memo.text = t; S.memo.when = stamp(); } else P.memos.unshift({ text: t, when: stamp() }); return pop("저장되었습니다", () => memoList(S.memo ? P.memos.indexOf(S.memo) + 1 : 1)); }
+    if (!t) return pop("Enter text");
+    if (S.mode === "sms") { P.sent.unshift({ to: S.to, when: stamp(), text: t }); const b = S.backTo; S.name = "sending"; return pop("Message sent", () => msgMenu(1)); }
+    if (S.mode === "memo") { if (S.memo) { S.memo.text = t; S.memo.when = stamp(); } else P.memos.unshift({ text: t, when: stamp() }); return pop("Saved", () => memoList(S.memo ? P.memos.indexOf(S.memo) + 1 : 1)); }
   }
   function startCall(num) {
     stopCall(); const who = nameOf(num) || (P.contacts || []).find(c => c.name === num)?.name || "";
     go("calling", { num: numberOf(num), who });
     tone([440, 480], 1.2, .03, .4); tone([440, 480], 1.2, .03, 4.4);
-    callT.push(setTimeout(() => { const s = lcd.querySelector("[data-cst]"); if (s) s.textContent = "상대방이 받지 않습니다"; }, 7000));
+    callT.push(setTimeout(() => { const s = lcd.querySelector("[data-cst]"); if (s) s.textContent = "No answer"; }, 7000));
     callT.push(setTimeout(() => { if (S.name === "calling") go("idle"); }, 9000));
   }
   function stopCall() { callT.forEach(clearTimeout); callT = []; }
@@ -230,8 +253,8 @@
       if (k === "up" || k === "down") { const r = lcd.querySelector(".read"); r.scrollTop += k === "up" ? -36 : 36; return; }
       if (k === "send" && S.call) return startCall(S.call);
       if (k === "ok" || k === "sl") {
-        if (S.memo) return go("edit", { title: "메모 수정", text: S.memo.text, l: "저장", max: 200, mode: "memo", memo: S.memo, backTo: S.backTo });
-        if (S.l === "답장" && S.smsTo) { const back = S.backTo; return compose(S.smsTo, back); }
+        if (S.memo) return go("edit", { title: "Edit Memo", text: S.memo.text, l: "Save", max: 200, mode: "memo", memo: S.memo, backTo: S.backTo });
+        if (S.l === "Reply" && S.smsTo) { const back = S.backTo; return compose(S.smsTo, back); }
         if (S.call) return startCall(S.call);
         return;
       }
@@ -243,6 +266,12 @@
       if (k === "sr") return S.backTo ? S.backTo() : go("idle");
       if (k === "clr") { if (S.text) { S.text = S.text.slice(0, -1); return render(); } return S.backTo ? S.backTo() : go("idle"); }
       if (digit) { S.text = (S.text || "") + k; return render(); }
+      return;
+    }
+    if (n === "player") {
+      if (k === "ok" || k === "sl") { M.on = !M.on; return render(); }
+      if (k === "left" || k === "right") { M.i = (M.i + (k === "left" ? -1 : 1) + SONGS.length) % SONGS.length; M.t = 0; return render(); }
+      if (k === "clr" || k === "sr" || k === "up") return musicList(M.i);
       return;
     }
     if (n === "calling") { if (k === "sr" || k === "clr") { stopCall(); go("idle"); } }

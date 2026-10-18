@@ -102,9 +102,7 @@ body.big .lcd:after{background:
 .pi{width:13px;height:13px;flex:none;color:var(--blue2);shape-rendering:crispEdges}
 
 /* 대기화면: 회청색 바탕 + 큰 시계 */
-.idle{position:absolute;inset:0;background:
-  repeating-linear-gradient(135deg,rgba(255,255,255,.18) 0 2px,transparent 2px 7px),
-  linear-gradient(#eef1fb 0%,#c6d0f1 55%,#9fb0e6 100%)}
+.idle{position:absolute;inset:0;background:linear-gradient(#bfc3cf 0%,#a3a9ba 55%,#868da2 100%)}
 .idle .ilogo{position:absolute;left:0;right:0;top:12px;text-align:center;font-size:11px;font-weight:700;color:var(--ink2)}
 .idle .clk{position:absolute;left:0;right:0;top:40px;display:flex;align-items:flex-end;justify-content:center;gap:4px;color:var(--navy)}
 .idle .clk span{font:700 42px/1 "Galmuri11",monospace;letter-spacing:.01em;text-shadow:2px 2px 0 rgba(255,255,255,.7),3px 3px 0 rgba(20,38,122,.15)}
@@ -144,3 +142,24 @@ body.big .lcd:after{background:
 @keyframes pulse{50%{opacity:.25}}
 body.big .lcd{cursor:default}
 body.big .softbar [data-sk]{cursor:pointer}
+
+/* 음악 재생 화면 */
+.player{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;padding:8px 10px 0;background:linear-gradient(#e4e8f5,#b9c3e6)}
+.player .art{position:relative;width:86px;height:70px;border:1px solid var(--blue2);background:linear-gradient(#fff,#d4dbf2);display:flex;align-items:center;justify-content:center}
+.player .art .pi{width:34px;height:34px}
+.player .eq{position:absolute;left:6px;right:6px;bottom:4px;height:16px;display:flex;align-items:flex-end;gap:2px}
+.player .eq i{flex:1;height:3px;background:var(--blue2)}
+.player .eq.on i{animation:eqb .5s steps(4) infinite alternate}
+.player .eq.on i:nth-child(2){animation-delay:-.2s}.player .eq.on i:nth-child(3){animation-delay:-.35s}.player .eq.on i:nth-child(4){animation-delay:-.1s}.player .eq.on i:nth-child(5){animation-delay:-.45s}.player .eq.on i:nth-child(6){animation-delay:-.27s}.player .eq.on i:nth-child(7){animation-delay:-.05s}
+@keyframes eqb{0%{height:3px}100%{height:16px}}
+.player .trk{margin-top:4px;font:10px "Galmuri11",monospace;color:var(--ink2)}
+.player .stl{width:100%;overflow:hidden;text-align:center;font-weight:700;font-size:13px;color:var(--navy);white-space:nowrap}
+.player .stl span{display:inline-block}
+.player .stl.long{text-align:left}.player .stl.long span{padding-left:100%;animation:mq 7s linear infinite}
+@keyframes mq{to{transform:translateX(-100%)}}
+.player .sar{font-size:11px;color:var(--ink2);margin-top:1px;white-space:nowrap;overflow:hidden;max-width:100%}
+.player .pb{width:100%;height:7px;margin-top:8px;border:1px solid var(--blue2);background:#fff}
+.player .pb i{display:block;height:100%;background:repeating-linear-gradient(90deg,var(--blue2) 0 3px,#4f66c8 3px 4px)}
+.player .ptm{width:100%;display:flex;justify-content:space-between;font:10px "Galmuri11",monospace;color:var(--ink2);margin-top:2px}
+.player .pctl{display:flex;gap:16px;align-items:center;margin-top:5px;font:700 12px "Galmuri11",monospace;color:var(--navy)}
+.player .pctl b{width:22px;height:18px;display:flex;align-items:center;justify-content:center;background:var(--navy);color:#fff;font-size:11px}
