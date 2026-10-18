@@ -26,11 +26,11 @@ body.big .hint{opacity:0}
 .layer{position:absolute;background-repeat:no-repeat;filter:drop-shadow(0 14px 18px rgba(20,30,60,.22))}
 
 /* 펼친 사진(362×1230, 경첩 축 y=605) */
-.open-bot{left:-184px;top:0;width:362px;height:625px;background-image:url("img/open.webp?v=202610181740");background-size:362px 1230px;background-position:0 -605px}
-.open-top{left:-184px;top:-605px;width:362px;height:605px;background-image:url("img/open.webp?v=202610181740");background-size:362px 1230px;background-position:0 0;
+.open-bot{left:-184px;top:0;width:362px;height:625px;background-image:url("img/open.webp?v=202610181747");background-size:362px 1230px;background-position:0 -605px}
+.open-top{left:-184px;top:-605px;width:362px;height:605px;background-image:url("img/open.webp?v=202610181747");background-size:362px 1230px;background-position:0 0;
   transform-origin:50% 100%;transform:rotateX(-90deg);backface-visibility:hidden;transition:transform .32s cubic-bezier(.2,.6,.3,1.15) .2s;visibility:hidden}
 /* 닫힌 사진(618×1419 를 0.547배 → 338×776, 경첩 축 y=126) */
-.closed{left:-173px;top:-126px;width:338px;height:776px;background-image:url("img/closed.webp?v=202610181740");background-size:338px 776px;cursor:pointer;
+.closed{left:-173px;top:-126px;width:338px;height:776px;background-image:url("img/closed.webp?v=202610181747");background-size:338px 776px;cursor:pointer;
   transform-origin:50% 126px;transition:transform .22s cubic-bezier(.6,0,.9,.5),opacity .01s .21s;backface-visibility:hidden}
 .flip.open .closed{transform:rotateX(90deg);opacity:0;pointer-events:none}
 .flip.open .open-top{transform:none;visibility:visible}
