@@ -94,7 +94,7 @@
     subT.innerHTML = `${t}<small>${ap}</small>`; subD.textContent = `${d.getMonth() + 1}/${p2(d.getDate())} ${WE[d.getDay()]}`;
     lcd.querySelectorAll("[data-clk]").forEach(e => e.textContent = t);
     lcd.querySelectorAll("[data-ap]").forEach(e => e.textContent = ap === "A" ? "AM" : "PM");
-    const missed = (P.calls || []).filter(c => c.dir === "missed" && !c.seen).length, unread = (P.messages || []).filter(m => !m.read).length;
+    const missed = (P.calls || []).filter(c => c.dir === "missed" && !c.seen).length, unread = (P.messages || []).filter(m => m.read === false).length;
     subIc.innerHTML = (unread ? `<span class="sl-ic">✉</span>` : "") + (missed ? `<span class="sl-ic">☎</span>` : "");
     subN.textContent = missed ? `${missed} Missed call${missed > 1 ? "s" : ""}` : unread ? `${unread} New msg` : "";
     lcd.querySelectorAll("[data-sbt]").forEach(e => e.textContent = `${p2(d.getHours())}:${p2(d.getMinutes())}`);
@@ -123,7 +123,7 @@
   };
   const ico = id => `<svg class="pi" viewBox="0 0 16 16">${ICON[id] || ""}</svg>`;
   const ANT = `<span class="ant"><b>T</b><i></i><i></i><i></i><i></i></span>`;
-  const statusBar = () => `<div class="sb">${ANT}<span class="sbi">${(P.messages || []).some(m => !m.read) ? ico("msg") : ""}${M.on ? ico("music") : ""}</span><span class="r"><span data-sbt></span><span class="bat">${batHTML(P.battery ?? 2)}</span></span></div>`;
+  const statusBar = () => `<div class="sb">${ANT}<span class="sbi">${(P.messages || []).some(m => m.read === false) ? ico("msg") : ""}${M.on ? ico("music") : ""}</span><span class="r"><span data-sbt></span><span class="bat">${batHTML(P.battery ?? 2)}</span></span></div>`;
   const frame = (title, body, l = "", r = "", o = {}) => `<div class="scr${o.cls ? " " + o.cls : ""}">${statusBar()}${title ? `<div class="title"><span>${esc(title)}</span>${o.right ? `<em>${esc(o.right)}</em>` : ""}</div>` : ""}<div class="body">${body}</div><div class="softbar"><button type="button" data-sk="sl">${esc(l)}</button><span class="mid">${o.mid !== undefined ? esc(o.mid) : "▲▼"}</span><button type="button" data-sk="sr">${esc(r)}</button></div></div>`;
   const stamp = () => { const d = now(); return `${p2(d.getMonth() + 1)}/${p2(d.getDate())} ${p2(d.getHours())}:${p2(d.getMinutes())}`; };
   const bytes = s => [...s].reduce((n, c) => n + (c.charCodeAt(0) > 127 ? 2 : 1), 0);
@@ -135,7 +135,7 @@
     const n = S.name;
     if (n !== "edit" && typing()) document.activeElement.blur();   // 전송·저장·취소하면 자판이 내려감
     if (n === "idle") {
-      const missed = (P.calls || []).filter(c => c.dir === "missed" && !c.seen).length, unread = (P.messages || []).filter(m => !m.read).length, d = now();
+      const missed = (P.calls || []).filter(c => c.dir === "missed" && !c.seen).length, unread = (P.messages || []).filter(m => m.read === false).length, d = now();
       lcd.innerHTML = frame("", `<div class="idle"><div class="ilogo">${esc(P.banner || "")}</div><div class="clk"><span data-clk></span><b data-ap></b></div><div class="dt">${WE[d.getDay()]}, ${MON[d.getMonth()]} ${p2(d.getDate())} ${d.getFullYear()}</div>
         ${missed || unread ? `<div class="note">${missed ? `<span>${ico("calls")}${missed} Missed call${missed > 1 ? "s" : ""}</span>` : ""}${unread ? `<span>${ico("msg")}${unread} New message${unread > 1 ? "s" : ""}</span>` : ""}</div>` : ""}</div>`, "Menu", "Contacts", { cls: "home", mid: "" });
     } else if (n === "dial") {
@@ -146,7 +146,7 @@
       lcd.innerHTML = frame(S.title, listHTML(S.items), S.items.length ? (S.lbl || "Select") : "", "Back", { right: S.items.length ? `${S.sel + 1}/${S.items.length}` : "" });
       const el = lcd.querySelector(".li.sel"); if (el) el.scrollIntoView({ block: "nearest" });
     } else if (n === "read") {
-      lcd.innerHTML = frame(S.title, `<div class="read ruled"><div class="meta">${esc(S.meta)}</div><div class="txt">${esc(S.text)}</div></div>`, S.l || "", "Back", { right: S.right || "" });
+      lcd.innerHTML = frame(S.title, `<div class="read ruled"><div class="meta">${esc(S.meta)}</div>${S.pic && PICS[S.pic] ? `<div class="pic"><div class="ph">${PICS[S.pic]}</div><div class="pn">${ico("cam")}IMG_${String(S.pic.length * 731 + 1024).slice(0, 4)}.JPG</div>${S.cap ? `<small class="ko">${esc(S.cap)}</small>` : ""}</div>` : ""}<div class="txt">${esc(S.text)}</div>${S.ko ? `<small class="ko">(${esc(S.ko)})</small>` : ""}</div>`, S.l || "", "Back", { right: S.right || "" });
     } else if (n === "edit") {
       lcd.innerHTML = frame(S.title, `<div class="edit">${S.to != null ? `<div class="to">To: <b>${esc(S.to || "")}</b></div>` : ""}<textarea class="ta ruled" spellcheck="false" maxlength="${S.max || 80}">${esc(S.text || "")}</textarea></div>`, S.l || "Save", "Cancel", { right: "", mid: `${bytes(S.text || "")}/${S.max || 80}` });
       const ta = lcd.querySelector(".ta"), cnt = lcd.querySelector(".softbar .mid");
@@ -182,6 +182,19 @@
     tick();
   }
   function pop(msg, then, ms = 1300) { const p = document.createElement("div"); p.className = "pop"; p.textContent = msg; lcd.querySelector(".body")?.appendChild(p); clearTimeout(popT); popT = setTimeout(() => { p.remove(); then && then(); }, ms); }
+
+  /* 첨부 사진: 흐릿한 흑백 저화질 사진처럼 그린 SVG */
+  const G = id => `<defs><filter id="g${id}" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="${id.length * 7}"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="table" tableValues="0 .45"/></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"/><feBlend in="SourceGraphic" mode="multiply"/></filter><radialGradient id="v${id}"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".55"/></radialGradient></defs>`;
+  const PH = (id, body) => `<svg viewBox="0 0 120 84" preserveAspectRatio="xMidYMid slice">${G(id)}<g filter="url(#g${id})" style="filter:url(#g${id}) blur(.35px)">${body}</g><rect width="120" height="84" fill="url(#v${id})"/></svg>`;
+  const scr = (x, y, t, sz, r) => `<text x="${x}" y="${y}" font-family="Impact,Arial Black,sans-serif" font-weight="900" font-size="${sz}" fill="#1a1a1a" transform="rotate(${r} ${x} ${y})" opacity=".85">${t}</text>`;
+  const PICS = {
+    locker: PH("locker", `<rect width="120" height="84" fill="#8f8f8f"/>${[0,1,2,3].map(i => `<rect x="${4 + i * 29}" y="4" width="26" height="80" fill="${i === 1 ? "#b3b3b3" : "#9d9d9d"}" stroke="#555"/><rect x="${8 + i * 29}" y="10" width="18" height="2" fill="#666"/><rect x="${8 + i * 29}" y="14" width="18" height="2" fill="#666"/><rect x="${25 + i * 29}" y="40" width="2" height="8" fill="#444"/>`).join("")}${scr(30, 32, "GO HOME", 9, -8)}${scr(33, 52, "YELLOW", 9, 6)}${scr(36, 70, "CHINK", 8, -4)}<path d="M33 76 q6 -8 14 2 M30 22 l20 -6" stroke="#111" stroke-width="1.6" fill="none"/>`),
+    tray: PH("tray", `<rect width="120" height="84" fill="#a9a9a9"/>${[0,1,2,3,4,5].map(i => `<line x1="${i * 24}" y1="0" x2="${i * 24 - 30}" y2="84" stroke="#939393"/>`).join("")}<rect x="34" y="30" width="54" height="34" rx="3" fill="#cfcfcf" stroke="#6d6d6d" transform="rotate(-14 61 47)"/><ellipse cx="50" cy="56" rx="16" ry="7" fill="#e6e6e6"/><ellipse cx="72" cy="40" rx="10" ry="6" fill="#5c5c5c"/><circle cx="85" cy="60" r="4" fill="#777"/><circle cx="30" cy="66" r="3" fill="#ededed"/><circle cx="24" cy="60" r="2" fill="#ededed"/><path d="M60 64 q14 10 30 4" stroke="#555" stroke-width="3" fill="none"/><path d="M8 6 l12 70" stroke="#777" stroke-width="5"/>`),
+    toilet: PH("toilet", `<rect width="120" height="84" fill="#9c9c9c"/>${[0,1,2,3,4].map(i => `<line x1="0" y1="${i * 18}" x2="120" y2="${i * 18}" stroke="#888"/>`).join("")}<ellipse cx="60" cy="50" rx="38" ry="26" fill="#e4e4e4" stroke="#6a6a6a" stroke-width="2"/><ellipse cx="60" cy="52" rx="28" ry="18" fill="#b8b8b8"/><rect x="42" y="36" width="34" height="26" rx="4" fill="#3d3d3d" transform="rotate(12 59 49)"/><rect x="48" y="40" width="22" height="5" fill="#555" transform="rotate(12 59 49)"/><path d="M44 36 q15 -14 30 0" stroke="#2c2c2c" stroke-width="3" fill="none" transform="rotate(12 59 49)"/><rect x="66" y="58" width="14" height="10" fill="#f2f2f2" transform="rotate(-20 73 63)"/>`),
+    desk: PH("desk", `<rect width="120" height="84" fill="#7d7d7d"/><rect x="0" y="10" width="120" height="74" fill="#b0a99f"/>${[0,1,2,3,4,5,6].map(i => `<path d="M0 ${16 + i * 10} q60 ${i % 2 ? 4 : -4} 120 0" stroke="#9a948b" fill="none"/>`).join("")}<text x="18" y="52" font-family="Courier New,monospace" font-weight="700" font-size="17" fill="none" stroke="#3a3a3a" stroke-width="1.4" transform="rotate(-6 60 50)">RICE RAT</text><path d="M14 64 l90 -10" stroke="#3a3a3a" stroke-width="1"/><circle cx="96" cy="24" r="5" fill="none" stroke="#555"/>`),
+    floor: PH("floor", `<rect width="120" height="84" fill="#a2a2a2"/><rect x="0" y="0" width="120" height="58" fill="#b9b9b9"/><rect x="0" y="56" width="120" height="3" fill="#7a7a7a"/>${[0,1,2,3].map(i => `<rect x="${8 + i * 30}" y="6" width="22" height="46" fill="#a8a8a8" stroke="#8a8a8a"/>`).join("")}<ellipse cx="60" cy="72" rx="26" ry="5" fill="#808080"/><path d="M40 72 q-2 -22 14 -28 q12 -4 20 6 q8 10 6 22 z" fill="#2e2e2e"/><circle cx="60" cy="40" r="9" fill="#222"/><path d="M42 70 q18 -10 38 0" stroke="#3c3c3c" stroke-width="5" fill="none"/>`),
+    book: PH("book", `<rect width="120" height="84" fill="#8a8a8a"/><rect x="18" y="22" width="44" height="54" fill="#d8d8d8" stroke="#666" transform="rotate(-10 40 49)"/><rect x="58" y="18" width="44" height="54" fill="#cfcfcf" stroke="#666" transform="rotate(8 80 45)"/>${[0,1,2,3,4,5].map(i => `<line x1="${66}" y1="${28 + i * 7}" x2="${96}" y2="${30 + i * 7}" stroke="#999" transform="rotate(8 80 45)"/>`).join("")}<path d="M24 30 l10 12 -6 8 12 10 -4 12" stroke="#5a5a5a" stroke-width="2" fill="none"/><path d="M70 22 l-6 20 8 6 -4 18" stroke="#666" stroke-width="2" fill="none"/><ellipse cx="60" cy="62" rx="30" ry="12" fill="#555" opacity=".45"/><polygon points="88,70 104,64 110,78 92,82" fill="#e0e0e0"/><polygon points="8,66 22,72 14,82 2,78" fill="#e8e8e8"/>`)
+  };
   const numberOf = name => (P.contacts || []).find(c => c.name === name)?.number || name;
   const nameOf = num => (P.contacts || []).find(c => c.number === num)?.name || "";
 
@@ -207,7 +220,7 @@
   }
   setInterval(musicTick, 1000);
   const musicList = sel => go("list", { title: "Music", kind: "music", sel: sel || 0, lbl: "Play", backTo: () => mainMenu(4), items: SONGS.map(s => ({ label: s.title, sub: s.artist, ic: "music", data: s })) });
-  const inbox = sel => go("list", { title: "Inbox", kind: "inbox", sel: sel || 0, backTo: () => msgMenu(0), items: (P.messages || []).map(m => ({ label: m.from, sub: m.when, dot: !m.read, data: m })) });
+  const inbox = sel => go("list", { title: "Inbox", kind: "inbox", sel: sel || 0, backTo: () => msgMenu(0), items: (P.messages || []).map(m => ({ label: (m.pic ? "▣ " : "") + m.from, sub: m.when, dot: m.read === false, data: m })) });
   const sentBox = sel => go("list", { title: "Sent", kind: "sent", sel: sel || 0, backTo: () => msgMenu(1), items: P.sent.map(m => ({ label: m.to, sub: m.when, data: m })) });
   const memoList = sel => go("list", { title: "Memo", kind: "memo", sel: sel || 0, lbl: "Open", backTo: () => mainMenu(3), items: [{ label: "New Memo", ic: "write", data: null }, ...P.memos.map(m => ({ label: (m.text || "").split("\n")[0] || "(Empty)", sub: m.when, data: m }))] });
   const pickTo = after => go("list", { title: "Select Recipient", kind: "pickTo", after, backTo: () => msgMenu(2), items: (P.contacts || []).map(c => ({ label: c.name, sub: c.number, data: c })) });
@@ -218,7 +231,7 @@
     if (here === "contacts") return go("read", { title: it.data.name, meta: "Mobile", text: it.data.number, call: it.data.number, smsTo: it.data.name, l: "Call", backTo: () => openMenu(0) });
     if (here === "calls" && it.data.talk) { it.data.seen = true; return go("talk", { c: it.data, n: 0, backTo: () => { openMenu(1); S.sel = sel; render(); } }); }
     if (here === "calls") { it.data.seen = true; } if (here === "calls") return go("read", { title: "Call Log", meta: { missed: "Missed", out: "Dialed", in: "Received" }[it.data.dir] + "  " + it.data.when, text: `${it.data.name}\n${numberOf(it.data.name)}`, call: numberOf(it.data.name), l: "Call", backTo: () => { openMenu(1); S.sel = sel; render(); } });
-    if (here === "inbox") { it.data.read = true; const i = P.messages.indexOf(it.data); return go("read", { title: "Message", right: `${i + 1}/${P.messages.length}`, meta: `${it.data.from}  ${it.data.when}`, text: it.data.text, call: numberOf(it.data.from), smsTo: it.data.from, l: "Reply", backTo: () => inbox(sel) }); }
+    if (here === "inbox") { it.data.read = true; const i = P.messages.indexOf(it.data); return go("read", { title: "Message", right: `${i + 1}/${P.messages.length}`, meta: `${it.data.from}  ${it.data.when}`, text: it.data.text, ko: it.data.ko, pic: it.data.pic, cap: it.data.cap, call: numberOf(it.data.from), smsTo: it.data.from, l: "Reply", backTo: () => inbox(sel) }); }
     if (here === "sent") return go("read", { title: "Sent", meta: `${it.data.to}  ${it.data.when}`, text: it.data.text, call: numberOf(it.data.to), l: "Call", backTo: () => sentBox(sel) });
     if (here === "memo") return it.data ? go("read", { title: "Memo", meta: it.data.when, text: it.data.text, l: "Edit", memo: it.data, backTo: () => memoList(sel) })
                                        : go("edit", { title: "New Memo", text: "", l: "Save", max: 200, mode: "memo", backTo: () => memoList(0) });
