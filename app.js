@@ -107,7 +107,8 @@
 
   /* ================= 큰 액정 화면 (흰색·회색·파랑의 옛 휴대폰 화면) ================= */
   P.sent = P.sent || []; P.memos = P.memos || [];
-  (P.calls || []).sort((x, y) => String(y.when).localeCompare(String(x.when)));   // 통화목록은 최근 것부터
+  (P.calls || []).sort((x, y) => String(y.when).localeCompare(String(x.when)));
+  (P.messages || []).sort((x, y) => String(y.when).localeCompare(String(x.when)));   // 받은 문자도 최근 것부터   // 통화목록은 최근 것부터
   const MENU = [
     { id: "contacts", label: "Phonebook" }, { id: "calls", label: "Call Log" },
     { id: "msg", label: "Messages" }, { id: "memo", label: "Memo" }, { id: "music", label: "Music" }, { id: "rec", label: "Recorder" }
