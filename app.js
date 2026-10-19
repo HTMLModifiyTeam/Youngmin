@@ -63,23 +63,24 @@
   function openPhone() {
     if (opened) return; opened = true; audio();
     flip.classList.add("open"); fit(); openJingle();
-    hint.style.opacity = 0; closeBtn.hidden = false;
+    hint.style.opacity = 0; closeBtn.hidden = false; bigBtn();
     if (S && S.name === "incoming") render(); else go("idle");
     if (MY && !autoT) autoT = setTimeout(() => incoming(0), 180000);   // 3분 안에 못 찾으면 먼저 걸려 옴
   }
   function closePhone() {
     if (!opened) return; opened = false;
     flip.classList.remove("open"); fit(); closeSnap();
-    setBig(false); closeBtn.hidden = true; hint.style.opacity = 1; hint.textContent = "휴대폰을 누르면 열립니다";
+    setBig(false); closeBtn.hidden = true; bigBtn(); hint.style.opacity = 1; hint.textContent = "휴대폰을 누르면 열립니다";
     stopCall(); RA.pause();
   }
   $("#lid").addEventListener("click", () => { if (!opened) openPhone(); });
   closeBtn.addEventListener("click", closePhone);
   /* 액정 클로즈업: 펼친 상태에서 액정을 누르면 크게, 액정 밖을 누르면 원래대로 */
   const bigOff = $("#bigOff");
-  function setBig(v) { if (big === v) return; big = v; document.body.classList.toggle("big", v); bigOff.hidden = !v; fit(); }
+  const bigBtn = () => { bigOff.hidden = !opened; bigOff.textContent = big ? "클로즈업 해제" : "클로즈업"; };
+  function setBig(v) { if (big === v) return; big = v; document.body.classList.toggle("big", v); bigBtn(); fit(); }
   lcd.addEventListener("click", e => { if (opened && !big) { e.stopImmediatePropagation(); setBig(true); } }, true);
-  bigOff.addEventListener("click", () => setBig(false));
+  bigOff.addEventListener("click", () => setBig(!big));
   /* 클로즈업 중 터치 조작: 화면 아래 글자(소프트키)도 누를 수 있음 */
   /* 소프트키 글자: 키보드가 떠 있어도 한 번에 눌리게 pointerdown 에서 처리 (글 쓰던 칸의 포커스를 뺏지 않음) */
   lcd.addEventListener("pointerdown", e => { const sk = e.target.closest("[data-sk]"); if (!sk || !big) return; e.preventDefault(); e.stopPropagation(); key(sk.dataset.sk); }, true);
