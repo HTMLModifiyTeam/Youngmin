@@ -237,19 +237,15 @@ window.PHONE = {
   },
 
   /* 보낸 문자 */
-  sent: [
-    { to: "수일이 형", when: "94/12/02 22:41", text: "(임시 내용) 보낸 문자입니다." }
-  ],
+  sent: [],
 
   /* 메모 (첫 줄이 목록 제목) */
-  memos: [
-    { when: "94/11/28 23:10", text: "(임시) 메모 제목\n메모 내용이 들어갑니다." }
-  ],
+  memos: [],
 
   /* 녹음기: 날짜 폴더 → 녹음 파일 (file = audio 폴더의 mp3)
      lines: at = 몇 초에 나오는지, who = 말하는 사람 (비우면 이름 없이), t = 대사, ko = 아래에 작게 나오는 한국어 번역 (없으면 생략) (재생 중 날짜와 재생바 사이에 표시) */
   recordings: [
-    { date: "1994-11-17", items: [ { name: "REC_001", time: "21:12", len: "0:23", file: "audio/1.mp3", lines: [ { at: 4, who: "?", t: "You're actually gonna do that? haha, you crazy mf.", ko: "그거 진짜 하려고? ㅋㅋㅋ, 미친 새끼." }, { at: 9, who: "??", t: "Alright, done. Hows that? You fuck with it?", ko: "다 됐다. 어때? 새 담배빵 마음에 드냐?" }, { at: 12, who: "민재", t: "제발, 그만해... 내가 잘못했--", ko: "" }, { at: 16, who: "??", t: "What the fuck are you yappin' about?", ko: "씨발, 뭐라는거야?"}, { at: 19, who: "??", t: Speak Chinese back in your country.", ko: "중국어는 네 좆같은 나라에서나 해." } ] } ] },
+    { date: "1994-11-17", items: [ { name: "REC_001", time: "21:12", len: "0:23", file: "audio/1.mp3", lines: [ { at: 4, who: "?", t: "You're actually gonna do that? haha, you crazy mf.", ko: "그거 진짜 하려고? ㅋㅋㅋ, 미친 새끼." }, { at: 9, who: "??", t: "Alright, done. Hows that? You fuck with it?", ko: "다 됐다. 어때? 새 담배빵 마음에 드냐?" }, { at: 12, who: "민재", t: "제발, 그만해... 내가 잘못했--", ko: "" }, { at: 16, who: "??", t: "What the fuck are you yappin' about?", ko: "씨발, 뭐라는거야?"}, { at: 19, who: "??", t: "Speak Chinese back in your country.", ko: "중국어는 네 좆같은 나라에서나 해." } ] } ] },
     { date: "1994-11-28", items: [ { name: "REC_002", time: "16:47", len: "0:20", file: "audio/2.mp3", lines: [ { at: 1, who: "?", t: "Fucking Asian piece of shit. Why the fuck you come to America just to start shit?", ko: "좆같은 동양인 새끼. 미국은 왜 쳐 들어와서 지랄이야?" }, { at: 5, who: "??", t: "Yo, chill with the fucking hits, man. You’re gonna kill the dude.", ko: "작작 때려, 저러다가 죽겠다 ㅋㅋ" }, { at: 9, who: "?", t: "So what if he fucking dies? What’s that got to do with me? Keep your eyes down, you chink.", ko: "뒤지든 말든 무슨 상관이야. 눈깔 쳐 깔아, 노랭이 중국인아." }, { at: 13, who: "민재", t: "......"}, { at: 17, who: "?", t: "Motherfucker. Get the fuck back to your own country.", ko: "등신 새끼. 너네 나라로 꺼져." } ] } ] }
   ],
 
