@@ -210,10 +210,10 @@ window.PHONE = {
   /* 문자: 받은 메시지 (최신순). ko = 한국어 해석, pic = 사진 첨부 (회색 칸 + 파일 이름), cap = 사진 설명
      read: false 면 안 읽은 문자 */
   messages: [
-    { from: "Marcus Lee", when: "94/12/08 23:12", read: false, text: "Behind the gym tomorrow. 7:30. Come alone, monkey. If you're late we start with your fingers.", ko: "내일 체육관 뒤. 7시 반. 혼자 와라, 원숭이. 늦으면 손가락부터 시작한다." },
-    { from: "Jake", when: "94/12/08 22:47", read: false, text: "heard u cried in the nurses office lmao. ching chong boo hoo. ur mommy cant hear u from china", ko: "양호실에서 질질 짰다며 ㅋㅋ 칭챙 엉엉. 중국에선 엄마가 니 소리 못 들어." },
-    { from: "(818) 555-0124", when: "94/12/07 01:03", read: false, text: "Nobody at this school wants you breathing the same air. Pack up and go back to whatever rice paddy you crawled out of.", ko: "이 학교에선 아무도 너랑 같은 공기 마시는 거 안 원해. 짐 싸서 기어 나온 논바닥으로 돌아가." },
-    { from: "Ryan", when: "94/12/05 16:20", pic: "floor", cap: "(사진: 복도 벽에 기대 바닥에 웅크린 민재의 뒷모습)", text: "look at this lil yellow bitch. sitting in the hallway like a stray dog. framed it lol", ko: "이 노란 새끼 봐라. 복도에 길바닥 개처럼 앉아 있네. 액자에 걸었음 ㅋㅋ" },
+    { from: "Marcus Lee", when: "94/12/01 23:12", read: false, text: "Behind the gym tomorrow. 7:30. Come alone, monkey. If you're late we start with your fingers.", ko: "내일 체육관 뒤. 7시 반. 혼자 와라, 원숭이. 늦으면 손가락부터 시작한다." },
+    { from: "Jake", when: "94/12/01 22:47", read: false, text: "heard u cried in the nurses office lmao. ching chong boo hoo. ur mommy cant hear u from china", ko: "양호실에서 질질 짰다며 ㅋㅋ 칭챙 엉엉. 중국에선 엄마가 니 소리 못 들어." },
+    { from: "(818) 555-0124", when: "94/11/30 01:03", read: false, text: "Nobody at this school wants you breathing the same air. Pack up and go back to whatever rice paddy you crawled out of.", ko: "이 학교에선 아무도 너랑 같은 공기 마시는 거 안 원해. 짐 싸서 기어 나온 논바닥으로 돌아가." },
+    { from: "Ryan", when: "94/11/29 16:20", pic: "floor", cap: "(사진: 복도 벽에 기대 바닥에 웅크린 민재의 뒷모습)", text: "look at this lil yellow bitch. sitting in the hallway like a stray dog. framed it lol", ko: "이 노란 새끼 봐라. 복도에 길바닥 개처럼 앉아 있네. 액자에 걸었음 ㅋㅋ" },
     { from: "Ethan Miller", when: "94/12/01 21:58", text: "You actually told the teacher? Bold move, slant-eyes. She laughed about it in the lounge btw. Nobody's coming to save you.", ko: "진짜 선생한테 말했냐? 배짱 좋네, 찢눈아. 그 선생 교무실에서 그거 얘기하면서 웃더라. 아무도 너 구하러 안 와." },
     { from: "Marcus Lee", when: "94/11/28 23:40", text: "Your face looked better with the blood on it. More color. Same time Monday.", ko: "피 묻으니까 얼굴이 더 낫더라. 혈색 돌고. 월요일 같은 시간에." },
     { from: "Jake", when: "94/11/22 12:14", pic: "tray", cap: "(사진: 식당 바닥에 엎어진 민재의 식판)", text: "lunch is served, rice rat. eat it off the floor like back home", ko: "점심 나왔다, 쌀쥐야. 고향에서처럼 바닥에서 주워 먹어." },
