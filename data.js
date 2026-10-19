@@ -234,7 +234,7 @@ window.PHONE = {
     { from: "Marcus Lee", when: "94/04/23 16:40", text: "Stop looking at me in class, slant-eyes. You look at me again I break your glasses.", ko: "수업 시간에 나 쳐다보지 마, 찢눈아. 또 쳐다보면 안경 부숴 버린다." },
     { from: "Ryan", when: "94/04/15 20:09", text: "Hey Mr. Miyagi. Wax on wax off lol. Do u even speak english or just ching chong", ko: "어이 쿵푸 사부님. 아뵤~ 한번 해 봐 ㅋㅋ 영어는 하냐 아님 칭챙만 하냐" },
     { from: "Jake", when: "94/04/09 22:31", text: "hey new kid. ur the yellow one right? welcome to america lol. u wont last", ko: "어이 전학생. 니가 그 노란 애 맞지? 미국에 온 걸 환영한다 ㅋㅋ 오래 못 버틸걸" },
-    { from: "수일이 형", when: "94/12/06 23:10", text: "민재야, 겨울방학 때 들어오지? 공항 마중은 형이 나갈게." },
+    { from: "수일이 형", when: "94/11/26 23:10", text: "민재야, 겨울방학 때 들어오지? 공항 마중은 형이 나갈게." },
     { from: "엄마", when: "94/11/24 10:05", text: "거기 오늘 추수감사절이라며. 맛있는 거 먹었니? 우리 아들 보고 싶다." },
     { from: "수일이 형", when: "94/10/15 19:20", text: "요즘 연락이 뜸하네. 바쁘면 괜찮은데, 무슨 일 있으면 꼭 말하고." },
     { from: "엄마", when: "94/09/03 08:30", text: "새 학기 시작했지? 엄마가 보낸 옷은 받았어? 사이즈 안 맞으면 말해." },
