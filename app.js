@@ -65,7 +65,7 @@
     flip.classList.add("open"); fit(); openJingle();
     hint.style.opacity = 0; closeBtn.hidden = false;
     if (S && S.name === "incoming") render(); else go("idle");
-    if (MY && !autoT) autoT = setTimeout(incoming, 180000);   // 3분 안에 못 찾으면 먼저 걸려 옴
+    if (MY && !autoT) autoT = setTimeout(() => incoming(0), 180000);   // 3분 안에 못 찾으면 먼저 걸려 옴
   }
   function closePhone() {
     if (!opened) return; opened = false;
@@ -184,14 +184,14 @@
           <div class="cap${cur ? " on" : ""}">${cur ? `<b>${cur.me ? "Me" : esc(who)}</b><span>${esc(cur.t)}</span>${cur.ko ? `<small>(${esc(cur.ko)})</small>` : ""}` : ""}</div></div>`, "", done ? "OK" : "End", { mid: "" });
         clearTimeout(talkT);
         if (!done) talkT = setTimeout(() => { if (S.name === "talk" && S.c === c) { S.n++; render(); } }, S.n === 0 ? 900 : 1500 + Math.min(3000, ((cur && cur.t.length) || 10) * 75));
-        else if (!S.logged) { S.logged = true; P.calls.unshift(c); if (c.talk[c.talk.length - 1]?.cut) [0, .5, 1, 1.5].forEach(t => tone([480, 620], .25, .03, t)); talkT = setTimeout(() => { if (S.name === "talk" && S.c === c) go("idle"); }, 3500); }
+        else if (!S.logged) { S.logged = true; logCall(c); if (c.talk[c.talk.length - 1]?.cut) [0, .5, 1, 1.5].forEach(t => tone([480, 620], .25, .03, t)); talkT = setTimeout(() => { if (S.name === "talk" && S.c === c) go("idle"); }, 3500); }
         tick(); return;
       }
       lcd.innerHTML = frame(S.live ? (done ? "Call Ended" : "Connected") : "Call Rec.", `<div class="talk ruled"><div class="meta">${S.live ? esc(who) : `<b class="who">${esc(who)}</b> ${{ missed: "Missed", out: "Dialed", in: "Received" }[c.dir]} ${esc(c.when)}${c.dur ? " · " + esc(c.dur) : ""}`}</div>${c.talk.slice(0, S.n).map(l => `<div class="tl${l.me ? " me" : ""}"><b>${l.me ? "Me" : esc(who)}</b>${esc(l.t)}${l.ko ? `<small class="ko">(${esc(l.ko)})</small>` : ""}</div>`).join("")}${S.n < c.talk.length ? `<div class="tl wait">▪ ▪ ▪</div>` : `<div class="tl end">— End of call —</div>`}</div>`, S.live ? "" : "Call", S.live ? (done ? "OK" : "End") : "Back", { right: `${Math.min(S.n, c.talk.length)}/${c.talk.length}`, mid: S.n < c.talk.length ? "▶" : "■" });
       const tk = lcd.querySelector(".talk"); tk.scrollTop = tk.scrollHeight;
       clearTimeout(talkT);
       if (S.n < c.talk.length) { talkT = setTimeout(() => { if (S.name === "talk" && S.c === c) { S.n++; render(); } }, S.n === 0 ? 700 : 1300 + Math.min(2600, (c.talk[S.n - 1]?.t.length || 10) * 70)); }
-      else if (S.live && !S.logged) { S.logged = true; P.calls.unshift(c); talkT = setTimeout(() => { if (S.name === "talk" && S.c === c) go("idle"); }, 3500); }   // 실시간 통화가 끝나면 통화목록에 남음
+      else if (S.live && !S.logged) { S.logged = true; logCall(c); talkT = setTimeout(() => { if (S.name === "talk" && S.c === c) go("idle"); }, 3500); }   // 실시간 통화가 끝나면 통화목록에 남음
     } else if (n === "recplay") {
       const r = S.r, on = !RA.paused && RA.src.endsWith(r.file);
       lcd.innerHTML = frame("Recorder", `<div class="player rec"><div class="art">${ico("rec")}<div class="eq${on ? " on" : ""}">${"<i></i>".repeat(7)}</div></div>
@@ -322,9 +322,15 @@
   let ringT = null, ringTO = null, autoT = null;
   const stamp2 = () => `${String(now().getFullYear()).slice(2)}/${stamp()}`;
   function ringOnce() { [0, .4].forEach(t => { tone([1300, 1600], .18, .05, t, "square"); tone([1300, 1600], .18, .05, t + .2, "square"); }); }
-  function incoming() {
-    if (!MY || myN > 0) return;
-    if (["talk", "calling", "edit"].includes(S.name)) { autoT = setTimeout(incoming, 10000); return; }   // 다른 걸 하는 중이면 조금 뒤에
+  /* 통화가 끝나 통화목록에 남을 때. ?와 첫 통화가 끝나면 1분 30초 뒤 두 번째 전화가 걸려 옴 (그새 직접 걸었으면 안 옴) */
+  let secondT = null;
+  function logCall(c) {
+    P.calls.unshift(c);
+    if (MY && c.name === MY.name && myN === 1 && !secondT) secondT = setTimeout(() => incoming(1), 90000);
+  }
+  function incoming(want = 0) {
+    if (!MY || myN !== want) return;
+    if (["talk", "calling", "edit", "incoming"].includes(S.name)) { setTimeout(() => incoming(want), 10000); return; }   // 다른 걸 하는 중이면 조금 뒤에   // 다른 걸 하는 중이면 조금 뒤에
     go("incoming", { who: MY.name }); ringOnce(); ringT = setInterval(ringOnce, 2600);
     ringTO = setTimeout(missIncoming, 30000);   // 30초 동안 안 받으면 부재중
   }
@@ -348,7 +354,7 @@
     if (k === "prev" || k === "next") return step(k === "prev" ? -1 : 1);
     const n = S.name, digit = /^[0-9*#]$/.test(k);
     if (n === "incoming") { if (k === "send" || k === "sl" || k === "ok") return answer(); if (k === "sr" || k === "end" || k === "clr") return missIncoming(); return; }
-    if (k === "end") { if (S.name === "talk" && S.live && !S.logged) { S.logged = true; P.calls.unshift(S.c); } clearTimeout(talkT); stopCall(); return go("idle"); }
+    if (k === "end") { if (S.name === "talk" && S.live && !S.logged) { S.logged = true; logCall(S.c); } clearTimeout(talkT); stopCall(); return go("idle"); }
     if (n === "idle") {
       if (digit) return go("dial", { num: MY ? MY.number[0] : k });   // 어떤 숫자를 눌러도 그 번호가 한 자리씩
       if (k === "ok" || k === "sl") return mainMenu(0);
@@ -403,7 +409,7 @@
     if (n === "talk") {
       if (k === "up" || k === "down") { const r = lcd.querySelector(".talk"), t0 = r.scrollTop; r.scrollTop += k === "up" ? -36 : 36; if (r.scrollTop === t0 && S.nav) step(k === "up" ? -1 : 1); return; }
       if (k === "ok" || k === "right") { if (S.n < S.c.talk.length) { S.n++; return render(); } return; }   // 다음 줄 바로 보기
-      if (S.live) { if (k === "sr" || k === "clr" || k === "end") { clearTimeout(talkT); if (!S.logged) { S.logged = true; P.calls.unshift(S.c); } return go("idle"); } return; }
+      if (S.live) { if (k === "sr" || k === "clr" || k === "end") { clearTimeout(talkT); if (!S.logged) { S.logged = true; logCall(S.c); } return go("idle"); } return; }
       if (k === "send" || k === "sl") return startCall(numberOf(S.c.name));
       if (k === "clr" || k === "sr" || k === "left") { clearTimeout(talkT); return S.backTo(); }
       return;
