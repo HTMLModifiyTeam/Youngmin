@@ -298,6 +298,14 @@
     stopCall(); clearTimeout(talkT); const who = nameOf(num) || (P.contacts || []).find(c => c.name === num)?.name || "";
     go("calling", { num: numberOf(num), who, intl: isIntl(who) });
     tone([440, 480], 1.2, .03, .4);
+    if (MY && who === MY.name && myN >= MY.calls.length) {   // 두 번 통화한 뒤로는 없는 번호
+      P.calls.unshift({ name: MY.name, dir: "out", when: stamp2() });
+      callT.push(setTimeout(() => { if (S.name !== "calling") return;
+        [913.8, 1370.6, 1776.7].forEach((f, i) => tone([f], .33, .05, i * .34));   // 안내 신호음 (도-레-미)
+        const st = lcd.querySelector("[data-cst]"); if (st) st.innerHTML = "The number you have dialed<br>is not in service.<br>Please check the number<br>and dial again."; }, 1800));
+      callT.push(setTimeout(() => { if (S.name === "calling") go("idle"); }, 8000));
+      return;
+    }
     const sc = (MY && who === MY.name) ? MY.calls[Math.min(myN++, MY.calls.length - 1)] : (P.scripts || {})[who];
     if (sc) {   // 전화번호부에서 건 전화: 상대가 받으면 대본이 한 줄씩
       callT.push(setTimeout(() => { if (S.name !== "calling") return; click(.3, 0, 1600); const d = now();
