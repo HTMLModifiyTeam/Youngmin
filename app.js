@@ -269,10 +269,18 @@
   const sentN = {};
   /* 새 문자 알림: 알림음 + 화면 위쪽 배너 (닫혀 있으면 바깥 액정에 표시) */
   let nbT = null;
-  function newMsgAlert(who) {
+  let nbMsg = null;
+  function openMsg(m) {   // 받은 문자 하나를 바로 열기
+    const i = P.messages.indexOf(m); if (i < 0) return;
+    stopCall(); clearTimeout(talkT); if (!big) setBig(true);
+    inbox(i); pickNav();
+  }
+  function newMsgAlert(who, m) {
+    nbMsg = m;
     [0, .5].forEach(t => { tone([1568], .09, .06, t, "square"); tone([2093], .12, .06, t + .1, "square"); });
     let nb = document.getElementById("nbanner");
-    if (!nb) { nb = document.createElement("div"); nb.id = "nbanner"; lcd.parentNode.appendChild(nb); }
+    if (!nb) { nb = document.createElement("div"); nb.id = "nbanner"; lcd.parentNode.appendChild(nb);
+      nb.addEventListener("click", e => { e.stopPropagation(); if (!nb.classList.contains("show") || !nbMsg || !opened) return; nb.classList.remove("show"); if (["talk", "calling", "incoming"].includes(S.name)) return; openMsg(nbMsg); }); }
     nb.innerHTML = `${ico("msg")}<div><b>New message</b><span>${esc(who)}</span></div>`;
     nb.classList.remove("show"); void nb.offsetWidth; nb.classList.add("show");
     clearTimeout(nbT); nbT = setTimeout(() => nb.classList.remove("show"), 3000);
@@ -283,8 +291,9 @@
     const txt = k < (C.replies || []).length ? C.replies[k] : (C.loop || [])[Math.floor(Math.random() * (C.loop || []).length)];
     if (!txt) return;
     setTimeout(() => {
-      P.messages.unshift({ from: who, when: `${String(now().getFullYear()).slice(2)}/${stamp()}`, read: false, text: txt });
-      newMsgAlert(who);
+      const m = { from: who, when: `${String(now().getFullYear()).slice(2)}/${stamp()}`, read: false, text: txt };
+      P.messages.unshift(m);
+      newMsgAlert(who, m);
       if (S.name === "idle") render(); else if (S.name === "list" && S.kind === "inbox") inbox(0);
     }, 3500 + Math.random() * 3000);
   }
