@@ -65,7 +65,6 @@
     flip.classList.add("open"); fit(); openJingle();
     hint.style.opacity = 0; closeBtn.hidden = false; bigBtn();
     if (S && S.name === "incoming") render(); else go("idle");
-    if (MY && !autoT) autoT = setTimeout(() => incoming(0), 180000);   // 3분 안에 못 찾으면 먼저 걸려 옴
   }
   function closePhone() {
     if (!opened) return; opened = false;
@@ -208,9 +207,10 @@
   }
   function pop(msg, then, ms = 1300) { const p = document.createElement("div"); p.className = "pop"; p.textContent = msg; lcd.querySelector(".body")?.appendChild(p); clearTimeout(popT); popT = setTimeout(() => { p.remove(); then && then(); }, ms); }
 
-  const MY = P.mystery || null; let myN = 0;   // 정체 모를 번호와 통화한 횟수
-  const numberOf = name => (MY && name === MY.name) ? MY.number : (P.contacts || []).find(c => c.name === name)?.number || name;
-  const nameOf = num => (MY && num === MY.number) ? MY.name : (P.contacts || []).find(c => c.number === num)?.name || "";
+  const MY = P.mystery || null;
+  let myN = 0;   // 정체 모를 번호와 통화한 횟수
+  const numberOf = name => (P.contacts || []).find(c => c.name === name)?.number || name;
+  const nameOf = num => (P.contacts || []).find(c => c.number === num)?.name || "";
   const isIntl = x => !!(P.contacts || []).find(c => (c.name === x || c.number === x) && c.intl);
   const INTL = `<span class="intl">INT'L</span>`;
 
@@ -309,15 +309,7 @@
     stopCall(); clearTimeout(talkT); const who = nameOf(num) || (P.contacts || []).find(c => c.name === num)?.name || "";
     go("calling", { num: numberOf(num), who, intl: isIntl(who) });
     tone([440, 480], 1.2, .03, .4);
-    if (MY && who === MY.name && myN >= MY.calls.length) {   // 두 번 통화한 뒤로는 없는 번호
-      P.calls.unshift({ name: MY.name, dir: "out", when: stamp2() });
-      callT.push(setTimeout(() => { if (S.name !== "calling") return;
-        [913.8, 1370.6, 1776.7].forEach((f, i) => tone([f], .33, .05, i * .34));   // 안내 신호음 (도-레-미)
-        const st = lcd.querySelector("[data-cst]"); if (st) st.innerHTML = "The number you have dialed<br>is not in service.<br>Please check the number<br>and dial again."; }, 1800));
-      callT.push(setTimeout(() => { if (S.name === "calling") go("idle"); }, 8000));
-      return;
-    }
-    const sc = (MY && who === MY.name) ? MY.calls[Math.min(myN++, MY.calls.length - 1)] : (P.scripts || {})[who];
+    const sc = (P.scripts || {})[who];
     if (sc) {   // 전화번호부에서 건 전화: 상대가 받으면 대본이 한 줄씩
       callT.push(setTimeout(() => { if (S.name !== "calling") return; click(.3, 0, 1600); const d = now();
         go("talk", { live: true, n: 0, t0: Date.now(), c: { name: who, dir: "out", when: `${String(d.getFullYear()).slice(2)}/${stamp()}`, dur: "", talk: sc } }); }, 2600));
@@ -336,13 +328,6 @@
   let secondT = null;
   function logCall(c) {
     P.calls.unshift(c);
-    if (MY && c.name === MY.name && myN === 1 && !secondT) secondT = setTimeout(() => incoming(1), 90000);
-  }
-  function incoming(want = 0) {
-    if (!MY || myN !== want) return;
-    if (["talk", "calling", "edit", "incoming"].includes(S.name)) { setTimeout(() => incoming(want), 10000); return; }   // 다른 걸 하는 중이면 조금 뒤에   // 다른 걸 하는 중이면 조금 뒤에
-    go("incoming", { who: MY.name }); ringOnce(); ringT = setInterval(ringOnce, 2600);
-    ringTO = setTimeout(missIncoming, 30000);   // 30초 동안 안 받으면 부재중
   }
   function stopRing() { clearInterval(ringT); clearTimeout(ringTO); ringT = ringTO = null; }
   function answer() {
@@ -363,10 +348,9 @@
     if (k === "ph") { stopCall(); return openMenu(0); }   // 위쪽 전화부 키
     if (k === "prev" || k === "next") return step(k === "prev" ? -1 : 1);
     const n = S.name, digit = /^[0-9*#]$/.test(k);
-    if (n === "incoming") { if (k === "send" || k === "sl" || k === "ok") return answer(); if (k === "sr" || k === "end" || k === "clr") return missIncoming(); return; }
     if (k === "end") { if (S.name === "talk" && S.live && !S.logged) { S.logged = true; logCall(S.c); } clearTimeout(talkT); stopCall(); return go("idle"); }
     if (n === "idle") {
-      if (digit) return go("dial", { num: MY ? MY.number[0] : k });   // 어떤 숫자를 눌러도 그 번호가 한 자리씩
+      if (digit) return go("dial", { num: k });   // 어떤 숫자를 눌러도 그 번호가 한 자리씩
       if (k === "ok" || k === "sl") return mainMenu(0);
       if (k === "sr" || k === "down") return openMenu(0);
       if (k === "send" || k === "up") return openMenu(1);
@@ -375,9 +359,9 @@
       return;
     }
     if (n === "dial") {
-      if (digit) { S.num = MY ? MY.number.slice(0, Math.min(MY.number.length, S.num.length + 1)) : (S.num + k).slice(0, 20); return render(); }
+      if (digit) { S.num = (S.num + k).slice(0, 20); return render(); }
       if (k === "clr" || k === "sr") { S.num = S.num.slice(0, -1); return S.num ? render() : go("idle"); }
-      if (k === "send" || k === "ok" || k === "sl") return startCall(MY ? MY.number : S.num);   // 아무 번호나 눌러도 그 번호로
+      if (k === "send" || k === "ok" || k === "sl") return startCall(S.num); // 아무 번호나 눌러도 그 번호로
       return;
     }
     if (n === "menu") {

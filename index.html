@@ -1,59 +1,75 @@
 <!doctype html>
 <html lang="ko">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<title>폴더폰</title>
-<meta name="description" content="2000년대 초 폴더폰을 열어 안을 들여다보는 페이지">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Nanum+Gothic+Coding:wght@400;700&display=swap">
-<link rel="stylesheet" href="style.css?v=202610190947">
-</head>
-<body>
-  <div id="room" class="room">
-    <div id="wrap" class="wrap">
-      <!-- 좌표 원점 = 경첩 축. 사진 두 장(펼친 사진을 위/아래로 나눔 + 닫힌 사진)을 겹쳐 씀 -->
-      <div id="flip" class="flip">
-        <div class="layer open-bot">
-          <button class="hk" data-k="ph" style="left:135px;top:78px;width:92px;height:30px" aria-label="ph"></button>
-          <button class="hk" data-k="jump" style="left:50px;top:100px;width:72px;height:46px" aria-label="jump"></button>
-          <button class="hk" data-k="cam" style="left:241px;top:100px;width:72px;height:46px" aria-label="cam"></button>
-          <button class="hk" data-k="menu" style="left:48px;top:176px;width:64px;height:62px" aria-label="menu"></button>
-          <button class="hk" data-k="ok" style="left:252px;top:176px;width:64px;height:62px" aria-label="ok"></button>
-          <button class="hk" data-k="nate" style="left:134px;top:238px;width:94px;height:34px" aria-label="nate"></button>
-          <button class="hk" data-k="up" style="left:146px;top:128px;width:70px;height:22px" aria-label="up"></button>
-          <button class="hk" data-k="down" style="left:146px;top:197px;width:70px;height:20px" aria-label="down"></button>
-          <button class="hk" data-k="left" style="left:108px;top:153px;width:40px;height:40px" aria-label="left"></button>
-          <button class="hk" data-k="right" style="left:214px;top:153px;width:40px;height:40px" aria-label="right"></button>
-          <button class="hk" data-k="ok" style="left:153px;top:156px;width:56px;height:34px" aria-label="ok"></button>
-          <button class="hk" data-k="send" style="left:39px;top:277px;width:92px;height:46px" aria-label="send"></button>
-          <button class="hk" data-k="clr" style="left:139px;top:292px;width:84px;height:36px" aria-label="clr"></button>
-          <button class="hk" data-k="end" style="left:236px;top:277px;width:92px;height:46px" aria-label="end"></button>
-          <button class="hk" data-k="1" style="left:40px;top:337px;width:90px;height:46px" aria-label="1"></button>
-          <button class="hk" data-k="2" style="left:141px;top:337px;width:90px;height:46px" aria-label="2"></button>
-          <button class="hk" data-k="3" style="left:238px;top:337px;width:90px;height:46px" aria-label="3"></button>
-          <button class="hk" data-k="4" style="left:40px;top:392px;width:90px;height:46px" aria-label="4"></button>
-          <button class="hk" data-k="5" style="left:141px;top:392px;width:90px;height:46px" aria-label="5"></button>
-          <button class="hk" data-k="6" style="left:238px;top:392px;width:90px;height:46px" aria-label="6"></button>
-          <button class="hk" data-k="7" style="left:40px;top:446px;width:90px;height:46px" aria-label="7"></button>
-          <button class="hk" data-k="8" style="left:141px;top:446px;width:90px;height:46px" aria-label="8"></button>
-          <button class="hk" data-k="9" style="left:238px;top:446px;width:90px;height:46px" aria-label="9"></button>
-          <button class="hk" data-k="*" style="left:40px;top:501px;width:90px;height:46px" aria-label="*"></button>
-          <button class="hk" data-k="0" style="left:141px;top:501px;width:90px;height:46px" aria-label="0"></button>
-          <button class="hk" data-k="#" style="left:238px;top:501px;width:90px;height:46px" aria-label="#"></button>
-        </div>
-        <div class="layer open-top">
-          <div id="lcd" class="lcd"></div>
-        </div>
-        <div id="lid" class="layer closed">
-          <div class="sub-lcd"><div class="sl-top"><span class="ant"><b>T</b><i></i><i></i><i></i><i></i></span><span data-subic></span><span class="gap"></span><span class="sl-ic">♪</span><b class="bat" data-bat></b></div><div class="sl-time" data-subtime></div><div class="sl-date" data-subdate></div><div class="sl-note" data-subnote></div></div>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+    <title>폴더폰</title>
+    <meta name="description" content="2000년대 초 폴더폰을 열어 안을 들여다보는 페이지">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Nanum+Gothic+Coding:wght@400;700&display=swap">
+    <link rel="stylesheet" href="style.css">
+  </head>
+
+  <body>
+    <div id="room" class="room">
+      <div id="wrap" class="wrap">
+        <!-- 좌표 원점 = 경첩 축. 사진 두 장(펼친 사진을 위/아래로 나눔 + 닫힌 사진)을 겹쳐 씀 -->
+        <div id="flip" class="flip">
+          <div class="layer open-bot">
+            <button class="hk" data-k="ph" style="left:135px;top:78px;width:92px;height:30px" aria-label="ph"></button>
+            <button class="hk" data-k="jump" style="left:50px;top:100px;width:72px;height:46px"
+              aria-label="jump"></button>
+            <button class="hk" data-k="cam" style="left:241px;top:100px;width:72px;height:46px" aria-label="cam"></button>
+            <button class="hk" data-k="menu" style="left:48px;top:176px;width:64px;height:62px"
+              aria-label="menu"></button>
+            <button class="hk" data-k="ok" style="left:252px;top:176px;width:64px;height:62px" aria-label="ok"></button>
+            <button class="hk" data-k="nate" style="left:134px;top:238px;width:94px;height:34px"
+              aria-label="nate"></button>
+            <button class="hk" data-k="up" style="left:146px;top:128px;width:70px;height:22px" aria-label="up"></button>
+            <button class="hk" data-k="down" style="left:146px;top:197px;width:70px;height:20px"
+              aria-label="down"></button>
+            <button class="hk" data-k="left" style="left:108px;top:153px;width:40px;height:40px"
+              aria-label="left"></button>
+            <button class="hk" data-k="right" style="left:214px;top:153px;width:40px;height:40px"
+              aria-label="right"></button>
+            <button class="hk" data-k="ok" style="left:153px;top:156px;width:56px;height:34px" aria-label="ok"></button>
+            <button class="hk" data-k="send" style="left:39px;top:277px;width:92px;height:46px"
+              aria-label="send"></button>
+            <button class="hk" data-k="clr" style="left:139px;top:292px;width:84px;height:36px" aria-label="clr"></button>
+            <button class="hk" data-k="end" style="left:236px;top:277px;width:92px;height:46px" aria-label="end"></button>
+            <button class="hk" data-k="1" style="left:40px;top:337px;width:90px;height:46px" aria-label="1"></button>
+            <button class="hk" data-k="2" style="left:141px;top:337px;width:90px;height:46px" aria-label="2"></button>
+            <button class="hk" data-k="3" style="left:238px;top:337px;width:90px;height:46px" aria-label="3"></button>
+            <button class="hk" data-k="4" style="left:40px;top:392px;width:90px;height:46px" aria-label="4"></button>
+            <button class="hk" data-k="5" style="left:141px;top:392px;width:90px;height:46px" aria-label="5"></button>
+            <button class="hk" data-k="6" style="left:238px;top:392px;width:90px;height:46px" aria-label="6"></button>
+            <button class="hk" data-k="7" style="left:40px;top:446px;width:90px;height:46px" aria-label="7"></button>
+            <button class="hk" data-k="8" style="left:141px;top:446px;width:90px;height:46px" aria-label="8"></button>
+            <button class="hk" data-k="9" style="left:238px;top:446px;width:90px;height:46px" aria-label="9"></button>
+            <button class="hk" data-k="*" style="left:40px;top:501px;width:90px;height:46px" aria-label="*"></button>
+            <button class="hk" data-k="0" style="left:141px;top:501px;width:90px;height:46px" aria-label="0"></button>
+            <button class="hk" data-k="#" style="left:238px;top:501px;width:90px;height:46px" aria-label="#"></button>
+          </div>
+          <div class="layer open-top">
+            <div id="lcd" class="lcd"></div>
+          </div>
+          <div id="lid" class="layer closed">
+            <div class="sub-lcd">
+              <div class="sl-top"><span class="ant"><b>T</b><i></i><i></i><i></i><i></i></span><span
+                  data-subic></span><span class="gap"></span><span class="sl-ic">♪</span><b class="bat" data-bat></b>
+              </div>
+              <div class="sl-time" data-subtime></div>
+              <div class="sl-date" data-subdate></div>
+              <div class="sl-note" data-subnote></div>
+            </div>
+          </div>
         </div>
       </div>
+      <div class="tbtns"><button id="bigOff" class="tb-btn" hidden>클로즈업 해제</button><button id="closeBtn" class="tb-btn"
+          hidden>폴더 닫기</button></div>
+      <p id="hint" class="hint">휴대폰을 누르면 열립니다</p>
     </div>
-    <div class="tbtns"><button id="bigOff" class="tb-btn" hidden>클로즈업 해제</button><button id="closeBtn" class="tb-btn" hidden>폴더 닫기</button></div>
-    <p id="hint" class="hint">휴대폰을 누르면 열립니다</p>
-  </div>
-  <script src="data.js?v=202610190947"></script>
-  <script src="app.js?v=202610190947"></script>
-</body>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+  </body>
 </html>
